@@ -1,21 +1,20 @@
-import { StyleSheet, Text, View } from "react-native";
-
+import { Text, View } from "react-native";
 
 export default function HomeScreen() {
   return (
     <View
       style={{
         flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
         padding: 20,
+        paddingTop: 60,
+        backgroundColor: "#fff",
       }}
     >
       <Text
         style={{
           fontSize: 28,
           fontWeight: "bold",
-          marginBottom: 10,
+          marginBottom: 20,
         }}
       >
         RCCG Hallelujah Parish
@@ -23,31 +22,55 @@ export default function HomeScreen() {
 
       <Text
         style={{
-          fontSize: 18,
-          textAlign: "center",
+          fontSize: 20,
+          marginBottom: 10,
         }}
       >
-        Church Announcement Mobile App
+        Announcements
       </Text>
+
+      <View
+        style={{
+          backgroundColor: "#f3f4f6",
+          padding: 15,
+          borderRadius: 12,
+          marginBottom: 15,
+        }}
+      >
+        <Text
+          style={{
+            fontSize: 18,
+            fontWeight: "bold",
+          }}
+        >
+          Sunday Service
+        </Text>
+
+        <Text style={{ marginTop: 5 }}>
+          Join us this Sunday by 8AM for worship.
+        </Text>
+      </View>
+
+      <View
+        style={{
+          backgroundColor: "#f3f4f6",
+          padding: 15,
+          borderRadius: 12,
+        }}
+      >
+        <Text
+          style={{
+            fontSize: 18,
+            fontWeight: "bold",
+          }}
+        >
+          Youth Meeting
+        </Text>
+
+        <Text style={{ marginTop: 5 }}>
+          Youth fellowship starts Friday 5PM.
+        </Text>
+      </View>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-  },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: "absolute",
-  },
-});
