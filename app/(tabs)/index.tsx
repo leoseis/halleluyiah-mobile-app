@@ -1,78 +1,122 @@
-import React, { useState } from "react";
-import { FlatList, Text, View } from "react-native";
+import React, { useEffect, useState } from "react";
+import { FlatList, Image, SafeAreaView, Text, View } from "react-native";
+
+import api from "../../src/api/api";
+
+interface Announcement {
+  id: string;
+  title: string;
+  message: string;
+}
 
 export default function HomeScreen() {
-  const [announcements] = useState([
-    {
-      id: "1",
-      title: "Sunday Service",
-      message: "Join us this Sunday by 8AM for worship.",
-    },
-    {
-      id: "2",
-      title: "Youth Meeting",
-      message: "Youth fellowship starts Friday 5PM.",
-    },
-    {
-      id: "3",
-      title: "Women Conference",
-      message: "Special women conference this Saturday.",
-    },
-  ]);
+  const [announcements, setAnnouncements] = useState<Announcement[]>([]);
+
+  useEffect(() => {
+    const fetchAnnouncements = async () => {
+      try {
+        const response = await api.get("/announcements/");
+        setAnnouncements(response.data);
+      } catch (error) {
+        console.error("Error fetching announcements:", error);
+      }
+    };
+
+    fetchAnnouncements();
+  }, []);
 
   return (
-    <View
+    <SafeAreaView
       style={{
         flex: 1,
-        padding: 20,
-        paddingTop: 60,
-        backgroundColor: "#fff",
+        backgroundColor: "#f5f7fb",
       }}
     >
-      <Text
+      {/* Header */}
+      <View
         style={{
-          fontSize: 28,
-          fontWeight: "bold",
-          marginBottom: 20,
+          backgroundColor: "#0d1b4c",
+          padding: 20,
+          flexDirection: "row",
+          alignItems: "center",
         }}
       >
-        RCCG Hallelujah Parish
-      </Text>
+        <Image
+          source={require("../../assets/images/icon.png")}
+          style={{
+            width: 50,
+            height: 50,
+            borderRadius: 25,
+            marginRight: 12,
+          }}
+        />
 
-      <Text
-        style={{
-          fontSize: 20,
-          marginBottom: 10,
-        }}
-      >
-        Latest announcements
-      </Text>
-
-      <FlatList
-        data={announcements}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <View
+        <View>
+          <Text
             style={{
-              backgroundColor: "#f3f4f6",
-              padding: 15,
-              borderRadius: 12,
-              marginBottom: 15,
+              color: "white",
+              fontSize: 20,
+              fontWeight: "bold",
             }}
           >
-            <Text
+            RCCG Hallelujah Parish
+          </Text>
+
+          <Text
+            style={{
+              color: "#d1d5db",
+            }}
+          >
+            Parish Announcements
+          </Text>
+        </View>
+      </View>
+
+      {/* Body */}
+      <View style={{ padding: 20, flex: 1 }}>
+        <Text
+          style={{
+            fontSize: 24,
+            fontWeight: "bold",
+            marginBottom: 20,
+          }}
+        >
+          Latest Announcements
+        </Text>
+
+        <FlatList
+          data={announcements}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={({ item }) => (
+            <View
               style={{
-                fontSize: 18,
-                fontWeight: "bold",
+                backgroundColor: "white",
+                padding: 16,
+                borderRadius: 14,
+                marginBottom: 15,
               }}
             >
-              {item.title}
-            </Text>
+              <Text
+                style={{
+                  fontSize: 18,
+                  fontWeight: "bold",
+                }}
+              >
+                {item.title}
+              </Text>
 
-            <Text style={{ marginTop: 5 }}>{item.message}</Text>
-          </View>
-        )}
-      />
-    </View>
+              <Text
+                style={{
+                  marginTop: 6,
+                  color: "#4b5563",
+                }}
+              >
+                {item.message}
+              </Text>
+            </View>
+          )}
+        />
+      </View>
+    </SafeAreaView>
   );
 }
