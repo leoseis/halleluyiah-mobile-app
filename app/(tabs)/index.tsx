@@ -1,6 +1,25 @@
-import { Text, View } from "react-native";
+import React, { useState } from "react";
+import { FlatList, Text, View } from "react-native";
 
 export default function HomeScreen() {
+  const [announcements] = useState([
+    {
+      id: "1",
+      title: "Sunday Service",
+      message: "Join us this Sunday by 8AM for worship.",
+    },
+    {
+      id: "2",
+      title: "Youth Meeting",
+      message: "Youth fellowship starts Friday 5PM.",
+    },
+    {
+      id: "3",
+      title: "Women Conference",
+      message: "Special women conference this Saturday.",
+    },
+  ]);
+
   return (
     <View
       style={{
@@ -26,51 +45,34 @@ export default function HomeScreen() {
           marginBottom: 10,
         }}
       >
-        Announcements
+        Latest announcements
       </Text>
 
-      <View
-        style={{
-          backgroundColor: "#f3f4f6",
-          padding: 15,
-          borderRadius: 12,
-          marginBottom: 15,
-        }}
-      >
-        <Text
-          style={{
-            fontSize: 18,
-            fontWeight: "bold",
-          }}
-        >
-          Sunday Service
-        </Text>
+      <FlatList
+        data={announcements}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => (
+          <View
+            style={{
+              backgroundColor: "#f3f4f6",
+              padding: 15,
+              borderRadius: 12,
+              marginBottom: 15,
+            }}
+          >
+            <Text
+              style={{
+                fontSize: 18,
+                fontWeight: "bold",
+              }}
+            >
+              {item.title}
+            </Text>
 
-        <Text style={{ marginTop: 5 }}>
-          Join us this Sunday by 8AM for worship.
-        </Text>
-      </View>
-
-      <View
-        style={{
-          backgroundColor: "#f3f4f6",
-          padding: 15,
-          borderRadius: 12,
-        }}
-      >
-        <Text
-          style={{
-            fontSize: 18,
-            fontWeight: "bold",
-          }}
-        >
-          Youth Meeting
-        </Text>
-
-        <Text style={{ marginTop: 5 }}>
-          Youth fellowship starts Friday 5PM.
-        </Text>
-      </View>
+            <Text style={{ marginTop: 5 }}>{item.message}</Text>
+          </View>
+        )}
+      />
     </View>
   );
 }
