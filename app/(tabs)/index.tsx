@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { FlatList, Image, SafeAreaView, Text, View } from "react-native";
+import AnnouncementCard from "../../components/AnnouncementCard";
 
 import api from "../../src/api/api";
 
@@ -87,34 +88,7 @@ export default function HomeScreen() {
         <FlatList
           data={announcements}
           keyExtractor={(item) => item.id.toString()}
-          renderItem={({ item }) => (
-            <View
-              style={{
-                backgroundColor: "white",
-                padding: 16,
-                borderRadius: 14,
-                marginBottom: 15,
-              }}
-            >
-              <Text
-                style={{
-                  fontSize: 18,
-                  fontWeight: "bold",
-                }}
-              >
-                {item.title}
-              </Text>
-
-              <Text
-                style={{
-                  marginTop: 6,
-                  color: "#4b5563",
-                }}
-              >
-                {item.message}
-              </Text>
-            </View>
-          )}
+          renderItem={({ item }) => <AnnouncementCard item={item} />}
         />
       </View>
     </SafeAreaView>
