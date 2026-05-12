@@ -1,5 +1,5 @@
 import { router } from "expo-router";
-import { Pressable, Text } from "react-native";
+import { Image, Pressable, Text, View } from "react-native";
 
 export default function AnnouncementCard({ item }: any) {
   return (
@@ -15,7 +15,47 @@ export default function AnnouncementCard({ item }: any) {
       }
       style={{}}
     >
-      <Text>{item.title}</Text>
+      <View
+        style={{
+          backgroundColor: "white",
+          borderRadius: 16,
+          overflow: "hidden",
+          marginBottom: 16,
+        }}
+      >
+        {item.image && (
+          <Image
+            source={{ uri: item.image }}
+            style={{
+              width: "100%",
+              height: 200,
+            }}
+            resizeMode="cover"
+          />
+        )}
+
+        <View style={{ padding: 16 }}>
+          <Text
+            style={{
+              fontSize: 20,
+              fontWeight: "bold",
+              marginBottom: 8,
+            }}
+          >
+            {item.title}
+          </Text>
+
+          <Text
+            numberOfLines={2}
+            style={{
+              color: "#4b5563",
+              lineHeight: 22,
+            }}
+          >
+            {item.body}
+          </Text>
+        </View>
+      </View>
     </Pressable>
   );
 }
