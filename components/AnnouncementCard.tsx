@@ -1,3 +1,4 @@
+import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { Image, Pressable, Text, View } from "react-native";
 
@@ -54,6 +55,25 @@ export default function AnnouncementCard({ item }: any) {
           >
             {item.body}
           </Text>
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              marginTop: 14,
+            }}
+          >
+            <Ionicons name="heart-outline" size={22} color="#dc2626" />
+
+            <Text
+              style={{
+                marginLeft: 6,
+                color: "#374151",
+                fontWeight: "600",
+              }}
+            >
+              {item.likes_count || 0} Likes
+            </Text>
+          </View>
         </View>
       </View>
     </Pressable>
