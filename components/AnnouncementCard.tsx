@@ -1,32 +1,21 @@
-import { Text, View } from "react-native";
+import { router } from "expo-router";
+import { Pressable, Text } from "react-native";
 
 export default function AnnouncementCard({ item }: any) {
   return (
-    <View
-      style={{
-        backgroundColor: "white",
-        padding: 16,
-        borderRadius: 14,
-        marginBottom: 15,
-      }}
+    <Pressable
+      onPress={() =>
+        router.push({
+          pathname: "/announcement-details",
+          params: {
+            title: item.title,
+            message: item.body,
+          },
+        })
+      }
+      style={{}}
     >
-      <Text
-        style={{
-          fontSize: 18,
-          fontWeight: "bold",
-        }}
-      >
-        {item.title}
-      </Text>
-
-      <Text
-        style={{
-          marginTop: 6,
-          color: "#4b5563",
-        }}
-      >
-        {item.message}
-      </Text>
-    </View>
+      <Text>{item.title}</Text>
+    </Pressable>
   );
 }

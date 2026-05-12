@@ -16,7 +16,7 @@ import {
 interface Announcement {
   id: string;
   title: string;
-  message: string;
+  body: string;
 }
 
 export default function HomeScreen() {
@@ -29,6 +29,7 @@ export default function HomeScreen() {
       setLoading(true);
 
       const response = await api.get("/announcements/");
+      // console.log(response.data);
 
       setAnnouncements(response.data);
     } catch (error) {
