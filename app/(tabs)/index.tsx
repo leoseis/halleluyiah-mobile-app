@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import AnnouncementCard from "../../components/AnnouncementCard";
+import EmptyState from "../../components/EmptyState";
 import Header from "../../components/Header";
 import api from "../../src/api/api";
 
@@ -79,19 +80,18 @@ export default function HomeScreen() {
           />
         ) : (
           <FlatList
-  data={announcements}
-  keyExtractor={(item) => item.id.toString()}
-  renderItem={({ item }) => (
-    <AnnouncementCard item={item} />
-  )}
-  refreshControl={
-    <RefreshControl
-      refreshing={refreshing}
-      onRefresh={onRefresh}
-      colors={["#0d1b4c"]}
-    />
-  }
-/>
+            data={announcements}
+            keyExtractor={(item) => item.id.toString()}
+            renderItem={({ item }) => <AnnouncementCard item={item} />}
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={onRefresh}
+                colors={["#0d1b4c"]}
+              />
+            }
+            ListEmptyComponent={<EmptyState />}
+          />
         )}
       </View>
     </SafeAreaView>
