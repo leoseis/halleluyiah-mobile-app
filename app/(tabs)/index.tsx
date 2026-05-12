@@ -6,6 +6,7 @@ import api from "../../src/api/api";
 import {
   ActivityIndicator,
   FlatList,
+  RefreshControl,
   SafeAreaView,
   Text,
   View,
@@ -20,22 +21,31 @@ interface Announcement {
 export default function HomeScreen() {
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const fetchAnnouncements = async () => {
+    try {
+      setLoading(true);
+
+      const response = await api.get("/announcements/");
+
+      setAnnouncements(response.data);
+    } catch (error) {
+      console.error("Error fetching announcements:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+
+    await fetchAnnouncements();
+
+    setRefreshing(false);
+  };
 
   useEffect(() => {
-    const fetchAnnouncements = async () => {
-      try {
-        setLoading(true);
-
-        const response = await api.get("/announcements/");
-
-        setAnnouncements(response.data);
-      } catch (error) {
-        console.error("Error fetching announcements:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchAnnouncements();
   }, []);
 
@@ -69,10 +79,19 @@ export default function HomeScreen() {
           />
         ) : (
           <FlatList
-            data={announcements}
-            keyExtractor={(item) => item.id.toString()}
-            renderItem={({ item }) => <AnnouncementCard item={item} />}
-          />
+  data={announcements}
+  keyExtractor={(item) => item.id.toString()}
+  renderItem={({ item }) => (
+    <AnnouncementCard item={item} />
+  )}
+  refreshControl={
+    <RefreshControl
+      refreshing={refreshing}
+      onRefresh={onRefresh}
+      colors={["#0d1b4c"]}
+    />
+  }
+/>
         )}
       </View>
     </SafeAreaView>
