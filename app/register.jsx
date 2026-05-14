@@ -1,3 +1,4 @@
+import { Link } from "expo-router";
 import { useState } from "react";
 import { Alert, Button, TextInput, View } from "react-native";
 
@@ -48,4 +49,16 @@ export default function RegisterScreen() {
       <Button title="Register" onPress={register} />
     </View>
   );
+
+  <Link href="/login">
+    <Text
+      style={{
+        marginTop: 20,
+        textAlign: "center",
+        color: "blue",
+      }}
+    >
+      Already have an account? Login
+    </Text>
+  </Link>;
 }

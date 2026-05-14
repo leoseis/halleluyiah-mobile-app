@@ -1,14 +1,14 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { router } from "expo-router";
+import { Link, router } from "expo-router";
 import React, { useContext, useState } from "react";
 import {
-    ActivityIndicator,
-    Alert,
-    Pressable,
-    SafeAreaView,
-    Text,
-    TextInput,
-    View,
+  ActivityIndicator,
+  Alert,
+  Pressable,
+  SafeAreaView,
+  Text,
+  TextInput,
+  View,
 } from "react-native";
 
 import api from "../src/api/api";
@@ -24,6 +24,11 @@ export default function LoginScreen() {
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async () => {
+    if (!username || !password) {
+      Alert.alert("Error", "Please enter username and password");
+      return;
+    }
+
     try {
       setLoading(true);
 
@@ -40,7 +45,7 @@ export default function LoginScreen() {
 
       await login(access);
 
-      router.replace("/");
+      router.push("/(tabs)");
     } catch (error) {
       console.log(error);
 
@@ -72,6 +77,7 @@ export default function LoginScreen() {
             fontWeight: "bold",
             marginBottom: 25,
             color: "#0d1b4c",
+            textAlign: "center",
           }}
         >
           RCCG Login
@@ -81,6 +87,7 @@ export default function LoginScreen() {
           placeholder="Username"
           value={username}
           onChangeText={setUsername}
+          autoCapitalize="none"
           style={{
             borderWidth: 1,
             borderColor: "#d1d5db",
@@ -105,12 +112,14 @@ export default function LoginScreen() {
         />
 
         <Pressable
+          disabled={loading}
           onPress={handleLogin}
           style={{
             backgroundColor: "#0d1b4c",
             padding: 16,
             borderRadius: 12,
             alignItems: "center",
+            opacity: loading ? 0.7 : 1,
           }}
         >
           {loading ? (
@@ -127,6 +136,21 @@ export default function LoginScreen() {
             </Text>
           )}
         </Pressable>
+
+        <Link href="/register" asChild>
+          <Pressable>
+            <Text
+              style={{
+                marginTop: 20,
+                textAlign: "center",
+                color: "#2563eb",
+                fontWeight: "600",
+              }}
+            >
+              Don't have an account? Register
+            </Text>
+          </Pressable>
+        </Link>
       </View>
     </SafeAreaView>
   );

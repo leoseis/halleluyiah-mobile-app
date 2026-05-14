@@ -55,6 +55,13 @@ function RootNavigator() {
               headerShown: false,
             }}
           />
+
+          <Stack.Screen
+            name="register"
+            options={{
+              headerShown: false,
+            }}
+          />
         </Stack>
       )}
 
