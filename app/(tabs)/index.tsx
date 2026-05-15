@@ -87,6 +87,7 @@ export default function HomeScreen() {
               params: {
                 title: item.title,
                 body: item.body,
+                image: item.image,
               },
             })
           }
