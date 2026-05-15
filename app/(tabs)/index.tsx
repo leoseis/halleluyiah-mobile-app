@@ -1,28 +1,63 @@
+import { useContext, useEffect, useState } from "react";
+
 import { router } from "expo-router";
-import { useContext } from "react";
-import { Pressable, Text, View } from "react-native";
+
+import { ActivityIndicator, Pressable, Text, View } from "react-native";
+
+import api from "../../src/api/api";
 
 import { AuthContext } from "../../src/context/AuthContext";
 
 export default function HomeScreen() {
   const { logout } = useContext(AuthContext);
 
-  const announcements = [
-    {
-      id: 1,
-      title: "Sunday Service",
-    },
-    {
-      id: 2,
-      title: "Prayer Meeting",
-    },
-  ];
+  const [announcements, setAnnouncements] = useState([]);
+
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchAnnouncements();
+  }, []);
+
+  const fetchAnnouncements = async () => {
+    try {
+      const response = await api.get("/announcements/");
+
+      setAnnouncements(response.data);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleLogout = async () => {
     await logout();
 
     router.replace("/login");
   };
+
+  if (loading) {
+    return (
+      <View
+        style={{
+          flex: 1,
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <ActivityIndicator size="large" />
+
+        <Text
+          style={{
+            marginTop: 10,
+          }}
+        >
+          Loading announcements...
+        </Text>
+      </View>
+    );
+  }
 
   return (
     <View
@@ -43,7 +78,7 @@ export default function HomeScreen() {
         RCCG Announcements
       </Text>
 
-      {announcements.map((item) => (
+      {announcements.map((item: any) => (
         <Pressable
           key={item.id}
           onPress={() =>
