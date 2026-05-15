@@ -1,25 +1,38 @@
 import { useLocalSearchParams } from "expo-router";
-import { Text, View } from "react-native";
+
+import { ScrollView, Text } from "react-native";
 
 export default function AnnouncementDetails() {
-  const { title } = useLocalSearchParams();
+  const { title, body } = useLocalSearchParams();
 
   return (
-    <View
+    <ScrollView
       style={{
         flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
+        backgroundColor: "#f5f7fb",
+        padding: 20,
       }}
     >
       <Text
         style={{
-          fontSize: 24,
+          fontSize: 28,
           fontWeight: "bold",
+          marginBottom: 20,
+          color: "#0d1b4c",
         }}
       >
         {title}
       </Text>
-    </View>
+
+      <Text
+        style={{
+          fontSize: 16,
+          lineHeight: 28,
+          color: "#444",
+        }}
+      >
+        {body}
+      </Text>
+    </ScrollView>
   );
 }

@@ -86,6 +86,7 @@ export default function HomeScreen() {
               pathname: "/announcement-details",
               params: {
                 title: item.title,
+                body: item.body,
               },
             })
           }
