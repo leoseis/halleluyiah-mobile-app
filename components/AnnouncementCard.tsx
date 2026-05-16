@@ -1,80 +1,137 @@
-import { Ionicons } from "@expo/vector-icons";
+import axios from "axios";
+
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 import { router } from "expo-router";
-import { Image, Pressable, Text, View } from "react-native";
+
+import { Image, Pressable, Text, TouchableOpacity, View } from "react-native";
 
 export default function AnnouncementCard({ item }: any) {
+  const handleLike = async (id: number) => {
+    try {
+      const token = await AsyncStorage.getItem("access");
+
+      await axios.post(
+        `http://192.168.43.207:8000/api/announcements/${id}/like/`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+
+      console.log("liked");
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <Pressable
       onPress={() =>
         router.push({
-          pathname: "/announcement-details",
+          pathname: "/(tabs)/announcement-details",
+
           params: {
             title: item.title,
-            message: item.body,
+            body: item.body,
+            image: item.image,
           },
         })
       }
-      style={{}}
+      style={{
+        backgroundColor: "#fff",
+        padding: 14,
+        borderRadius: 18,
+        marginBottom: 18,
+        width: "100%",
+        overflow: "hidden",
+
+        shadowColor: "#000",
+        shadowOpacity: 0.08,
+        shadowRadius: 8,
+        shadowOffset: {
+          width: 0,
+          height: 4,
+        },
+
+        elevation: 4,
+      }}
     >
-      <View
+      <Image
+        source={{
+          uri: item.image,
+        }}
+        resizeMode="cover"
         style={{
-          backgroundColor: "white",
-          borderRadius: 16,
-          overflow: "hidden",
+          width: "100%",
+          height: 190,
+          borderRadius: 14,
+          marginBottom: 14,
+        }}
+      />
+
+      <Text
+        numberOfLines={2}
+        style={{
+          fontSize: 20,
+          fontWeight: "700",
+          color: "#0d1b4c",
+          marginBottom: 8,
+        }}
+      >
+        {item.title}
+      </Text>
+
+      <Text
+        numberOfLines={3}
+        style={{
+          color: "#555",
+          fontSize: 15,
+          lineHeight: 22,
           marginBottom: 16,
         }}
       >
-        {item.image && (
-          <Image
-            source={{ uri: item.image }}
-            style={{
-              width: "100%",
-              height: 200,
-            }}
-            resizeMode="cover"
-          />
-        )}
+        {item.body}
+      </Text>
 
-        <View style={{ padding: 16 }}>
+      <View
+        style={{
+          flexDirection: "row",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <TouchableOpacity
+          onPress={() => handleLike(item.id)}
+          activeOpacity={0.8}
+          style={{
+            backgroundColor: "#eef2ff",
+            paddingVertical: 10,
+            paddingHorizontal: 16,
+            borderRadius: 12,
+          }}
+        >
           <Text
             style={{
-              fontSize: 20,
-              fontWeight: "bold",
-              marginBottom: 8,
+              color: "#0d1b4c",
+              fontWeight: "700",
+              fontSize: 14,
             }}
           >
-            {item.title}
+            ❤️ {item.likes_count || 0}
           </Text>
+        </TouchableOpacity>
 
-          <Text
-            numberOfLines={2}
-            style={{
-              color: "#4b5563",
-              lineHeight: 22,
-            }}
-          >
-            {item.body}
-          </Text>
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              marginTop: 14,
-            }}
-          >
-            <Ionicons name="heart-outline" size={22} color="#dc2626" />
-
-            <Text
-              style={{
-                marginLeft: 6,
-                color: "#374151",
-                fontWeight: "600",
-              }}
-            >
-              {item.likes_count || 0} Likes
-            </Text>
-          </View>
-        </View>
+        <Text
+          style={{
+            color: "#888",
+            fontSize: 13,
+          }}
+        >
+          Tap to read more
+        </Text>
       </View>
     </Pressable>
   );

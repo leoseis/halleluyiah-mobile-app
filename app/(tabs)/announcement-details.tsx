@@ -1,9 +1,10 @@
-import { useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 
-import { Image, ScrollView, Text } from "react-native";
+import { Image, Pressable, ScrollView, Text } from "react-native";
 
 export default function AnnouncementDetails() {
   const { title, body, image } = useLocalSearchParams();
+  const imageUri = typeof image === "string" ? image : undefined;
 
   return (
     <ScrollView
@@ -15,7 +16,7 @@ export default function AnnouncementDetails() {
     >
       <Image
         source={{
-          uri: image as string,
+          uri: imageUri,
         }}
         resizeMode="contain"
         style={{
@@ -35,6 +36,22 @@ export default function AnnouncementDetails() {
           marginBottom: 14,
         }}
       >
+        <Pressable
+          onPress={() => router.back()}
+          style={{
+            marginBottom: 20,
+          }}
+        >
+          <Text
+            style={{
+              fontSize: 16,
+              color: "#0d1b4c",
+              fontWeight: "bold",
+            }}
+          >
+            ← Back
+          </Text>
+        </Pressable>
         {title}
       </Text>
 

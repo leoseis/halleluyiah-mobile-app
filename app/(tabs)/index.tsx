@@ -1,8 +1,17 @@
 import { useContext, useEffect, useState } from "react";
 
+import AnnouncementCard from "../../components/AnnouncementCard";
+
 import { router } from "expo-router";
 
-import { ActivityIndicator, Pressable, Text, View } from "react-native";
+import {
+  ActivityIndicator,
+  FlatList,
+  Pressable,
+  SafeAreaView,
+  Text,
+  View,
+} from "react-native";
 
 import api from "../../src/api/api";
 
@@ -51,6 +60,7 @@ export default function HomeScreen() {
         <Text
           style={{
             marginTop: 10,
+            fontSize: 16,
           }}
         >
           Loading announcements...
@@ -60,74 +70,65 @@ export default function HomeScreen() {
   }
 
   return (
-    <View
+    <SafeAreaView
       style={{
         flex: 1,
-        padding: 20,
         backgroundColor: "#f5f7fb",
       }}
     >
-      <Text
-        style={{
-          fontSize: 28,
-          fontWeight: "bold",
-          marginBottom: 20,
-          color: "#0d1b4c",
+      <FlatList
+        data={announcements}
+        keyExtractor={(item: any) => item.id.toString()}
+        contentContainerStyle={{
+          padding: 16,
+          paddingBottom: 100,
         }}
-      >
-        RCCG Announcements
-      </Text>
-
-      {announcements.map((item: any) => (
-        <Pressable
-          key={item.id}
-          onPress={() =>
-            router.push({
-              pathname: "/announcement-details",
-              params: {
-                title: item.title,
-                body: item.body,
-                image: item.image,
-              },
-            })
-          }
-          style={{
-            backgroundColor: "white",
-            padding: 20,
-            borderRadius: 16,
-            marginBottom: 15,
-          }}
-        >
-          <Text
+        showsVerticalScrollIndicator={false}
+        ListHeaderComponent={
+          <View
             style={{
-              fontSize: 18,
-              fontWeight: "600",
+              marginBottom: 20,
             }}
           >
-            {item.title}
-          </Text>
-        </Pressable>
-      ))}
+            <Text
+              style={{
+                fontSize: 28,
+                fontWeight: "bold",
+                color: "#0d1b4c",
+              }}
+            >
+              RCCG Announcements
+            </Text>
+          </View>
+        }
+        renderItem={({ item }: any) => <AnnouncementCard item={item} />}
+      />
 
       <Pressable
         onPress={handleLogout}
         style={{
           backgroundColor: "#0d1b4c",
-          padding: 16,
-          borderRadius: 12,
-          marginTop: 20,
+
+          marginHorizontal: 16,
+          marginBottom: 20,
+
+          paddingVertical: 15,
+
+          borderRadius: 14,
+
+          alignItems: "center",
         }}
       >
         <Text
           style={{
             color: "white",
-            textAlign: "center",
             fontWeight: "bold",
+            fontSize: 16,
           }}
         >
           Logout
         </Text>
       </Pressable>
-    </View>
+    </SafeAreaView>
   );
 }
