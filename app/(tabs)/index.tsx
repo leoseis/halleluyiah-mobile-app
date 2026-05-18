@@ -21,22 +21,31 @@ export default function HomeScreen() {
   const { logout } = useContext(AuthContext);
 
   const [announcements, setAnnouncements] = useState([]);
-
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     fetchAnnouncements();
   }, []);
 
-  const fetchAnnouncements = async () => {
+  const fetchAnnouncements = async (isRefreshing = false) => {
     try {
-      const response = await api.get("/announcements/");
+      if (isRefreshing) {
+        setRefreshing(true);
+      } else {
+        setLoading(true);
+      }
 
+      const response = await api.get("/announcements/");
       setAnnouncements(response.data);
     } catch (error) {
       console.log(error);
     } finally {
-      setLoading(false);
+      if (isRefreshing) {
+        setRefreshing(false);
+      } else {
+        setLoading(false);
+      }
     }
   };
 
@@ -79,17 +88,23 @@ export default function HomeScreen() {
       <FlatList
         data={announcements}
         keyExtractor={(item: any) => item.id.toString()}
+        renderItem={({ item }: any) => <AnnouncementCard item={item} />}
         contentContainerStyle={{
-          padding: 16,
-          paddingBottom: 100,
+          paddingTop: 50,
+          paddingBottom: 20,
         }}
-        showsVerticalScrollIndicator={false}
         ListHeaderComponent={
-          <View
-            style={{
-              marginBottom: 20,
-            }}
-          >
+          <View style={{ marginBottom: 20 }}>
+            <Text
+              style={{
+                fontSize: 24,
+                color: "#666",
+                marginBottom: 8,
+              }}
+            >
+              Good Afternoon 👋
+            </Text>
+
             <Text
               style={{
                 fontSize: 28,
@@ -97,33 +112,29 @@ export default function HomeScreen() {
                 color: "#0d1b4c",
               }}
             >
-              RCCG Announcements
+              RCCG HalleluYah Parish
             </Text>
           </View>
         }
-        renderItem={({ item }: any) => <AnnouncementCard item={item} />}
       />
-
       <Pressable
         onPress={handleLogout}
         style={{
-          backgroundColor: "#0d1b4c",
-
-          marginHorizontal: 16,
+          backgroundColor: "#001f5b",
+          paddingVertical: 10,
+          borderRadius: 12,
+          marginTop: 10,
           marginBottom: 20,
-
-          paddingVertical: 15,
-
-          borderRadius: 14,
-
-          alignItems: "center",
+          alignSelf: "center",
+          width: 140,
         }}
       >
         <Text
           style={{
             color: "white",
+            textAlign: "center",
             fontWeight: "bold",
-            fontSize: 16,
+            fontSize: 15,
           }}
         >
           Logout

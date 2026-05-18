@@ -59,18 +59,18 @@ export default function AnnouncementCard({ item }: any) {
         elevation: 4,
       }}
     >
-      <Image
-        source={{
-          uri: item.image,
-        }}
-        resizeMode="cover"
-        style={{
-          width: "100%",
-          height: 190,
-          borderRadius: 14,
-          marginBottom: 14,
-        }}
-      />
+      {item.image && (
+        <Image
+          source={{ uri: item.image }}
+          resizeMode="cover"
+          style={{
+            width: "100%",
+            height: 170,
+            borderRadius: 14,
+            marginBottom: 14,
+          }}
+        />
+      )}
 
       <Text
         numberOfLines={2}
