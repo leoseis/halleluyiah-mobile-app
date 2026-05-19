@@ -2,13 +2,14 @@ import { useContext, useEffect, useState } from "react";
 
 import AnnouncementCard from "../../components/AnnouncementCard";
 
+import { SafeAreaView } from "react-native-safe-area-context";
+
 import { router } from "expo-router";
 
 import {
   ActivityIndicator,
   FlatList,
   Pressable,
-  SafeAreaView,
   Text,
   View,
 } from "react-native";
@@ -87,19 +88,27 @@ export default function HomeScreen() {
     >
       <FlatList
         data={announcements}
+        refreshing={refreshing}
+        onRefresh={() => fetchAnnouncements(true)}
         keyExtractor={(item: any) => item.id.toString()}
         renderItem={({ item }: any) => <AnnouncementCard item={item} />}
         contentContainerStyle={{
-          paddingTop: 50,
+          paddingTop: 20,
           paddingBottom: 20,
         }}
         ListHeaderComponent={
-          <View style={{ marginBottom: 20 }}>
+          <View
+            style={{
+              paddingHorizontal: 20,
+              paddingTop: 10,
+              marginBottom: 20,
+            }}
+          >
             <Text
               style={{
-                fontSize: 24,
+                fontSize: 16,
                 color: "#666",
-                marginBottom: 8,
+                marginBottom: 4,
               }}
             >
               Good Afternoon 👋
@@ -121,12 +130,11 @@ export default function HomeScreen() {
         onPress={handleLogout}
         style={{
           backgroundColor: "#001f5b",
-          paddingVertical: 10,
-          borderRadius: 12,
-          marginTop: 10,
+          paddingVertical: 12,
+          borderRadius: 14,
+          marginHorizontal: 20,
           marginBottom: 20,
-          alignSelf: "center",
-          width: 140,
+          alignItems: "center",
         }}
       >
         <Text
