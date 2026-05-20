@@ -34,6 +34,7 @@ export default function AnnouncementCard({ item }: any) {
           pathname: "/(tabs)/announcement-details",
 
           params: {
+            id: item.id,
             title: item.title,
             body: item.body,
             image: item.image,
