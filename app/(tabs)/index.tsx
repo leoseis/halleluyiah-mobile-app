@@ -21,7 +21,7 @@ import { AuthContext } from "../../src/context/AuthContext";
 export default function HomeScreen() {
   const { logout } = useContext(AuthContext);
 
-  const [announcements, setAnnouncements] = useState([]);
+  const [announcements, setAnnouncements] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
@@ -38,6 +38,7 @@ export default function HomeScreen() {
       }
 
       const response = await api.get("/announcements/");
+
       setAnnouncements(response.data);
     } catch (error) {
       console.log(error);
@@ -50,12 +51,28 @@ export default function HomeScreen() {
     }
   };
 
+  // ✅ UPDATE LIKES
+  const handleLikeUpdate = (id: number, likes_count: number) => {
+    setAnnouncements((prev: any) =>
+      prev.map((announcement: any) =>
+        announcement.id === id
+          ? {
+              ...announcement,
+              likes_count,
+            }
+          : announcement,
+      ),
+    );
+  };
+
+  // ✅ LOGOUT
   const handleLogout = async () => {
     await logout();
 
     router.replace("/login");
   };
 
+  // ✅ LOADING SCREEN
   if (loading) {
     return (
       <View
@@ -92,18 +109,7 @@ export default function HomeScreen() {
         onRefresh={() => fetchAnnouncements(true)}
         keyExtractor={(item: any) => item.id.toString()}
         renderItem={({ item }: any) => (
-          <AnnouncementCard
-            item={item}
-            onLike={(updatedItem: any) => {
-              setAnnouncements((prev: any) =>
-                prev.map((announcement: any) =>
-                  announcement.id === updatedItem.id
-                    ? updatedItem
-                    : announcement,
-                ),
-              );
-            }}
-          />
+          <AnnouncementCard item={item} onLike={handleLikeUpdate} />
         )}
         contentContainerStyle={{
           paddingTop: 20,
@@ -139,6 +145,8 @@ export default function HomeScreen() {
           </View>
         }
       />
+
+      {/* LOGOUT BUTTON */}
       <Pressable
         onPress={handleLogout}
         style={{
