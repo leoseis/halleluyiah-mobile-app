@@ -1,14 +1,14 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Link, router } from "expo-router";
+import { router } from "expo-router";
 import React, { useContext, useState } from "react";
 import {
-  ActivityIndicator,
   Alert,
+  Image,
+  ImageBackground,
   Pressable,
-  SafeAreaView,
   Text,
   TextInput,
-  View,
+  View
 } from "react-native";
 
 import api from "../src/api/api";
@@ -56,44 +56,70 @@ export default function LoginScreen() {
   };
 
   return (
-    <SafeAreaView
+    <ImageBackground
+      source={require("../assets/images/back.png")}
       style={{
         flex: 1,
         justifyContent: "center",
-        padding: 20,
-        backgroundColor: "#f5f7fb",
+        padding: 24,
       }}
+      blurRadius={2}
     >
       <View
         style={{
-          backgroundColor: "white",
-          padding: 20,
-          borderRadius: 20,
+          backgroundColor: "rgba(255,255,255,0.92)",
+          borderRadius: 24,
+          padding: 24,
         }}
       >
-        <Text
+        <View
           style={{
-            fontSize: 30,
-            fontWeight: "bold",
-            marginBottom: 25,
-            color: "#0d1b4c",
-            textAlign: "center",
+            alignItems: "center",
+            marginBottom: 30,
           }}
         >
-          RCCG Login
-        </Text>
+          <Image
+            source={require("../assets/images/reed.png")}
+            style={{
+              width: 80,
+              height: 80,
+              resizeMode: "contain",
+              marginBottom: 12,
+            }}
+          />
+
+          <Text
+            style={{
+              fontSize: 30,
+              fontWeight: "bold",
+              color: "#0d1b4c",
+            }}
+          >
+            HalleluYah Parish
+          </Text>
+
+          <Text
+            style={{
+              color: "#666",
+              marginTop: 6,
+              fontSize: 15,
+            }}
+          >
+            Welcome Back 👋
+          </Text>
+        </View>
 
         <TextInput
           placeholder="Username"
           value={username}
           onChangeText={setUsername}
-          autoCapitalize="none"
           style={{
+            backgroundColor: "#fff",
+            padding: 16,
+            borderRadius: 14,
+            marginBottom: 16,
             borderWidth: 1,
-            borderColor: "#d1d5db",
-            borderRadius: 12,
-            padding: 14,
-            marginBottom: 15,
+            borderColor: "#ddd",
           }}
         />
 
@@ -103,55 +129,35 @@ export default function LoginScreen() {
           value={password}
           onChangeText={setPassword}
           style={{
-            borderWidth: 1,
-            borderColor: "#d1d5db",
-            borderRadius: 12,
-            padding: 14,
+            backgroundColor: "#fff",
+            padding: 16,
+            borderRadius: 14,
             marginBottom: 20,
+            borderWidth: 1,
+            borderColor: "#ddd",
           }}
         />
 
         <Pressable
-          disabled={loading}
           onPress={handleLogin}
           style={{
-            backgroundColor: "#0d1b4c",
-            padding: 16,
-            borderRadius: 12,
+            backgroundColor: "#001f5b",
+            paddingVertical: 16,
+            borderRadius: 14,
             alignItems: "center",
-            opacity: loading ? 0.7 : 1,
           }}
         >
-          {loading ? (
-            <ActivityIndicator color="white" />
-          ) : (
-            <Text
-              style={{
-                color: "white",
-                fontWeight: "bold",
-                fontSize: 16,
-              }}
-            >
-              Login
-            </Text>
-          )}
+          <Text
+            style={{
+              color: "white",
+              fontWeight: "bold",
+              fontSize: 16,
+            }}
+          >
+            Login
+          </Text>
         </Pressable>
-
-        <Link href="/register" asChild>
-          <Pressable>
-            <Text
-              style={{
-                marginTop: 20,
-                textAlign: "center",
-                color: "#2563eb",
-                fontWeight: "600",
-              }}
-            >
-              Don't have an account? Register
-            </Text>
-          </Pressable>
-        </Link>
       </View>
-    </SafeAreaView>
+    </ImageBackground>
   );
 }

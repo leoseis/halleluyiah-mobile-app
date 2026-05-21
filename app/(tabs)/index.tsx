@@ -5,6 +5,7 @@ import AnnouncementCard from "../../components/AnnouncementCard";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { router } from "expo-router";
+import { Image } from "react-native";
 
 import {
   ActivityIndicator,
@@ -95,6 +96,19 @@ export default function HomeScreen() {
       </View>
     );
   }
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+
+    if (hour < 12) {
+      return "Good Morning ☀️";
+    }
+
+    if (hour < 18) {
+      return "Good Afternoon 🌤️";
+    }
+
+    return "Good Evening 🌙";
+  };
 
   return (
     <SafeAreaView
@@ -130,18 +144,36 @@ export default function HomeScreen() {
                 marginBottom: 4,
               }}
             >
-              Good Afternoon 👋
+              {getGreeting()}
             </Text>
 
-            <Text
+            <View
               style={{
-                fontSize: 28,
-                fontWeight: "bold",
-                color: "#0d1b4c",
+                flexDirection: "row",
+                alignItems: "center",
+                marginTop: 6,
               }}
             >
-              RCCG HalleluYah Parish
-            </Text>
+              <Image
+                source={require("../../assets/images/reed.png")}
+                style={{
+                  width: 45,
+                  height: 45,
+                  marginRight: 12,
+                  resizeMode: "contain",
+                }}
+              />
+
+              <Text
+                style={{
+                  fontSize: 26,
+                  fontWeight: "bold",
+                  color: "#0d1b4c",
+                }}
+              >
+                HalleluYah Parish
+              </Text>
+            </View>
           </View>
         }
       />
