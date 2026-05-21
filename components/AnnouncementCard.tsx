@@ -6,12 +6,12 @@ import { router } from "expo-router";
 
 import { Image, Pressable, Text, TouchableOpacity, View } from "react-native";
 
-export default function AnnouncementCard({ item }: any) {
+export default function AnnouncementCard({ item, onLike }: any) {
   const handleLike = async (id: number) => {
     try {
       const token = await AsyncStorage.getItem("access");
 
-      await axios.post(
+      const response = await axios.post(
         `http://192.168.43.207:8000/api/announcements/${id}/like/`,
         {},
         {
@@ -21,7 +21,7 @@ export default function AnnouncementCard({ item }: any) {
         },
       );
 
-      console.log("liked");
+      onLike(response.data);
     } catch (error) {
       console.log(error);
     }

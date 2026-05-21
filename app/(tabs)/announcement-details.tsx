@@ -20,6 +20,7 @@ export default function AnnouncementDetails() {
 
   console.log("Announcement ID:", id);
   const [comment, setComment] = useState("");
+  const [posting, setPosting] = useState(false);
 
   const [comments, setComments] = useState<any[]>([]);
 
@@ -27,6 +28,8 @@ export default function AnnouncementDetails() {
     if (!comment.trim()) return;
 
     try {
+      setPosting(true);
+
       const token = await AsyncStorage.getItem("access");
 
       await axios.post(
@@ -42,18 +45,14 @@ export default function AnnouncementDetails() {
           },
         },
       );
+
       fetchAnnouncement();
-      setComments([
-        ...comments,
-        {
-          author: "You",
-          content: comment,
-        },
-      ]);
 
       setComment("");
     } catch (error) {
       console.log(error);
+    } finally {
+      setPosting(false);
     }
   };
 
@@ -211,7 +210,7 @@ export default function AnnouncementDetails() {
             fontSize: 16,
           }}
         >
-          Post Comment
+          {posting ? "Posting..." : "Post Comment"}
         </Text>
       </Pressable>
     </ScrollView>

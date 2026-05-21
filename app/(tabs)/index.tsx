@@ -91,7 +91,20 @@ export default function HomeScreen() {
         refreshing={refreshing}
         onRefresh={() => fetchAnnouncements(true)}
         keyExtractor={(item: any) => item.id.toString()}
-        renderItem={({ item }: any) => <AnnouncementCard item={item} />}
+        renderItem={({ item }: any) => (
+          <AnnouncementCard
+            item={item}
+            onLike={(updatedItem: any) => {
+              setAnnouncements((prev: any) =>
+                prev.map((announcement: any) =>
+                  announcement.id === updatedItem.id
+                    ? updatedItem
+                    : announcement,
+                ),
+              );
+            }}
+          />
+        )}
         contentContainerStyle={{
           paddingTop: 20,
           paddingBottom: 20,
