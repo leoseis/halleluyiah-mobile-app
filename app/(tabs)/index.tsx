@@ -33,7 +33,16 @@ export default function HomeScreen() {
   // ✅ CATEGORY
   const [selectedCategory, setSelectedCategory] = useState("All");
 
-  const categories = ["All", "Events", "Wedding", "Testimony", "Youth"];
+  const categories = [
+    "All",
+    "Events",
+    "Testimony",
+    "Youth",
+    "Men",
+    "Women",
+    "children",
+    "pastoral",
+  ];
 
   useEffect(() => {
     fetchAnnouncements();
@@ -101,12 +110,17 @@ export default function HomeScreen() {
   // ✅ FILTERED ANNOUNCEMENTS
   const filteredAnnouncements = useMemo(() => {
     return announcements.filter((item: any) => {
+      // ✅ SEARCH FILTER
       const matchesSearch =
         item.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         item.body?.toLowerCase().includes(searchQuery.toLowerCase());
 
+      // ✅ CATEGORY FILTER
+      const categoryName = item.category?.name?.toLowerCase() || "";
+
       const matchesCategory =
-        selectedCategory === "All" || item.category?.name === selectedCategory;
+        selectedCategory === "All" ||
+        categoryName.includes(selectedCategory.toLowerCase());
 
       return matchesSearch && matchesCategory;
     });
