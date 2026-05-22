@@ -158,6 +158,22 @@ export default function LoginScreen() {
           </Text>
         </Pressable>
       </View>
+      <Pressable
+        onPress={() => router.push("/register")}
+        style={{
+          marginTop: 18,
+          alignItems: "center",
+        }}
+      >
+        <Text
+          style={{
+            color: "#1d4ed8",
+            fontWeight: "600",
+          }}
+        >
+          Don't have an account? Register
+        </Text>
+      </Pressable>
     </ImageBackground>
   );
 }
