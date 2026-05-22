@@ -8,7 +8,7 @@ import {
   Pressable,
   Text,
   TextInput,
-  View
+  View,
 } from "react-native";
 
 import api from "../src/api/api";
@@ -81,8 +81,8 @@ export default function LoginScreen() {
           <Image
             source={require("../assets/images/reed.png")}
             style={{
-              width: 80,
-              height: 80,
+              width: 78,
+              height: 78,
               resizeMode: "contain",
               marginBottom: 12,
             }}
@@ -90,12 +90,12 @@ export default function LoginScreen() {
 
           <Text
             style={{
-              fontSize: 30,
+              fontSize: 28,
               fontWeight: "bold",
               color: "#0d1b4c",
             }}
           >
-            HalleluYah Parish
+            HalleluYah Santuary
           </Text>
 
           <Text

@@ -171,7 +171,7 @@ export default function HomeScreen() {
                   color: "#0d1b4c",
                 }}
               >
-                HalleluYah Parish
+                HalleluYah Sanctuary
               </Text>
             </View>
           </View>
