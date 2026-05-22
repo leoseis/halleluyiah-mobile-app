@@ -1,17 +1,18 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 
 import AnnouncementCard from "../../components/AnnouncementCard";
 
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { router } from "expo-router";
-import { Image } from "react-native";
 
 import {
   ActivityIndicator,
   FlatList,
+  Image,
   Pressable,
   Text,
+  TextInput,
   View,
 } from "react-native";
 
@@ -26,10 +27,19 @@ export default function HomeScreen() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
+  // ✅ SEARCH
+  const [searchQuery, setSearchQuery] = useState("");
+
+  // ✅ CATEGORY
+  const [selectedCategory, setSelectedCategory] = useState("All");
+
+  const categories = ["All", "Events", "Wedding", "Testimony", "Youth"];
+
   useEffect(() => {
     fetchAnnouncements();
   }, []);
 
+  // ✅ FETCH ANNOUNCEMENTS
   const fetchAnnouncements = async (isRefreshing = false) => {
     try {
       if (isRefreshing) {
@@ -52,7 +62,7 @@ export default function HomeScreen() {
     }
   };
 
-  // ✅ UPDATE LIKES
+  // ✅ LIKE UPDATE
   const handleLikeUpdate = (id: number, likes_count: number) => {
     setAnnouncements((prev: any) =>
       prev.map((announcement: any) =>
@@ -72,6 +82,35 @@ export default function HomeScreen() {
 
     router.replace("/login");
   };
+
+  // ✅ REAL TIME GREETING
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+
+    if (hour < 12) {
+      return "Good Morning ☀️";
+    }
+
+    if (hour < 18) {
+      return "Good Afternoon 🌤️";
+    }
+
+    return "Good Evening 🌙";
+  };
+
+  // ✅ FILTERED ANNOUNCEMENTS
+  const filteredAnnouncements = useMemo(() => {
+    return announcements.filter((item: any) => {
+      const matchesSearch =
+        item.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        item.body?.toLowerCase().includes(searchQuery.toLowerCase());
+
+      const matchesCategory =
+        selectedCategory === "All" || item.category?.name === selectedCategory;
+
+      return matchesSearch && matchesCategory;
+    });
+  }, [announcements, searchQuery, selectedCategory]);
 
   // ✅ LOADING SCREEN
   if (loading) {
@@ -96,19 +135,6 @@ export default function HomeScreen() {
       </View>
     );
   }
-  const getGreeting = () => {
-    const hour = new Date().getHours();
-
-    if (hour < 12) {
-      return "Good Morning ☀️";
-    }
-
-    if (hour < 18) {
-      return "Good Afternoon 🌤️";
-    }
-
-    return "Good Evening 🌙";
-  };
 
   return (
     <SafeAreaView
@@ -118,7 +144,7 @@ export default function HomeScreen() {
       }}
     >
       <FlatList
-        data={announcements}
+        data={filteredAnnouncements}
         refreshing={refreshing}
         onRefresh={() => fetchAnnouncements(true)}
         keyExtractor={(item: any) => item.id.toString()}
@@ -126,7 +152,6 @@ export default function HomeScreen() {
           <AnnouncementCard item={item} onLike={handleLikeUpdate} />
         )}
         contentContainerStyle={{
-          paddingTop: 20,
           paddingBottom: 20,
         }}
         ListHeaderComponent={
@@ -137,21 +162,23 @@ export default function HomeScreen() {
               marginBottom: 20,
             }}
           >
+            {/* GREETING */}
             <Text
               style={{
                 fontSize: 16,
                 color: "#666",
-                marginBottom: 4,
+                marginBottom: 6,
               }}
             >
               {getGreeting()}
             </Text>
 
+            {/* LOGO + TITLE */}
             <View
               style={{
                 flexDirection: "row",
                 alignItems: "center",
-                marginTop: 6,
+                marginBottom: 24,
               }}
             >
               <Image
@@ -166,13 +193,66 @@ export default function HomeScreen() {
 
               <Text
                 style={{
-                  fontSize: 26,
+                  fontSize: 28,
                   fontWeight: "bold",
                   color: "#0d1b4c",
                 }}
               >
                 HalleluYah Sanctuary
               </Text>
+            </View>
+
+            {/* SEARCH */}
+            <TextInput
+              placeholder="Search announcements..."
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+              style={{
+                backgroundColor: "white",
+                padding: 14,
+                borderRadius: 14,
+                borderWidth: 1,
+                borderColor: "#e5e7eb",
+                fontSize: 16,
+                marginBottom: 20,
+              }}
+            />
+
+            {/* CATEGORY FILTERS */}
+            <View
+              style={{
+                flexDirection: "row",
+                flexWrap: "wrap",
+                marginBottom: 10,
+              }}
+            >
+              {categories.map((category) => (
+                <Pressable
+                  key={category}
+                  onPress={() => setSelectedCategory(category)}
+                  style={{
+                    backgroundColor:
+                      selectedCategory === category ? "#001f5b" : "#e5e7eb",
+
+                    paddingVertical: 10,
+                    paddingHorizontal: 16,
+                    borderRadius: 20,
+                    marginRight: 10,
+                    marginBottom: 10,
+                  }}
+                >
+                  <Text
+                    style={{
+                      color:
+                        selectedCategory === category ? "white" : "#111827",
+
+                      fontWeight: "600",
+                    }}
+                  >
+                    {category}
+                  </Text>
+                </Pressable>
+              ))}
             </View>
           </View>
         }
@@ -183,7 +263,7 @@ export default function HomeScreen() {
         onPress={handleLogout}
         style={{
           backgroundColor: "#001f5b",
-          paddingVertical: 12,
+          paddingVertical: 14,
           borderRadius: 14,
           marginHorizontal: 20,
           marginBottom: 20,
