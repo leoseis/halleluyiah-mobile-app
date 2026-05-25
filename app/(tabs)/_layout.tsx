@@ -62,6 +62,16 @@ export default function TabLayout() {
           ),
         }}
       />
+
+      <Tabs.Screen
+        name="media"
+        options={{
+          title: "Media",
+          tabBarIcon: ({ color }) => (
+            <IconSymbol size={28} name="play.rectangle.fill" color={color} />
+          ),
+        }}
+      />
     </Tabs>
   );
 }
