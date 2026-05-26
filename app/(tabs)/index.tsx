@@ -5,6 +5,9 @@ import AnnouncementCard from "../../components/AnnouncementCard";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { router } from "expo-router";
+import { COLORS } from "../../constants/colors";
+
+import { useColorScheme } from "@/hooks/use-color-scheme";
 
 import {
   ActivityIndicator,
@@ -26,6 +29,9 @@ export default function HomeScreen() {
   const [announcements, setAnnouncements] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const colorScheme = useColorScheme();
+
+  const theme = COLORS[colorScheme ?? "light"];
 
   // ✅ SEARCH
   const [searchQuery, setSearchQuery] = useState("");
@@ -154,7 +160,7 @@ export default function HomeScreen() {
     <SafeAreaView
       style={{
         flex: 1,
-        backgroundColor: "#f5f7fb",
+        backgroundColor: theme.background,
       }}
     >
       <FlatList
@@ -180,7 +186,7 @@ export default function HomeScreen() {
             <Text
               style={{
                 fontSize: 16,
-                color: "#666",
+                color: theme.subtext,
                 marginBottom: 6,
               }}
             >
@@ -209,7 +215,7 @@ export default function HomeScreen() {
                 style={{
                   fontSize: 28,
                   fontWeight: "bold",
-                  color: "#0d1b4c",
+                  color: theme.text,
                 }}
               >
                 HalleluYah Sanctuary
@@ -222,11 +228,10 @@ export default function HomeScreen() {
               value={searchQuery}
               onChangeText={setSearchQuery}
               style={{
-                backgroundColor: "white",
                 padding: 14,
                 borderRadius: 14,
                 borderWidth: 1,
-                borderColor: "#e5e7eb",
+                backgroundColor: theme.card,
                 fontSize: 16,
                 marginBottom: 20,
               }}
