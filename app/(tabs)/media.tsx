@@ -1,76 +1,97 @@
+import { useEffect, useState } from "react";
+
 import {
-    Image,
-    Linking,
-    Pressable,
-    ScrollView,
-    Text,
-    View,
+  ActivityIndicator,
+  FlatList,
+  Image,
+  Linking,
+  Pressable,
+  Text,
+  View,
 } from "react-native";
 
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import api from "../../src/api/api";
+
 export default function MediaScreen() {
-  const sermons = [
-    {
-      id: 1,
-      title: "Walking In Divine Purpose",
-      pastor: "Pastor E.A Adeboye",
-      image: "https://images.unsplash.com/photo-1515169067868-5387ec356754",
+  const [sermons, setSermons] = useState<any[]>([]);
 
-      link: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-    },
+  const [loading, setLoading] = useState(true);
 
-    {
-      id: 2,
-      title: "The Power Of Prayer",
-      pastor: "Pastor Kumuyi",
-      image: "https://images.unsplash.com/photo-1504052434569-70ad5836ab65",
+  useEffect(() => {
+    fetchSermons();
+  }, []);
 
-      link: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-    },
+  const fetchSermons = async () => {
+    try {
+      const response = await api.get("/sermons/");
 
-    {
-      id: 3,
-      title: "Faith That Moves Mountains",
-      pastor: "Pastor Paul Enenche",
-      image: "https://images.unsplash.com/photo-1438232992991-995b7058bbb3",
+      console.log(response.data);
 
-      link: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-    },
-  ];
+      setSermons(response.data);
+      setSermons(response.data);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <View
+        style={{
+          flex: 1,
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <ActivityIndicator size="large" />
+
+        <Text
+          style={{
+            marginTop: 10,
+            fontSize: 16,
+          }}
+        >
+          Loading sermons...
+        </Text>
+      </View>
+    );
+  }
 
   return (
     <SafeAreaView
       style={{
         flex: 1,
         backgroundColor: "#f5f7fb",
+        paddingHorizontal: 16,
       }}
     >
-      <ScrollView
-        contentContainerStyle={{
-          padding: 20,
+      <Text
+        style={{
+          fontSize: 28,
+          fontWeight: "bold",
+          color: "#0d1b4c",
+          marginBottom: 20,
+          marginTop: 10,
         }}
       >
-        <Text
-          style={{
-            fontSize: 30,
-            fontWeight: "bold",
-            color: "#0d1b4c",
-            marginBottom: 24,
-          }}
-        >
-          Sermons & Media 🎥
-        </Text>
+        Sermons 🎥
+      </Text>
 
-        {sermons.map((sermon) => (
-          <Pressable
-            key={sermon.id}
-            onPress={() => Linking.openURL(sermon.link)}
+      <FlatList
+        data={sermons}
+        keyExtractor={(item) => item.id.toString()}
+        showsVerticalScrollIndicator={false}
+        renderItem={({ item }) => (
+          <View
             style={{
-              backgroundColor: "#fff",
-              borderRadius: 22,
+              backgroundColor: "white",
+              borderRadius: 18,
+              marginBottom: 20,
               overflow: "hidden",
-              marginBottom: 24,
 
               shadowColor: "#000",
               shadowOpacity: 0.08,
@@ -85,45 +106,47 @@ export default function MediaScreen() {
           >
             <Image
               source={{
-                uri: sermon.image,
+                uri: item.thumbnail,
               }}
               style={{
                 width: "100%",
                 height: 220,
               }}
+              resizeMode="cover"
             />
 
             <View
               style={{
-                padding: 18,
+                padding: 16,
               }}
             >
               <Text
                 style={{
-                  fontSize: 22,
+                  fontSize: 20,
                   fontWeight: "bold",
                   color: "#0d1b4c",
+                  marginBottom: 8,
                 }}
               >
-                {sermon.title}
+                {item.title}
               </Text>
 
               <Text
                 style={{
-                  color: "#666",
-                  marginTop: 8,
                   fontSize: 15,
+                  color: "#666",
+                  marginBottom: 16,
                 }}
               >
-                {sermon.pastor}
+                Pastor {item.pastor}
               </Text>
 
-              <View
+              <Pressable
+                onPress={() => Linking.openURL(item.youtube_link)}
                 style={{
-                  marginTop: 18,
                   backgroundColor: "#001f5b",
                   paddingVertical: 12,
-                  borderRadius: 14,
+                  borderRadius: 12,
                   alignItems: "center",
                 }}
               >
@@ -131,15 +154,16 @@ export default function MediaScreen() {
                   style={{
                     color: "white",
                     fontWeight: "bold",
+                    fontSize: 15,
                   }}
                 >
-                  ▶ Watch Sermon
+                  Watch Sermon
                 </Text>
-              </View>
+              </Pressable>
             </View>
-          </Pressable>
-        ))}
-      </ScrollView>
+          </View>
+        )}
+      />
     </SafeAreaView>
   );
 }
