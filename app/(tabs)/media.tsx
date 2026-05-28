@@ -1,10 +1,11 @@
+import { router } from "expo-router";
+
 import { useEffect, useState } from "react";
 
 import {
   ActivityIndicator,
   FlatList,
   Image,
-  Linking,
   Pressable,
   Text,
   View,
@@ -29,7 +30,6 @@ export default function MediaScreen() {
 
       console.log(response.data);
 
-      setSermons(response.data);
       setSermons(response.data);
     } catch (error) {
       console.log(error);
@@ -86,7 +86,15 @@ export default function MediaScreen() {
         keyExtractor={(item) => item.id.toString()}
         showsVerticalScrollIndicator={false}
         renderItem={({ item }) => (
-          <View
+          <Pressable
+            onPress={() =>
+              router.push({
+                pathname: "/sermon-details",
+                params: {
+                  sermon: JSON.stringify(item),
+                },
+              })
+            }
             style={{
               backgroundColor: "white",
               borderRadius: 18,
@@ -104,6 +112,7 @@ export default function MediaScreen() {
               elevation: 4,
             }}
           >
+            {/* THUMBNAIL */}
             <Image
               source={{
                 uri: item.thumbnail,
@@ -115,11 +124,13 @@ export default function MediaScreen() {
               resizeMode="cover"
             />
 
+            {/* CONTENT */}
             <View
               style={{
                 padding: 16,
               }}
             >
+              {/* TITLE */}
               <Text
                 style={{
                   fontSize: 20,
@@ -131,6 +142,7 @@ export default function MediaScreen() {
                 {item.title}
               </Text>
 
+              {/* PASTOR */}
               <Text
                 style={{
                   fontSize: 15,
@@ -141,8 +153,8 @@ export default function MediaScreen() {
                 Pastor {item.pastor}
               </Text>
 
-              <Pressable
-                onPress={() => Linking.openURL(item.youtube_link)}
+              {/* BUTTON */}
+              <View
                 style={{
                   backgroundColor: "#001f5b",
                   paddingVertical: 12,
@@ -157,11 +169,11 @@ export default function MediaScreen() {
                     fontSize: 15,
                   }}
                 >
-                  Watch Sermon
+                  Tap To View Sermon
                 </Text>
-              </Pressable>
+              </View>
             </View>
-          </View>
+          </Pressable>
         )}
       />
     </SafeAreaView>
