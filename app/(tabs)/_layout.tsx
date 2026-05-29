@@ -71,6 +71,16 @@ export default function TabLayout() {
       />
 
       <Tabs.Screen
+        name="prayer"
+        options={{
+          title: "Prayer",
+          tabBarIcon: ({ color }) => (
+            <IconSymbol size={28} name="heart.fill" color={color} />
+          ),
+        }}
+      />
+
+      <Tabs.Screen
         name="media"
         options={{
           title: "Media",
