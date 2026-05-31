@@ -1,4 +1,4 @@
-import { Stack, Tabs } from "expo-router";
+import { Tabs } from "expo-router";
 import React from "react";
 
 import { HapticTab } from "@/components/haptic-tab";
@@ -15,7 +15,6 @@ export default function TabLayout() {
         tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
         headerShown: false,
         tabBarButton: HapticTab,
-
         tabBarStyle: {
           height: 70,
           paddingBottom: 10,
@@ -32,19 +31,7 @@ export default function TabLayout() {
           ),
         }}
       />
-      <Tabs.Screen
-        name="announcement-details"
-        options={{
-          href: null,
-        }}
-      />
 
-      <Stack.Screen
-        name="sermon-details"
-        options={{
-          title: "Sermon",
-        }}
-      />
       <Tabs.Screen
         name="explore"
         options={{
@@ -54,18 +41,23 @@ export default function TabLayout() {
           ),
         }}
       />
+
       <Tabs.Screen
         name="calendar"
         options={{
           title: "Calendar",
+          tabBarIcon: ({ color }) => (
+            <IconSymbol size={28} name="calendar" color={color} />
+          ),
         }}
       />
+
       <Tabs.Screen
-        name="profile"
+        name="events"
         options={{
-          title: "Profile",
+          title: "Events",
           tabBarIcon: ({ color }) => (
-            <IconSymbol size={28} name="person.fill" color={color} />
+            <IconSymbol size={28} name="calendar.badge.clock" color={color} />
           ),
         }}
       />
@@ -87,6 +79,45 @@ export default function TabLayout() {
           tabBarIcon: ({ color }) => (
             <IconSymbol size={28} name="play.rectangle.fill" color={color} />
           ),
+        }}
+      />
+
+      <Tabs.Screen
+        name="profile"
+        options={{
+          title: "Profile",
+          tabBarIcon: ({ color }) => (
+            <IconSymbol size={28} name="person.fill" color={color} />
+          ),
+        }}
+      />
+
+      {/* Hidden Screens */}
+      <Tabs.Screen
+        name="announcement-details"
+        options={{
+          href: null,
+        }}
+      />
+
+      <Tabs.Screen
+        name="sermon-details"
+        options={{
+          href: null,
+        }}
+      />
+
+      <Tabs.Screen
+        name="event-details"
+        options={{
+          href: null,
+        }}
+      />
+
+      <Tabs.Screen
+        name="event-register"
+        options={{
+          href: null,
         }}
       />
     </Tabs>
