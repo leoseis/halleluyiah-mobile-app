@@ -46,6 +46,12 @@ function RootNavigator() {
               title: "Announcement",
             }}
           />
+          <Stack.Screen
+            name="testimony-details"
+            options={{
+              title: "Testimony",
+            }}
+          />
         </Stack>
       ) : (
         <Stack>
