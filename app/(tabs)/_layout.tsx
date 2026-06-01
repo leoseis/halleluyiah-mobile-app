@@ -73,6 +73,16 @@ export default function TabLayout() {
       />
 
       <Tabs.Screen
+        name="giving"
+        options={{
+          title: "Giving",
+          tabBarIcon: ({ color }) => (
+            <IconSymbol size={28} name="creditcard.fill" color={color} />
+          ),
+        }}
+      />
+
+      <Tabs.Screen
         name="media"
         options={{
           title: "Media",
