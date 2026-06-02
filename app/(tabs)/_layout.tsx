@@ -45,7 +45,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="calendar"
         options={{
-          title: "Calendar",
+          href: null,
           tabBarIcon: ({ color }) => (
             <IconSymbol size={28} name="calendar" color={color} />
           ),
@@ -75,7 +75,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="giving"
         options={{
-          title: "Giving",
+          href: null,
           tabBarIcon: ({ color }) => (
             <IconSymbol size={28} name="creditcard.fill" color={color} />
           ),
@@ -104,7 +104,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="testimonies"
         options={{
-          title: "Testimonies",
+          href: null,
           tabBarIcon: ({ color }) => (
             <IconSymbol size={28} name="sparkles" color={color} />
           ),
@@ -114,7 +114,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="profile"
         options={{
-          title: "Profile",
+          href: null,
           tabBarIcon: ({ color }) => (
             <IconSymbol size={28} name="person.fill" color={color} />
           ),
@@ -147,6 +147,16 @@ export default function TabLayout() {
         name="event-register"
         options={{
           href: null,
+        }}
+      />
+
+      <Tabs.Screen
+        name="more"
+        options={{
+          title: "More",
+          tabBarIcon: ({ color }) => (
+            <IconSymbol size={28} name="ellipsis.circle.fill" color={color} />
+          ),
         }}
       />
     </Tabs>
