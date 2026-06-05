@@ -1,9 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import React, {
-    createContext,
-    useEffect,
-    useState,
-} from "react";
+import React, { createContext, useEffect, useState } from "react";
+import { registerForPushNotificationsAsync } from "../utils/notifications";
 
 interface AuthContextType {
   userToken: string | null;
@@ -12,19 +9,14 @@ interface AuthContextType {
   logout: () => Promise<void>;
 }
 
-export const AuthContext =
-  createContext<AuthContextType>(
-    {} as AuthContextType
-  );
+export const AuthContext = createContext<AuthContextType>(
+  {} as AuthContextType,
+);
 
-export const AuthProvider = ({
-  children,
-}: any) => {
-  const [userToken, setUserToken] =
-    useState<string | null>(null);
+export const AuthProvider = ({ children }: any) => {
+  const [userToken, setUserToken] = useState<string | null>(null);
 
-  const [loading, setLoading] =
-    useState(true);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     checkLogin();
@@ -32,8 +24,7 @@ export const AuthProvider = ({
 
   const checkLogin = async () => {
     try {
-      const token =
-        await AsyncStorage.getItem("access");
+      const token = await AsyncStorage.getItem("access");
 
       if (token) {
         setUserToken(token);
@@ -46,12 +37,17 @@ export const AuthProvider = ({
   };
 
   const login = async (token: string) => {
-    await AsyncStorage.setItem(
-      "access",
-      token
-    );
+    await AsyncStorage.setItem("access", token);
 
     setUserToken(token);
+
+    try {
+      const pushToken = await registerForPushNotificationsAsync();
+
+      console.log("Expo Push Token:", pushToken);
+    } catch (error) {
+      console.log("Push notification error:", error);
+    }
   };
 
   const logout = async () => {

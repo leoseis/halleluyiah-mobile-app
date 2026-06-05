@@ -149,6 +149,15 @@ export default function TabLayout() {
           href: null,
         }}
       />
+      <Tabs.Screen
+        name="gallery"
+        options={{
+          title: "Gallery",
+          tabBarIcon: ({ color }) => (
+            <IconSymbol size={28} name="photo.fill" color={color} />
+          ),
+        }}
+      />
 
       <Tabs.Screen
         name="more"
