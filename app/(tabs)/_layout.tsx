@@ -65,9 +65,19 @@ export default function TabLayout() {
       <Tabs.Screen
         name="prayer"
         options={{
-          title: "Prayer",
+          href: null,
           tabBarIcon: ({ color }) => (
             <IconSymbol size={28} name="heart.fill" color={color} />
+          ),
+        }}
+      />
+
+      <Tabs.Screen
+        name="livestream"
+        options={{
+          title: "Live",
+          tabBarIcon: ({ color }) => (
+            <IconSymbol size={28} name="tv.fill" color={color} />
           ),
         }}
       />
@@ -85,7 +95,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="media"
         options={{
-          title: "Media",
+          href: null,
           tabBarIcon: ({ color }) => (
             <IconSymbol size={28} name="play.rectangle.fill" color={color} />
           ),
@@ -95,7 +105,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="devotional"
         options={{
-          title: "Devotional",
+          href: null,
           tabBarIcon: ({ color }) => (
             <IconSymbol size={28} name="book.fill" color={color} />
           ),
@@ -152,7 +162,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="gallery"
         options={{
-          title: "Gallery",
+          href: null,
           tabBarIcon: ({ color }) => (
             <IconSymbol size={28} name="photo.fill" color={color} />
           ),
