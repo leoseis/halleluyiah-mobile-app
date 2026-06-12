@@ -35,7 +35,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="explore"
         options={{
-          title: "Explore",
+          href: null,
           tabBarIcon: ({ color }) => (
             <IconSymbol size={28} name="paperplane.fill" color={color} />
           ),
@@ -95,7 +95,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="media"
         options={{
-          href: null,
+          title: "Media",
           tabBarIcon: ({ color }) => (
             <IconSymbol size={28} name="play.rectangle.fill" color={color} />
           ),
@@ -155,6 +155,12 @@ export default function TabLayout() {
 
       <Tabs.Screen
         name="event-register"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="testimony-details"
         options={{
           href: null,
         }}

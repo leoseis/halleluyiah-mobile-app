@@ -1,33 +1,24 @@
-import { router } from "expo-router";
-
 import { useEffect, useState } from "react";
 
-import {
-  ActivityIndicator,
-  FlatList,
-  Pressable,
-  Text,
-  View,
-} from "react-native";
+import { ActivityIndicator, FlatList, Text, View } from "react-native";
 
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import api from "../../src/api/api";
 
-export default function TestimoniesScreen() {
-  const [testimonies, setTestimonies] = useState<any[]>([]);
-
+export default function ReadingPlanScreen() {
+  const [plans, setPlans] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchTestimonies();
+    fetchPlans();
   }, []);
 
-  const fetchTestimonies = async () => {
+  const fetchPlans = async () => {
     try {
-      const response = await api.get("/testimonies/");
+      const response = await api.get("/reading-plans/");
 
-      setTestimonies(response.data);
+      setPlans(response.data);
     } catch (error) {
       console.log(error);
     } finally {
@@ -61,32 +52,24 @@ export default function TestimoniesScreen() {
         style={{
           fontSize: 28,
           fontWeight: "bold",
-          color: "#0d1b4c",
+          color: "#001f5b",
           marginVertical: 20,
         }}
       >
-        Testimonies ✨
+        Bible Reading Plan 📖
       </Text>
 
       <FlatList
-        data={testimonies}
+        data={plans}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
-          <Pressable
-            onPress={() =>
-              router.push({
-                pathname: "/testimony-details",
-                params: {
-                  testimony: JSON.stringify(item),
-                },
-              })
-            }
+          <View
             style={{
               backgroundColor: "white",
-              padding: 20,
-              borderRadius: 18,
-              marginBottom: 18,
-              elevation: 4,
+              borderRadius: 16,
+              padding: 18,
+              marginBottom: 15,
+              elevation: 3,
             }}
           >
             <Text
@@ -101,33 +84,22 @@ export default function TestimoniesScreen() {
 
             <Text
               style={{
+                marginTop: 8,
+                color: "#555",
+              }}
+            >
+              📖 {item.scripture}
+            </Text>
+
+            <Text
+              style={{
+                marginTop: 8,
                 color: "#777",
-                marginTop: 6,
               }}
             >
-              By {item.author}
+              📅 {item.reading_date}
             </Text>
-
-            <Text
-              numberOfLines={3}
-              style={{
-                marginTop: 12,
-                color: "#444",
-              }}
-            >
-              {item.content}
-            </Text>
-
-            <Text
-              style={{
-                marginTop: 15,
-                color: "#001f5b",
-                fontWeight: "bold",
-              }}
-            >
-              Read More →
-            </Text>
-          </Pressable>
+          </View>
         )}
       />
     </SafeAreaView>

@@ -1,9 +1,9 @@
 import { useContext } from "react";
 
 import {
-  DarkTheme,
-  DefaultTheme,
-  ThemeProvider,
+    DarkTheme,
+    DefaultTheme,
+    ThemeProvider,
 } from "@react-navigation/native";
 
 import { Stack } from "expo-router";

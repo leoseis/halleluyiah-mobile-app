@@ -2,64 +2,81 @@ import { router } from "expo-router";
 
 import { Pressable, ScrollView, Text } from "react-native";
 
-export default function MoreScreen() {
-  const menus = [
-    {
-      title: "Daily Devotional",
-      route: "/devotional",
-    },
-    {
-      title: "Giving",
-      route: "/giving",
-    },
-    {
-      title: "Testimonies",
-      route: "/testimony",
-    },
-    {
-      title: "Calendar",
-      route: "/calendar",
-    },
-    {
-      title: "Profile",
-      route: "/profile",
-    },
-  ];
+const menuItems = [
+  {
+    title: "Prayer Requests 🙏",
+    route: "/prayer",
+  },
+  {
+    title: "Daily Devotional 📖",
+    route: "/devotional",
+  },
+  {
+    title: "Giving 💳",
+    route: "/giving",
+  },
+  {
+    title: "Testimonies ✨",
+    route: "/testimonies",
+  },
+  {
+    title: "Gallery 📸",
+    route: "/gallery",
+  },
+  {
+    title: "Profile 👤",
+    route: "/profile",
+  },
+  {
+    title: "Calendar 📅",
+    route: "/calendar",
+  },
 
+  {
+    title: "Bible Reading Plan 📖",
+    route: "/reading-plan",
+  },
+];
+
+export default function MoreScreen() {
   return (
     <ScrollView
       style={{
         flex: 1,
         backgroundColor: "#f5f7fb",
+      }}
+      contentContainerStyle={{
         padding: 20,
       }}
     >
       <Text
         style={{
-          fontSize: 28,
+          fontSize: 30,
           fontWeight: "bold",
+          color: "#001f5b",
           marginBottom: 25,
         }}
       >
         More
       </Text>
 
-      {menus.map((item, index) => (
+      {menuItems.map((item, index) => (
         <Pressable
           key={index}
           onPress={() => router.push(item.route as any)}
           style={{
             backgroundColor: "white",
             padding: 18,
-            borderRadius: 12,
+            borderRadius: 16,
             marginBottom: 15,
-            elevation: 2,
+            elevation: 3,
           }}
         >
           <Text
             style={{
-              fontSize: 17,
+              fontSize: 18,
               fontWeight: "600",
+              color: "#001f5b",
             }}
           >
             {item.title}
