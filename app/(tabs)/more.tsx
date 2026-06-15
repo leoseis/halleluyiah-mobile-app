@@ -36,6 +36,10 @@ const menuItems = [
     title: "Bible Reading Plan 📖",
     route: "/reading-plan",
   },
+  {
+    title: "Settings ⚙️",
+    route: "/settings",
+  },
 ];
 
 export default function MoreScreen() {
