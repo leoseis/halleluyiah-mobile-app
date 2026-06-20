@@ -1,6 +1,7 @@
+import { router } from "expo-router";
 import { useContext } from "react";
 
-import { Alert, Pressable, ScrollView, Text, View } from "react-native";
+import { Alert, Pressable, ScrollView, Text } from "react-native";
 
 import { AuthContext } from "../../src/context/AuthContext";
 
@@ -25,18 +26,22 @@ export default function SettingsScreen() {
     {
       title: "About Church",
       icon: "🏛",
+      route: "/about-church",
     },
     {
       title: "Contact Us",
       icon: "📞",
+      route: "/contact-us",
     },
     {
       title: "Social Media",
       icon: "🌐",
+      route: "/social-media",
     },
     {
       title: "App Version",
       icon: "ℹ️",
+      route: "/app-version",
     },
   ];
 
@@ -62,8 +67,9 @@ export default function SettingsScreen() {
       </Text>
 
       {settingsItems.map((item, index) => (
-        <View
+        <Pressable
           key={index}
+          onPress={() => router.push(item.route as any)}
           style={{
             backgroundColor: "white",
             padding: 18,
@@ -81,7 +87,7 @@ export default function SettingsScreen() {
           >
             {item.icon} {item.title}
           </Text>
-        </View>
+        </Pressable>
       ))}
 
       <Pressable

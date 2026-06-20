@@ -1,17 +1,15 @@
 import { useContext } from "react";
 
 import {
-    DarkTheme,
-    DefaultTheme,
-    ThemeProvider,
+  DarkTheme,
+  DefaultTheme,
+  ThemeProvider,
 } from "@react-navigation/native";
 
 import { Stack } from "expo-router";
-
 import { StatusBar } from "expo-status-bar";
 
 import LoaderSpinner from "../components/LoaderSpinner";
-
 import { AuthContext, AuthProvider } from "../src/context/AuthContext";
 
 import { useColorScheme } from "@/hooks/use-color-scheme";
@@ -46,10 +44,39 @@ function RootNavigator() {
               title: "Announcement",
             }}
           />
+
           <Stack.Screen
             name="testimony-details"
             options={{
               title: "Testimony",
+            }}
+          />
+
+          <Stack.Screen
+            name="about-church"
+            options={{
+              title: "About Church",
+            }}
+          />
+
+          <Stack.Screen
+            name="contact-us"
+            options={{
+              title: "Contact Us",
+            }}
+          />
+
+          <Stack.Screen
+            name="social-media"
+            options={{
+              title: "Social Media",
+            }}
+          />
+
+          <Stack.Screen
+            name="app-version"
+            options={{
+              title: "App Version",
             }}
           />
         </Stack>
