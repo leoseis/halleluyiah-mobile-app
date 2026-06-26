@@ -200,7 +200,51 @@ export default function HomeScreen() {
             fontSize: 15,
           }}
         >
-          Welcome to RCCG Hallelujah Parish
+          Welcome to RCCG Hallelujah Sanctuary
+        </Text>
+      </View>
+
+      <View
+        style={{
+          backgroundColor: "#fff",
+          marginHorizontal: 20,
+          marginTop: -20,
+          borderRadius: 18,
+          padding: 18,
+          elevation: 5,
+        }}
+      >
+        <Text
+          style={{
+            fontSize: 18,
+            fontWeight: "bold",
+            color: "#001f5b",
+          }}
+        >
+          📖 Verse of the Day
+        </Text>
+
+        <Text
+          style={{
+            marginTop: 12,
+            fontSize: 16,
+            lineHeight: 24,
+            color: "#444",
+            fontStyle: "italic",
+          }}
+        >
+          "Trust in the Lord with all your heart and lean not on your own
+          understanding."
+        </Text>
+
+        <Text
+          style={{
+            marginTop: 10,
+            fontWeight: "bold",
+            color: "#001f5b",
+          }}
+        >
+          Proverbs 3:5
         </Text>
       </View>
       <FlatList
