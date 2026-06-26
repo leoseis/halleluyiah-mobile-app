@@ -5,6 +5,7 @@ import AnnouncementCard from "../../components/AnnouncementCard";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { router } from "expo-router";
+import HomeHeader from "../../components/home/HomeHeader";
 import { COLORS } from "../../constants/colors";
 
 import { useColorScheme } from "@/hooks/use-color-scheme";
@@ -163,46 +164,7 @@ export default function HomeScreen() {
         backgroundColor: theme.background,
       }}
     >
-      <View
-        style={{
-          backgroundColor: "#001f5b",
-          borderBottomLeftRadius: 30,
-          borderBottomRightRadius: 30,
-          paddingHorizontal: 20,
-          paddingTop: 50,
-          paddingBottom: 30,
-        }}
-      >
-        <Text
-          style={{
-            color: "white",
-            fontSize: 18,
-          }}
-        >
-          👋 Good Morning,
-        </Text>
-
-        <Text
-          style={{
-            color: "white",
-            fontSize: 28,
-            fontWeight: "bold",
-            marginTop: 5,
-          }}
-        >
-          Leonard
-        </Text>
-
-        <Text
-          style={{
-            color: "#dbeafe",
-            marginTop: 8,
-            fontSize: 15,
-          }}
-        >
-          Welcome to RCCG Hallelujah Sanctuary
-        </Text>
-      </View>
+      <HomeHeader greeting={getGreeting()} userName="Leonard" />
 
       <View
         style={{
