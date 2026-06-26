@@ -81,6 +81,15 @@ export default function TabLayout() {
           ),
         }}
       />
+      <Tabs.Screen
+        name="branches"
+        options={{
+          title: "Branches",
+          tabBarIcon: ({ color }) => (
+            <IconSymbol size={28} name="building.2.fill" color={color} />
+          ),
+        }}
+      />
 
       <Tabs.Screen
         name="schedule"
@@ -105,7 +114,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="media"
         options={{
-          title: "Media",
+          href: null,
           tabBarIcon: ({ color }) => (
             <IconSymbol size={28} name="play.rectangle.fill" color={color} />
           ),
