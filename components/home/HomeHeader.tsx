@@ -15,7 +15,7 @@ export default function HomeHeader({ greeting, userName }: HomeHeaderProps) {
         borderBottomRightRadius: 30,
         paddingHorizontal: 20,
         paddingTop: 50,
-        paddingBottom: 30,
+        paddingBottom: 45,
       }}
     >
       <Text
