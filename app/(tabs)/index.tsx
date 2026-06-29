@@ -167,11 +167,6 @@ export default function HomeScreen() {
         backgroundColor: theme.background,
       }}
     >
-      <HomeHeader greeting={getGreeting()} userName="Leonard" />
-      <VerseCard />
-
-      <QuickActions />
-      <UpcomingEventCard />
       <FlatList
         data={filteredAnnouncements}
         refreshing={refreshing}
@@ -191,16 +186,12 @@ export default function HomeScreen() {
               marginBottom: 20,
             }}
           >
+            <HomeHeader greeting={getGreeting()} userName="Leonard" />
+            <VerseCard />
+
+            <QuickActions />
+            <UpcomingEventCard />
             {/* GREETING */}
-            <Text
-              style={{
-                fontSize: 16,
-                color: theme.subtext,
-                marginBottom: 6,
-              }}
-            >
-              {getGreeting()}
-            </Text>
             <View
               style={{
                 flexDirection: "row",
@@ -208,103 +199,7 @@ export default function HomeScreen() {
                 justifyContent: "space-between",
                 marginVertical: 20,
               }}
-            >
-              <Pressable
-                onPress={() => router.push("/devotional")}
-                style={{
-                  width: "48%",
-                  backgroundColor: "#ffffff",
-                  padding: 20,
-                  borderRadius: 16,
-                  marginBottom: 12,
-                  elevation: 3,
-                }}
-              >
-                <Text
-                  style={{
-                    fontSize: 28,
-                  }}
-                >
-                  📖
-                </Text>
-
-                <Text
-                  style={{
-                    fontWeight: "bold",
-                    marginTop: 10,
-                  }}
-                >
-                  Daily Devotional
-                </Text>
-              </Pressable>
-
-              <Pressable
-                onPress={() => router.push("/giving")}
-                style={{
-                  width: "48%",
-                  backgroundColor: "#ffffff",
-                  padding: 20,
-                  borderRadius: 16,
-                  marginBottom: 12,
-                  elevation: 3,
-                }}
-              >
-                <Text style={{ fontSize: 28 }}>💳</Text>
-
-                <Text
-                  style={{
-                    fontWeight: "bold",
-                    marginTop: 10,
-                  }}
-                >
-                  Giving
-                </Text>
-              </Pressable>
-
-              <Pressable
-                onPress={() => router.push("/events")}
-                style={{
-                  width: "48%",
-                  backgroundColor: "#ffffff",
-                  padding: 20,
-                  borderRadius: 16,
-                  elevation: 3,
-                }}
-              >
-                <Text style={{ fontSize: 28 }}>📅</Text>
-
-                <Text
-                  style={{
-                    fontWeight: "bold",
-                    marginTop: 10,
-                  }}
-                >
-                  Events
-                </Text>
-              </Pressable>
-
-              <Pressable
-                onPress={() => router.push("/testimonies")}
-                style={{
-                  width: "48%",
-                  backgroundColor: "#ffffff",
-                  padding: 20,
-                  borderRadius: 16,
-                  elevation: 3,
-                }}
-              >
-                <Text style={{ fontSize: 28 }}>✨</Text>
-
-                <Text
-                  style={{
-                    fontWeight: "bold",
-                    marginTop: 10,
-                  }}
-                >
-                  Testimonies
-                </Text>
-              </Pressable>
-            </View>
+            ></View>
 
             {/* LOGO + TITLE */}
             <View
