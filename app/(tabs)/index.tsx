@@ -8,6 +8,7 @@ import UpcomingEventCard from "../../components/home/UpcomingEventCard";
 import VerseCard from "../../components/home/VerseCard";
 
 import { router } from "expo-router";
+import ContinueReadingCard from "../../components/home/ContinueReadingCard";
 import HomeHeader from "../../components/home/HomeHeader";
 import { COLORS } from "../../constants/colors";
 
@@ -191,6 +192,7 @@ export default function HomeScreen() {
 
             <QuickActions />
             <UpcomingEventCard />
+            <ContinueReadingCard />
             {/* GREETING */}
             <View
               style={{
