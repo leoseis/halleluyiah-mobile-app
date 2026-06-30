@@ -1,4 +1,5 @@
 import { useContext, useEffect, useMemo, useState } from "react";
+import LiveServiceBanner from "../../components/home/LiveServiceBanner";
 import QuickActions from "../../components/home/QuickActions";
 
 import AnnouncementCard from "../../components/AnnouncementCard";
@@ -192,6 +193,7 @@ export default function HomeScreen() {
 
             <QuickActions />
             <UpcomingEventCard />
+            <LiveServiceBanner />
             <ContinueReadingCard />
             {/* GREETING */}
             <View
