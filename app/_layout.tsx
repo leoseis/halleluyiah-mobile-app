@@ -53,6 +53,13 @@ function RootNavigator() {
           />
 
           <Stack.Screen
+            name="devotional-details"
+            options={{
+              title: "Daily Devotional",
+            }}
+          />
+
+          <Stack.Screen
             name="about-church"
             options={{
               title: "About Church",

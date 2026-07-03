@@ -6,10 +6,10 @@ import AnnouncementCard from "../../components/AnnouncementCard";
 
 import { SafeAreaView } from "react-native-safe-area-context";
 import UpcomingEventCard from "../../components/home/UpcomingEventCard";
-import VerseCard from "../../components/home/VerseCard";
 
 import { router } from "expo-router";
 import ContinueReadingCard from "../../components/home/ContinueReadingCard";
+import DailyDevotionalCard from "../../components/home/DailyDevotionalCard";
 import HomeHeader from "../../components/home/HomeHeader";
 import { COLORS } from "../../constants/colors";
 
@@ -189,7 +189,7 @@ export default function HomeScreen() {
             }}
           >
             <HomeHeader greeting={getGreeting()} userName="Leonard" />
-            <VerseCard />
+            <DailyDevotionalCard />
 
             <QuickActions />
             <UpcomingEventCard />
