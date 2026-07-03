@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import {
-    ActivityIndicator,
-    Pressable,
-    ScrollView,
-    Share,
-    Text,
-    View,
+  ActivityIndicator,
+  Pressable,
+  ScrollView,
+  Share,
+  Text,
+  View,
 } from "react-native";
 
 import { useLocalSearchParams } from "expo-router";
@@ -16,7 +16,6 @@ export default function DevotionalDetailsScreen() {
   const { id } = useLocalSearchParams();
 
   const [devotional, setDevotional] = useState<any>(null);
-
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -26,7 +25,6 @@ export default function DevotionalDetailsScreen() {
   const fetchDevotional = async () => {
     try {
       const response = await api.get(`/devotionals/${id}/`);
-
       setDevotional(response.data);
     } catch (error) {
       console.log(error);
@@ -38,13 +36,20 @@ export default function DevotionalDetailsScreen() {
   const shareDevotional = async () => {
     if (!devotional) return;
 
-    await Share.share({
-      message:
-        `${devotional.title}\n\n` +
-        `${devotional.scripture}\n\n` +
-        `${devotional.content}\n\n` +
-        `Prayer:\n${devotional.prayer}`,
-    });
+    try {
+      await Share.share({
+        message: `${devotional.title}
+
+${devotional.bible_verse}
+
+${devotional.message}
+
+Prayer:
+${devotional.prayer}`,
+      });
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   if (loading) {
@@ -56,12 +61,24 @@ export default function DevotionalDetailsScreen() {
           alignItems: "center",
         }}
       >
-        <ActivityIndicator size="large" />
+        <ActivityIndicator size="large" color="#001f5b" />
       </View>
     );
   }
 
-  if (!devotional) return null;
+  if (!devotional) {
+    return (
+      <View
+        style={{
+          flex: 1,
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <Text>No devotional found.</Text>
+      </View>
+    );
+  }
 
   return (
     <ScrollView
@@ -99,7 +116,7 @@ export default function DevotionalDetailsScreen() {
             color: "#555",
           }}
         >
-          📖 {devotional.scripture}
+          📖 {devotional.bible_verse}
         </Text>
 
         <Text
@@ -110,7 +127,7 @@ export default function DevotionalDetailsScreen() {
             color: "#444",
           }}
         >
-          {devotional.content}
+          {devotional.message}
         </Text>
 
         <View
