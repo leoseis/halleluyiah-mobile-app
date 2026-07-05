@@ -17,6 +17,8 @@ export default function QuickActions() {
 
       <ActionCard title="Giving" icon="💳" route="/giving" />
 
+      <ActionCard title="Sermons" icon="🎤" route="/sermons" />
+
       <ActionCard title="Events" icon="📅" route="/events" />
 
       <ActionCard title="Testimonies" icon="✨" route="/testimonies" />
