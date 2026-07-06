@@ -1,6 +1,10 @@
-import { useLocalSearchParams, router } from "expo-router";
+import api from "@/src/api/api";
+import { router, useLocalSearchParams } from "expo-router";
+import { useEffect, useState } from "react";
 
 import {
+  ActivityIndicator,
+  Alert,
   Image,
   Pressable,
   ScrollView,
@@ -11,7 +15,42 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function EventDetailsScreen() {
-  const { event } = useLocalSearchParams();
+  const { id } = useLocalSearchParams();
+
+  const [event, setEvent] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (id) {
+      fetchEvent();
+    }
+  }, [id]);
+
+  const fetchEvent = async () => {
+    try {
+      const response = await api.get(`/events/${id}/`);
+      setEvent(response.data);
+    } catch (error) {
+      console.log(error);
+      Alert.alert("Error", "Unable to load event.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <View
+        style={{
+          flex: 1,
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <ActivityIndicator size="large" color="#001f5b" />
+      </View>
+    );
+  }
 
   if (!event) {
     return (
@@ -27,8 +66,6 @@ export default function EventDetailsScreen() {
     );
   }
 
-  const eventData = JSON.parse(event as string);
-
   return (
     <SafeAreaView
       style={{
@@ -37,11 +74,9 @@ export default function EventDetailsScreen() {
       }}
     >
       <ScrollView showsVerticalScrollIndicator={false}>
-        {eventData.banner ? (
+        {event.banner ? (
           <Image
-            source={{
-              uri: eventData.banner,
-            }}
+            source={{ uri: event.banner }}
             style={{
               width: "100%",
               height: 260,
@@ -62,7 +97,7 @@ export default function EventDetailsScreen() {
               color: "#0d1b4c",
             }}
           >
-            {eventData.title}
+            {event.title}
           </Text>
 
           <Text
@@ -72,9 +107,20 @@ export default function EventDetailsScreen() {
               fontSize: 16,
             }}
           >
-            📅{" "}
-            {new Date(eventData.event_date).toLocaleDateString()}
+            📅 {new Date(event.event_date).toLocaleDateString()}
           </Text>
+
+          {event.event_time ? (
+            <Text
+              style={{
+                marginTop: 8,
+                color: "#666",
+                fontSize: 16,
+              }}
+            >
+              🕒 {event.event_time}
+            </Text>
+          ) : null}
 
           <Text
             style={{
@@ -83,7 +129,7 @@ export default function EventDetailsScreen() {
               fontSize: 16,
             }}
           >
-            📍 {eventData.venue}
+            📍 {event.venue}
           </Text>
 
           <Text
@@ -94,7 +140,7 @@ export default function EventDetailsScreen() {
               fontSize: 16,
             }}
           >
-            {eventData.description}
+            {event.description}
           </Text>
 
           <Pressable
@@ -102,8 +148,8 @@ export default function EventDetailsScreen() {
               router.push({
                 pathname: "/event-register",
                 params: {
-                  eventId: eventData.id.toString(),
-                  title: eventData.title,
+                  eventId: event.id.toString(),
+                  title: event.title,
                 },
               })
             }

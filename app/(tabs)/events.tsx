@@ -2,12 +2,12 @@ import { router } from "expo-router";
 import { useEffect, useState } from "react";
 
 import {
-    ActivityIndicator,
-    FlatList,
-    Image,
-    Pressable,
-    Text,
-    View,
+  ActivityIndicator,
+  FlatList,
+  Image,
+  Pressable,
+  Text,
+  View,
 } from "react-native";
 
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -56,6 +56,7 @@ export default function EventsScreen() {
         paddingHorizontal: 16,
       }}
     >
+      <Text>hello just added u do same lets grow</Text>
       <Text
         style={{
           fontSize: 28,
@@ -67,7 +68,6 @@ export default function EventsScreen() {
       >
         Events 🎟️
       </Text>
-
       <FlatList
         data={events}
         keyExtractor={(item) => item.id.toString()}
@@ -78,7 +78,7 @@ export default function EventsScreen() {
               router.push({
                 pathname: "/event-details",
                 params: {
-                  event: JSON.stringify(item),
+                  id: item.id,
                 },
               })
             }
