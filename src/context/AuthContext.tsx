@@ -1,9 +1,11 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { createContext, useEffect, useState } from "react";
+import api from "../api/api";
 import { registerForPushNotificationsAsync } from "../utils/notifications";
 
 interface AuthContextType {
   userToken: string | null;
+  user: any;
   loading: boolean;
   login: (token: string) => Promise<void>;
   logout: () => Promise<void>;
@@ -15,6 +17,7 @@ export const AuthContext = createContext<AuthContextType>(
 
 export const AuthProvider = ({ children }: any) => {
   const [userToken, setUserToken] = useState<string | null>(null);
+  const [user, setUser] = useState<any>(null);
 
   const [loading, setLoading] = useState(true);
 
@@ -42,14 +45,25 @@ export const AuthProvider = ({ children }: any) => {
     setUserToken(token);
 
     try {
+      // Fetch the logged-in user's profile
+      const response = await api.get("/auth/profile/", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      setUser(response.data);
+
+      console.log("Logged in user:", response.data);
+
+      // Register for push notifications
       const pushToken = await registerForPushNotificationsAsync();
 
       console.log("Expo Push Token:", pushToken);
     } catch (error) {
-      console.log("Push notification error:", error);
+      console.log("Login/Profile error:", error);
     }
   };
-
   const logout = async () => {
     await AsyncStorage.removeItem("access");
 
@@ -60,6 +74,7 @@ export const AuthProvider = ({ children }: any) => {
     <AuthContext.Provider
       value={{
         userToken,
+        user,
         loading,
         login,
         logout,

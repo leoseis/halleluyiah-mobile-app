@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import {
-    ActivityIndicator,
-    FlatList,
-    Image,
-    Pressable,
-    Text,
-    View,
+  ActivityIndicator,
+  FlatList,
+  Image,
+  Pressable,
+  Text,
+  View,
 } from "react-native";
 
 import { router } from "expo-router";
@@ -13,7 +13,8 @@ import { router } from "expo-router";
 import { getSermons } from "../src/api/sermons";
 
 export default function SermonsScreen() {
-  const [sermons, setSermons] = useState([]);
+  const [sermons, setSermons] = useState<any[]>([]);
+  const [error, setError] = useState("");
 
   const [loading, setLoading] = useState(true);
 
@@ -25,8 +26,14 @@ export default function SermonsScreen() {
     try {
       const data = await getSermons();
       setSermons(data);
-    } catch (err) {
-      console.log(err);
+    } catch (err: any) {
+      console.log("SERMON ERROR:", err);
+
+      setError(
+        err?.response
+          ? `Server error: ${err.response.status}`
+          : err?.message || "Failed to load sermons",
+      );
     } finally {
       setLoading(false);
     }
@@ -34,6 +41,29 @@ export default function SermonsScreen() {
 
   if (loading) {
     return <ActivityIndicator size="large" />;
+  }
+
+  if (error) {
+    return (
+      <View
+        style={{
+          flex: 1,
+          justifyContent: "center",
+          alignItems: "center",
+          padding: 25,
+        }}
+      >
+        <Text
+          style={{
+            color: "red",
+            fontSize: 18,
+            textAlign: "center",
+          }}
+        >
+          {error}
+        </Text>
+      </View>
+    );
   }
 
   return (

@@ -41,3 +41,28 @@ app-example
 # generated native folders
 /ios
 /android
+
+
+
+# Expo build outputs
+*.apk
+*.aab
+
+# Expo
+.expo/
+.expo-shared/
+
+# EAS
+.eas/
+
+# Native build folders
+android/app/build/
+android/build/
+ios/build/
+
+# Logs
+*.log
+
+# Environment
+.env
+.env.*

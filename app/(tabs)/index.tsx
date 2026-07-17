@@ -30,7 +30,7 @@ import api from "../../src/api/api";
 import { AuthContext } from "../../src/context/AuthContext";
 
 export default function HomeScreen() {
-  const { logout } = useContext(AuthContext);
+  const { user, logout } = useContext(AuthContext);
 
   const [announcements, setAnnouncements] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -188,7 +188,10 @@ export default function HomeScreen() {
               marginBottom: 20,
             }}
           >
-            <HomeHeader greeting={getGreeting()} userName="Leonard" />
+            <HomeHeader
+              greeting={getGreeting()}
+              userName={user?.username || "Member"}
+            />
             <DailyDevotionalCard />
 
             <QuickActions />
