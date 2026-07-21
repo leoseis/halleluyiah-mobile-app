@@ -192,6 +192,7 @@ export default function ProfileScreen() {
           </Text>
 
           <Pressable
+            onPress={() => router.push("../edit-profile")}
             style={{
               paddingVertical: 16,
               borderBottomWidth: 1,
