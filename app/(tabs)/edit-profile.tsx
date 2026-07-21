@@ -1,14 +1,8 @@
 import { useContext, useEffect, useState } from "react";
 
-import {
-    ActivityIndicator,
-    Pressable,
-    Text,
-    TextInput
-} from "react-native";
+import { ActivityIndicator, Pressable, Text, TextInput } from "react-native";
 
 import { SafeAreaView } from "react-native-safe-area-context";
-
 
 import { AuthContext } from "../../src/context/AuthContext";
 
@@ -90,12 +84,13 @@ export default function EditProfileScreen() {
       <TextInput
         value={firstName}
         onChangeText={setFirstName}
+        placeholder="First Name"
         style={{
           borderWidth: 1,
           borderColor: "#ddd",
-          padding: 14,
           borderRadius: 12,
-          marginBottom: 20,
+          padding: 14,
+          marginBottom: 16,
         }}
       />
 
@@ -104,12 +99,13 @@ export default function EditProfileScreen() {
       <TextInput
         value={lastName}
         onChangeText={setLastName}
+        placeholder="Last Name"
         style={{
           borderWidth: 1,
           borderColor: "#ddd",
-          padding: 14,
           borderRadius: 12,
-          marginBottom: 20,
+          padding: 14,
+          marginBottom: 16,
         }}
       />
 
@@ -118,14 +114,15 @@ export default function EditProfileScreen() {
       <TextInput
         value={email}
         onChangeText={setEmail}
+        placeholder="Email"
         keyboardType="email-address"
         autoCapitalize="none"
         style={{
           borderWidth: 1,
           borderColor: "#ddd",
-          padding: 14,
           borderRadius: 12,
-          marginBottom: 30,
+          padding: 14,
+          marginBottom: 16,
         }}
       />
 
