@@ -4,8 +4,8 @@ import { ActivityIndicator, Pressable, Text, TextInput } from "react-native";
 
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { updateProfile } from "../../src/api/auth";
 import { AuthContext } from "../../src/context/AuthContext";
-
 export default function EditProfileScreen() {
   const { user } = useContext(AuthContext);
 
@@ -45,7 +45,26 @@ export default function EditProfileScreen() {
       </SafeAreaView>
     );
   }
+  const handleSave = async () => {
+    try {
+      setSaving(true);
 
+      const updatedUser = await updateProfile({
+        first_name: firstName,
+        last_name: lastName,
+        email,
+      });
+
+      console.log("Updated User:", updatedUser);
+
+      alert("Profile updated successfully!");
+    } catch (error) {
+      console.log(error);
+      alert("Unable to update profile.");
+    } finally {
+      setSaving(false);
+    }
+  };
   return (
     <SafeAreaView
       style={{
@@ -127,11 +146,14 @@ export default function EditProfileScreen() {
       />
 
       <Pressable
+        onPress={handleSave}
+        disabled={saving}
         style={{
           backgroundColor: "#001f5b",
           padding: 16,
           borderRadius: 14,
           alignItems: "center",
+          opacity: saving ? 0.7 : 1,
         }}
       >
         <Text
@@ -141,7 +163,7 @@ export default function EditProfileScreen() {
             fontSize: 16,
           }}
         >
-          Save Changes
+          {saving ? "Saving..." : "Save Changes"}
         </Text>
       </Pressable>
     </SafeAreaView>
