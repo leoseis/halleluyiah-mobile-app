@@ -32,9 +32,19 @@ export const AuthProvider = ({ children }: any) => {
 
       if (token) {
         setUserToken(token);
+
+        const response = await api.get("/auth/profile/", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        setUser(response.data);
+
+        console.log("Restored user:", response.data);
       }
     } catch (error) {
-      console.log(error);
+      console.log("Restore Login Error:", error);
     } finally {
       setLoading(false);
     }
