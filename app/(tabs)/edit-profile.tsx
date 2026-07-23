@@ -20,6 +20,7 @@ export default function EditProfileScreen() {
   const [lastName, setLastName] = useState("");
 
   const [email, setEmail] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
 
   useEffect(() => {
     if (user) {
@@ -27,6 +28,7 @@ export default function EditProfileScreen() {
       setFirstName(user.first_name || "");
       setLastName(user.last_name || "");
       setEmail(user.email || "");
+      setPhoneNumber(user.phone_number || "");
 
       setLoading(false);
     }
@@ -136,6 +138,22 @@ export default function EditProfileScreen() {
         placeholder="Email"
         keyboardType="email-address"
         autoCapitalize="none"
+        style={{
+          borderWidth: 1,
+          borderColor: "#ddd",
+          borderRadius: 12,
+          padding: 14,
+          marginBottom: 16,
+        }}
+      />
+
+      <Text>Phone Number</Text>
+
+      <TextInput
+        value={phoneNumber}
+        onChangeText={setPhoneNumber}
+        placeholder="Phone Number"
+        keyboardType="phone-pad"
         style={{
           borderWidth: 1,
           borderColor: "#ddd",
