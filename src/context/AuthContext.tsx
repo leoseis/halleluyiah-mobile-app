@@ -6,6 +6,7 @@ import { registerForPushNotificationsAsync } from "../utils/notifications";
 interface AuthContextType {
   userToken: string | null;
   user: any;
+  setUser: React.Dispatch<React.SetStateAction<any>>;
   loading: boolean;
   login: (token: string) => Promise<void>;
   logout: () => Promise<void>;
@@ -68,6 +69,7 @@ export const AuthProvider = ({ children }: any) => {
     await AsyncStorage.removeItem("access");
 
     setUserToken(null);
+    setUser(null);
   };
 
   return (
@@ -75,6 +77,7 @@ export const AuthProvider = ({ children }: any) => {
       value={{
         userToken,
         user,
+        setUser,
         loading,
         login,
         logout,
