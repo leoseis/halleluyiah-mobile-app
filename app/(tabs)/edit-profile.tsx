@@ -1,24 +1,29 @@
+import * as ImagePicker from "expo-image-picker";
 import { useContext, useEffect, useState } from "react";
-
-import { ActivityIndicator, Pressable, Text, TextInput } from "react-native";
-
+import {
+  ActivityIndicator,
+  Image,
+  Pressable,
+  Text,
+  TextInput,
+  TouchableOpacity,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { updateProfile } from "../../src/api/auth";
 import { AuthContext } from "../../src/context/AuthContext";
+
 export default function EditProfileScreen() {
-  const { user } = useContext(AuthContext);
+  const { user, setUser } = useContext(AuthContext);
 
   const [loading, setLoading] = useState(true);
-
   const [saving, setSaving] = useState(false);
 
+  const [profileImage, setProfileImage] = useState<string | null>(null);
+
   const [username, setUsername] = useState("");
-
   const [firstName, setFirstName] = useState("");
-
   const [lastName, setLastName] = useState("");
-
   const [email, setEmail] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
 
@@ -30,9 +35,59 @@ export default function EditProfileScreen() {
       setEmail(user.email || "");
       setPhoneNumber(user.phone_number || "");
 
+      if (user.profile_picture) {
+        setProfileImage(user.profile_picture);
+      }
+
       setLoading(false);
     }
   }, [user]);
+
+  const pickImage = async () => {
+    const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+    if (!permission.granted) {
+      alert("Permission to access gallery is required.");
+      return;
+    }
+
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ["images"],
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 0.8,
+    });
+
+    if (!result.canceled) {
+      setProfileImage(result.assets[0].uri);
+
+      console.log("Selected Image:", result.assets[0]);
+    }
+  };
+
+  const handleSave = async () => {
+    try {
+      setSaving(true);
+
+      const updatedUser = await updateProfile({
+        first_name: firstName,
+        last_name: lastName,
+        email,
+        phone_number: phoneNumber,
+      });
+
+      setUser(updatedUser);
+
+      console.log("Updated User:", updatedUser);
+
+      alert("Profile updated successfully!");
+    } catch (error) {
+      console.log(error);
+      alert("Unable to update profile.");
+    } finally {
+      setSaving(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -47,26 +102,7 @@ export default function EditProfileScreen() {
       </SafeAreaView>
     );
   }
-  const handleSave = async () => {
-    try {
-      setSaving(true);
 
-      const updatedUser = await updateProfile({
-        first_name: firstName,
-        last_name: lastName,
-        email,
-      });
-
-      console.log("Updated User:", updatedUser);
-
-      alert("Profile updated successfully!");
-    } catch (error) {
-      console.log(error);
-      alert("Unable to update profile.");
-    } finally {
-      setSaving(false);
-    }
-  };
   return (
     <SafeAreaView
       style={{
@@ -79,11 +115,48 @@ export default function EditProfileScreen() {
         style={{
           fontSize: 28,
           fontWeight: "bold",
-          marginBottom: 30,
+          marginBottom: 25,
         }}
       >
         Edit Profile
       </Text>
+
+      {/* Profile Picture */}
+
+      <TouchableOpacity
+        onPress={pickImage}
+        style={{
+          alignItems: "center",
+          marginBottom: 30,
+        }}
+      >
+        <Image
+          source={
+            profileImage
+              ? { uri: profileImage }
+              : {
+                  uri: "https://i.pravatar.cc/300",
+                }
+          }
+          style={{
+            width: 120,
+            height: 120,
+            borderRadius: 60,
+            borderWidth: 2,
+            borderColor: "#001f5b",
+          }}
+        />
+
+        <Text
+          style={{
+            marginTop: 10,
+            color: "#001f5b",
+            fontWeight: "600",
+          }}
+        >
+          Change Profile Picture
+        </Text>
+      </TouchableOpacity>
 
       <Text>Username</Text>
 
@@ -159,7 +232,7 @@ export default function EditProfileScreen() {
           borderColor: "#ddd",
           borderRadius: 12,
           padding: 14,
-          marginBottom: 16,
+          marginBottom: 30,
         }}
       />
 
