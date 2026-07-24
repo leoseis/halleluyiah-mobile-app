@@ -20,8 +20,33 @@ export const updateProfile = async (data: {
   last_name: string;
   email: string;
   phone_number: string;
+  profile_picture?: string | null;
 }) => {
-  const response = await api.put("/auth/profile/", data);
+  const formData = new FormData();
+
+  formData.append("first_name", data.first_name);
+  formData.append("last_name", data.last_name);
+  formData.append("email", data.email);
+  formData.append("phone_number", data.phone_number);
+
+  if (data.profile_picture) {
+    const filename = data.profile_picture.split("/").pop() || "profile.jpg";
+
+    const match = /\.(\w+)$/.exec(filename);
+    const type = match ? `image/${match[1]}` : "image/jpeg";
+
+    formData.append("profile_picture", {
+      uri: data.profile_picture,
+      name: filename,
+      type,
+    } as any);
+  }
+
+  const response = await api.put("/auth/profile/", formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
 
   return response.data;
 };

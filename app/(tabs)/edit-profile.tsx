@@ -4,6 +4,7 @@ import {
   ActivityIndicator,
   Image,
   Pressable,
+  ScrollView,
   Text,
   TextInput,
   TouchableOpacity,
@@ -36,7 +37,7 @@ export default function EditProfileScreen() {
       setPhoneNumber(user.phone_number || "");
 
       if (user.profile_picture) {
-        setProfileImage(user.profile_picture);
+        setProfileImage(`http://192.168.43.207:8000${user.profile_picture}`);
       }
 
       setLoading(false);
@@ -74,6 +75,7 @@ export default function EditProfileScreen() {
         last_name: lastName,
         email,
         phone_number: phoneNumber,
+        profile_picture: profileImage,
       });
 
       setUser(updatedUser);
@@ -108,155 +110,162 @@ export default function EditProfileScreen() {
       style={{
         flex: 1,
         backgroundColor: "#f5f7fb",
-        padding: 20,
       }}
     >
-      <Text
-        style={{
-          fontSize: 28,
-          fontWeight: "bold",
-          marginBottom: 25,
+      <ScrollView
+        contentContainerStyle={{
+          padding: 20,
+          paddingBottom: 40,
         }}
+        showsVerticalScrollIndicator={false}
       >
-        Edit Profile
-      </Text>
-
-      {/* Profile Picture */}
-
-      <TouchableOpacity
-        onPress={pickImage}
-        style={{
-          alignItems: "center",
-          marginBottom: 30,
-        }}
-      >
-        <Image
-          source={
-            profileImage
-              ? { uri: profileImage }
-              : {
-                  uri: "https://i.pravatar.cc/300",
-                }
-          }
+        <Text
           style={{
-            width: 120,
-            height: 120,
-            borderRadius: 60,
-            borderWidth: 2,
-            borderColor: "#001f5b",
+            fontSize: 28,
+            fontWeight: "bold",
+            marginBottom: 25,
+          }}
+        >
+          Edit Profile
+        </Text>
+
+        {/* Profile Picture */}
+
+        <TouchableOpacity
+          onPress={pickImage}
+          style={{
+            alignItems: "center",
+            marginBottom: 30,
+          }}
+        >
+          <Image
+            source={
+              profileImage
+                ? { uri: profileImage }
+                : {
+                    uri: "https://i.pravatar.cc/300",
+                  }
+            }
+            style={{
+              width: 120,
+              height: 120,
+              borderRadius: 60,
+              borderWidth: 2,
+              borderColor: "#001f5b",
+            }}
+          />
+
+          <Text
+            style={{
+              marginTop: 10,
+              color: "#001f5b",
+              fontWeight: "600",
+            }}
+          >
+            Change Profile Picture
+          </Text>
+        </TouchableOpacity>
+
+        <Text>Username</Text>
+
+        <TextInput
+          value={username}
+          editable={false}
+          style={{
+            borderWidth: 1,
+            borderColor: "#ddd",
+            padding: 14,
+            borderRadius: 12,
+            marginBottom: 20,
+            backgroundColor: "#eee",
           }}
         />
 
-        <Text
+        <Text>First Name</Text>
+
+        <TextInput
+          value={firstName}
+          onChangeText={setFirstName}
+          placeholder="First Name"
           style={{
-            marginTop: 10,
-            color: "#001f5b",
-            fontWeight: "600",
+            borderWidth: 1,
+            borderColor: "#ddd",
+            borderRadius: 12,
+            padding: 14,
+            marginBottom: 16,
+          }}
+        />
+
+        <Text>Last Name</Text>
+
+        <TextInput
+          value={lastName}
+          onChangeText={setLastName}
+          placeholder="Last Name"
+          style={{
+            borderWidth: 1,
+            borderColor: "#ddd",
+            borderRadius: 12,
+            padding: 14,
+            marginBottom: 16,
+          }}
+        />
+
+        <Text>Email</Text>
+
+        <TextInput
+          value={email}
+          onChangeText={setEmail}
+          placeholder="Email"
+          keyboardType="email-address"
+          autoCapitalize="none"
+          style={{
+            borderWidth: 1,
+            borderColor: "#ddd",
+            borderRadius: 12,
+            padding: 14,
+            marginBottom: 16,
+          }}
+        />
+
+        <Text>Phone Number</Text>
+
+        <TextInput
+          value={phoneNumber}
+          onChangeText={setPhoneNumber}
+          placeholder="Phone Number"
+          keyboardType="phone-pad"
+          style={{
+            borderWidth: 1,
+            borderColor: "#ddd",
+            borderRadius: 12,
+            padding: 14,
+            marginBottom: 30,
+          }}
+        />
+
+        <Pressable
+          onPress={handleSave}
+          disabled={saving}
+          style={{
+            backgroundColor: "#001f5b",
+            padding: 16,
+            borderRadius: 14,
+            alignItems: "center",
+            opacity: saving ? 0.7 : 1,
           }}
         >
-          Change Profile Picture
-        </Text>
-      </TouchableOpacity>
-
-      <Text>Username</Text>
-
-      <TextInput
-        value={username}
-        editable={false}
-        style={{
-          borderWidth: 1,
-          borderColor: "#ddd",
-          padding: 14,
-          borderRadius: 12,
-          marginBottom: 20,
-          backgroundColor: "#eee",
-        }}
-      />
-
-      <Text>First Name</Text>
-
-      <TextInput
-        value={firstName}
-        onChangeText={setFirstName}
-        placeholder="First Name"
-        style={{
-          borderWidth: 1,
-          borderColor: "#ddd",
-          borderRadius: 12,
-          padding: 14,
-          marginBottom: 16,
-        }}
-      />
-
-      <Text>Last Name</Text>
-
-      <TextInput
-        value={lastName}
-        onChangeText={setLastName}
-        placeholder="Last Name"
-        style={{
-          borderWidth: 1,
-          borderColor: "#ddd",
-          borderRadius: 12,
-          padding: 14,
-          marginBottom: 16,
-        }}
-      />
-
-      <Text>Email</Text>
-
-      <TextInput
-        value={email}
-        onChangeText={setEmail}
-        placeholder="Email"
-        keyboardType="email-address"
-        autoCapitalize="none"
-        style={{
-          borderWidth: 1,
-          borderColor: "#ddd",
-          borderRadius: 12,
-          padding: 14,
-          marginBottom: 16,
-        }}
-      />
-
-      <Text>Phone Number</Text>
-
-      <TextInput
-        value={phoneNumber}
-        onChangeText={setPhoneNumber}
-        placeholder="Phone Number"
-        keyboardType="phone-pad"
-        style={{
-          borderWidth: 1,
-          borderColor: "#ddd",
-          borderRadius: 12,
-          padding: 14,
-          marginBottom: 30,
-        }}
-      />
-
-      <Pressable
-        onPress={handleSave}
-        disabled={saving}
-        style={{
-          backgroundColor: "#001f5b",
-          padding: 16,
-          borderRadius: 14,
-          alignItems: "center",
-          opacity: saving ? 0.7 : 1,
-        }}
-      >
-        <Text
-          style={{
-            color: "white",
-            fontWeight: "bold",
-            fontSize: 16,
-          }}
-        >
-          {saving ? "Saving..." : "Save Changes"}
-        </Text>
-      </Pressable>
+          <Text
+            style={{
+              color: "white",
+              fontWeight: "bold",
+              fontSize: 16,
+            }}
+          >
+            {saving ? "Saving..." : "Save Changes"}
+          </Text>
+        </Pressable>
+      </ScrollView>
     </SafeAreaView>
   );
 }

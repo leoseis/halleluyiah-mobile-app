@@ -48,13 +48,19 @@ export default function ProfileScreen() {
         >
           {/* AVATAR */}
           <Image
-            source={{
-              uri: "https://i.pravatar.cc/300",
-            }}
+            source={
+              user?.profile_picture
+                ? {
+                    uri: `http://192.168.43.207:8000${user.profile_picture}`,
+                  }
+                : {
+                    uri: "https://i.pravatar.cc/300",
+                  }
+            }
             style={{
               width: 110,
               height: 110,
-              borderRadius: 100,
+              borderRadius: 55,
               marginBottom: 16,
             }}
           />
