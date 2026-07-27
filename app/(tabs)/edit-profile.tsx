@@ -11,7 +11,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { updateProfile } from "../../src/api/auth";
+import { changePassword, updateProfile } from "../../src/api/auth";
 import { AuthContext } from "../../src/context/AuthContext";
 
 export default function EditProfileScreen() {
@@ -40,7 +40,7 @@ export default function EditProfileScreen() {
       setPhoneNumber(user.phone_number || "");
 
       if (user.profile_picture) {
-        setProfileImage(`http://192.168.43.207:8000${user.profile_picture}`);
+        setProfileImage(`http://192.168.43.206:8000${user.profile_picture}`);
       }
 
       setLoading(false);
@@ -73,6 +73,7 @@ export default function EditProfileScreen() {
     try {
       setSaving(true);
 
+      // Update profile
       const updatedUser = await updateProfile({
         first_name: firstName,
         last_name: lastName,
@@ -83,12 +84,35 @@ export default function EditProfileScreen() {
 
       setUser(updatedUser);
 
-      console.log("Updated User:", updatedUser);
+      // Change password if user entered one
+      if (oldPassword || newPassword || confirmPassword) {
+        if (newPassword !== confirmPassword) {
+          alert("New password and confirm password do not match.");
+          return;
+        }
 
-      alert("Profile updated successfully!");
-    } catch (error) {
+        await changePassword({
+          old_password: oldPassword,
+          new_password: newPassword,
+        });
+
+        // Clear password fields after success
+        setOldPassword("");
+        setNewPassword("");
+        setConfirmPassword("");
+
+        alert("Password changed successfully!");
+      } else {
+        alert("Profile updated successfully!");
+      }
+    } catch (error: any) {
       console.log(error);
-      alert("Unable to update profile.");
+
+      if (error.response?.data) {
+        console.log(error.response.data);
+      }
+
+      alert("Unable to save changes.");
     } finally {
       setSaving(false);
     }
