@@ -27,6 +27,9 @@ export default function EditProfileScreen() {
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
+  const [oldPassword, setOldPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
 
   useEffect(() => {
     if (user) {
@@ -126,7 +129,7 @@ export default function EditProfileScreen() {
             marginBottom: 25,
           }}
         >
-          Edit Profile
+          EDIT PROFILE TEST
         </Text>
 
         {/* Profile Picture */}
@@ -241,6 +244,65 @@ export default function EditProfileScreen() {
             borderRadius: 12,
             padding: 14,
             marginBottom: 30,
+          }}
+        />
+
+        <Text
+          style={{
+            marginTop: 20,
+            marginBottom: 10,
+            fontSize: 18,
+            fontWeight: "bold",
+          }}
+        >
+          Change Password
+        </Text>
+
+        <Text>Current Password</Text>
+
+        <TextInput
+          value={oldPassword}
+          onChangeText={setOldPassword}
+          placeholder="Current Password"
+          secureTextEntry
+          style={{
+            borderWidth: 1,
+            borderColor: "#ddd",
+            borderRadius: 12,
+            padding: 14,
+            marginBottom: 16,
+          }}
+        />
+
+        <Text>New Password</Text>
+
+        <TextInput
+          value={newPassword}
+          onChangeText={setNewPassword}
+          placeholder="New Password"
+          secureTextEntry
+          style={{
+            borderWidth: 1,
+            borderColor: "#ddd",
+            borderRadius: 12,
+            padding: 14,
+            marginBottom: 16,
+          }}
+        />
+
+        <Text>Confirm Password</Text>
+
+        <TextInput
+          value={confirmPassword}
+          onChangeText={setConfirmPassword}
+          placeholder="Confirm Password"
+          secureTextEntry
+          style={{
+            borderWidth: 1,
+            borderColor: "#ddd",
+            borderRadius: 12,
+            padding: 14,
+            marginBottom: 20,
           }}
         />
 

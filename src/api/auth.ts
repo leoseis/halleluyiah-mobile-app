@@ -50,3 +50,11 @@ export const updateProfile = async (data: {
 
   return response.data;
 };
+export const changePassword = async (data: {
+  old_password: string;
+  new_password: string;
+}) => {
+  const response = await api.post("/auth/change-password/", data);
+
+  return response.data;
+};
