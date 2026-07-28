@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "626521970623",
+    "project_id": "rccg-hallelujah-app",
+    "storage_bucket": "rccg-hallelujah-app.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:626521970623:android:7b748b58da18a8b77ef30a",
+        "android_client_info": {
+          "package_name": "com.leoseis.rccghallelujah.churchapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDtNqVqj1EFAOqeGiDATKkHQpBvXDoSg4g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
