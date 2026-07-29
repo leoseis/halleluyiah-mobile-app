@@ -1,7 +1,11 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as Device from "expo-device";
 import React, { createContext, useEffect, useState } from "react";
 import api from "../api/api";
-import { registerForPushNotificationsAsync } from "../utils/notifications";
+import {
+  registerDeviceToken,
+  registerForPushNotificationsAsync,
+} from "../api/notifications";
 
 interface AuthContextType {
   userToken: string | null;
@@ -68,9 +72,22 @@ export const AuthProvider = ({ children }: any) => {
       console.log("Logged in user:", response.data);
 
       // Register for push notifications
-      const pushToken = await registerForPushNotificationsAsync();
+      try {
+        const pushToken = await registerForPushNotificationsAsync();
 
-      console.log("Expo Push Token:", pushToken);
+        if (pushToken) {
+          const deviceName =
+            Device.deviceName ||
+            `${Device.manufacturer ?? "Unknown"} ${Device.modelName ?? "Android"}`;
+
+          await registerDeviceToken(pushToken, deviceName);
+
+          console.log("Expo Push Token:", pushToken);
+          console.log("Device registered successfully.");
+        }
+      } catch (error) {
+        console.log("Notification registration failed:", error);
+      }
     } catch (error) {
       console.log("Login/Profile error:", error);
     }
