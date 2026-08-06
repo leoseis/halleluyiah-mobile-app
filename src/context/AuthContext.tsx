@@ -93,10 +93,13 @@ export const AuthProvider = ({ children }: any) => {
     }
   };
   const logout = async () => {
+    console.log("1. Logout started");
+
     await AsyncStorage.removeItem("access");
 
-    setUserToken(null);
-    setUser(null);
+    console.log("2. Token removed");
+
+    // STOP HERE
   };
 
   return (
