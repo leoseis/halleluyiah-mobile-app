@@ -1,4 +1,5 @@
-import { useContext } from "react";
+import * as Notifications from "expo-notifications";
+import { useContext, useEffect } from "react";
 
 import {
   DarkTheme,
@@ -117,6 +118,20 @@ function RootNavigator() {
 }
 
 export default function RootLayout() {
+  useEffect(() => {
+    const subscription = Notifications.addNotificationResponseReceivedListener(
+      (response) => {
+        console.log(
+          "Notification tapped:",
+          response.notification.request.content,
+        );
+      },
+    );
+
+    return () => {
+      subscription.remove();
+    };
+  }, []);
   return (
     <AuthProvider>
       <RootNavigator />
