@@ -13,7 +13,6 @@ import { useEffect, useState } from "react";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-import axios from "axios";
 import api from "../../src/api/api";
 
 export default function AnnouncementDetails() {
@@ -33,8 +32,8 @@ export default function AnnouncementDetails() {
 
       const token = await AsyncStorage.getItem("access");
 
-      await axios.post(
-        "http://192.168.43.207:8000/api/comments/create/",
+      await api.post(
+        "/comments/create/",
         {
           content: comment,
           announcement: Number(id),
