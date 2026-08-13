@@ -14,6 +14,7 @@ import { useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import axios from "axios";
+import api from "../../src/api/api";
 
 export default function AnnouncementDetails() {
   const { id, title, body, image } = useLocalSearchParams();
@@ -21,7 +22,7 @@ export default function AnnouncementDetails() {
   console.log("Announcement ID:", id);
   const [comment, setComment] = useState("");
   const [posting, setPosting] = useState(false);
-
+  const [announcement, setAnnouncement] = useState<any>(null);
   const [comments, setComments] = useState<any[]>([]);
 
   const handleComment = async () => {
@@ -62,10 +63,8 @@ export default function AnnouncementDetails() {
 
   const fetchAnnouncement = async () => {
     try {
-      const response = await axios.get(
-        `http://192.168.43.207:8000/api/announcements/${id}/`,
-      );
-
+      const response = await api.get(`/announcements/${id}/`);
+      setAnnouncement(response.data);
       setComments(response.data.comments);
     } catch (error) {
       console.log(error);
@@ -98,7 +97,9 @@ export default function AnnouncementDetails() {
 
       {image && (
         <Image
-          source={{ uri: image as string }}
+          source={{
+            uri: (announcement?.image || image) as string,
+          }}
           resizeMode="contain"
           style={{
             width: "100%",
@@ -118,7 +119,7 @@ export default function AnnouncementDetails() {
           marginBottom: 10,
         }}
       >
-        {title}
+        {announcement?.title || title}
       </Text>
 
       <Text
@@ -138,7 +139,7 @@ export default function AnnouncementDetails() {
           marginBottom: 30,
         }}
       >
-        {body}
+        {announcement?.content || announcement?.body || body}
       </Text>
 
       <Text

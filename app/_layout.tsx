@@ -1,4 +1,5 @@
 import * as Notifications from "expo-notifications";
+import { Stack, router } from "expo-router";
 import { useContext, useEffect } from "react";
 
 import {
@@ -7,7 +8,6 @@ import {
   ThemeProvider,
 } from "@react-navigation/native";
 
-import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 
 import LoaderSpinner from "../components/LoaderSpinner";
@@ -23,6 +23,28 @@ function RootNavigator() {
   const colorScheme = useColorScheme();
 
   const { userToken, loading } = useContext(AuthContext);
+
+  useEffect(() => {
+    const subscription = Notifications.addNotificationResponseReceivedListener(
+      (response) => {
+        const announcementId =
+          response.notification.request.content.data?.announcement_id;
+
+        console.log("Notification tapped - announcement ID:", announcementId);
+
+        if (announcementId) {
+          router.push({
+            pathname: "/announcement-details",
+            params: {
+              id: String(announcementId),
+            },
+          });
+        }
+      },
+    );
+
+    return () => subscription.remove();
+  }, []);
 
   if (loading) {
     return <LoaderSpinner />;
