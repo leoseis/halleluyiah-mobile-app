@@ -291,30 +291,6 @@ export default function HomeScreen() {
           </View>
         }
       />
-
-      {/* LOGOUT BUTTON */}
-      <Pressable
-        onPress={handleLogout}
-        style={{
-          backgroundColor: "#001f5b",
-          paddingVertical: 14,
-          borderRadius: 14,
-          marginHorizontal: 20,
-          marginBottom: 20,
-          alignItems: "center",
-        }}
-      >
-        <Text
-          style={{
-            color: "white",
-            textAlign: "center",
-            fontWeight: "bold",
-            fontSize: 15,
-          }}
-        >
-          Logout
-        </Text>
-      </Pressable>
     </SafeAreaView>
   );
 }
