@@ -99,9 +99,12 @@ export const AuthProvider = ({ children }: any) => {
 
     console.log("2. Token removed");
 
-    // STOP HERE
-  };
+    console.log("3. About to clear userToken");
 
+    setUserToken(null);
+
+    console.log("4. userToken state update requested");
+  };
   return (
     <AuthContext.Provider
       value={{
