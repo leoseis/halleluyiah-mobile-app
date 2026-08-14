@@ -72,6 +72,13 @@ export default function HomeScreen() {
       const response = await api.get("/announcements/");
 
       setAnnouncements(response.data);
+      console.log(
+        "ANNOUNCEMENT CATEGORIES:",
+        response.data.map((item: any) => ({
+          title: item.title,
+          category: item.category,
+        })),
+      );
     } catch (error) {
       console.log(error);
     } finally {

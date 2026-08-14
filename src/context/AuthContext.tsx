@@ -93,17 +93,8 @@ export const AuthProvider = ({ children }: any) => {
     }
   };
   const logout = async () => {
-    console.log("1. Logout started");
-
     await AsyncStorage.removeItem("access");
-
-    console.log("2. Token removed");
-
-    console.log("3. About to clear userToken");
-
     setUserToken(null);
-
-    console.log("4. userToken state update requested");
   };
   return (
     <AuthContext.Provider
