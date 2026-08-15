@@ -3,8 +3,8 @@ import React from "react";
 
 import { HapticTab } from "@/components/haptic-tab";
 import { IconSymbol } from "@/components/ui/icon-symbol";
-import { Colors } from "@/constants/theme";
 import { useColorScheme } from "@/hooks/use-color-scheme";
+import { Ionicons } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function TabLayout() {
@@ -14,7 +14,8 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
+        tabBarActiveTintColor: "#000000",
+        tabBarInactiveTintColor: "#666666",
         headerShown: false,
         tabBarButton: HapticTab,
         tabBarStyle: {
@@ -28,9 +29,7 @@ export default function TabLayout() {
         name="index"
         options={{
           title: "Home",
-          tabBarIcon: ({ color }) => (
-            <IconSymbol size={28} name="house.fill" color={color} />
-          ),
+          tabBarIcon: () => <Ionicons name="home" size={26} color="#0EA5E9" />,
         }}
       />
 
@@ -58,8 +57,8 @@ export default function TabLayout() {
         name="events"
         options={{
           title: "Events",
-          tabBarIcon: ({ color }) => (
-            <IconSymbol size={28} name="calendar.badge.clock" color={color} />
+          tabBarIcon: () => (
+            <Ionicons name="calendar" size={26} color="#F59E0B" />
           ),
         }}
       />
@@ -78,15 +77,13 @@ export default function TabLayout() {
         name="livestream"
         options={{
           title: "Live",
-          tabBarIcon: ({ color }) => (
-            <IconSymbol size={28} name="tv.fill" color={color} />
-          ),
+          tabBarIcon: () => <Ionicons name="tv" size={26} color="#EF4444" />,
         }}
       />
       <Tabs.Screen
         name="branches"
         options={{
-          title: "Branches",
+          href: null,
           tabBarIcon: ({ color }) => (
             <IconSymbol size={28} name="building.2.fill" color={color} />
           ),
@@ -96,7 +93,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="schedule"
         options={{
-          title: "Schedule",
+          href: null,
           tabBarIcon: ({ color }) => (
             <IconSymbol size={28} name="calendar" color={color} />
           ),
@@ -126,10 +123,8 @@ export default function TabLayout() {
       <Tabs.Screen
         name="devotional"
         options={{
-          href: null,
-          tabBarIcon: ({ color }) => (
-            <IconSymbol size={28} name="book.fill" color={color} />
-          ),
+          title: "Devotional",
+          tabBarIcon: () => <Ionicons name="book" size={26} color="#8B5CF6" />,
         }}
       />
       <Tabs.Screen
@@ -153,6 +148,19 @@ export default function TabLayout() {
       />
       <Tabs.Screen
         name="settings"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="edit-profile"
+        options={{
+          href: null,
+        }}
+      />
+
+      <Tabs.Screen
+        name="reading-plan"
         options={{
           href: null,
         }}
@@ -206,8 +214,12 @@ export default function TabLayout() {
         name="more"
         options={{
           title: "More",
-          tabBarIcon: ({ color }) => (
-            <IconSymbol size={28} name="ellipsis.circle.fill" color={color} />
+          tabBarIcon: () => (
+            <Ionicons
+              name="ellipsis-horizontal-circle"
+              size={26}
+              color="#10B981"
+            />
           ),
         }}
       />
