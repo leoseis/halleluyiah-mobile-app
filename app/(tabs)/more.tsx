@@ -1,44 +1,69 @@
+import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
+import React from "react";
 
-import { Pressable, ScrollView, Text } from "react-native";
+import { Pressable, ScrollView, Text, View } from "react-native";
 
 const menuItems = [
   {
-    title: "Prayer Requests 🙏",
+    title: "Prayer Requests",
     route: "/prayer",
+    icon: "heart",
+    color: "#ef4444",
   },
   {
-    title: "Daily Devotional 📖",
-    route: "/devotional",
-  },
-  {
-    title: "Giving 💳",
+    title: "Giving",
     route: "/giving",
+    icon: "card",
+    color: "#10b981",
   },
   {
-    title: "Testimonies ✨",
+    title: "Testimonies",
     route: "/testimonies",
+    icon: "sparkles",
+    color: "#f59e0b",
   },
   {
-    title: "Gallery 📸",
+    title: "Gallery",
     route: "/gallery",
+    icon: "images",
+    color: "#8b5cf6",
   },
   {
-    title: "Profile 👤",
+    title: "Church Branches",
+    route: "/branches",
+    icon: "business",
+    color: "#0ea5e9",
+  },
+  {
+    title: "Service Schedule",
+    route: "/schedule",
+    icon: "calendar",
+    color: "#6366f1",
+  },
+  {
+    title: "Profile",
     route: "/profile",
+    icon: "person",
+    color: "#14b8a6",
   },
   {
-    title: "Calendar 📅",
+    title: "Calendar",
     route: "/calendar",
+    icon: "calendar-outline",
+    color: "#f97316",
   },
-
   {
-    title: "Bible Reading Plan 📖",
+    title: "Bible Reading",
     route: "/reading-plan",
+    icon: "book",
+    color: "#7c3aed",
   },
   {
-    title: "Settings ⚙️",
+    title: "Settings",
     route: "/settings",
+    icon: "settings",
+    color: "#64748b",
   },
 ];
 
@@ -51,6 +76,7 @@ export default function MoreScreen() {
       }}
       contentContainerStyle={{
         padding: 20,
+        paddingBottom: 40,
       }}
     >
       <Text
@@ -58,35 +84,71 @@ export default function MoreScreen() {
           fontSize: 30,
           fontWeight: "bold",
           color: "#001f5b",
-          marginBottom: 25,
+          marginBottom: 8,
         }}
       >
         More
       </Text>
 
-      {menuItems.map((item, index) => (
-        <Pressable
-          key={index}
-          onPress={() => router.push(item.route as any)}
-          style={{
-            backgroundColor: "white",
-            padding: 18,
-            borderRadius: 16,
-            marginBottom: 15,
-            elevation: 3,
-          }}
-        >
-          <Text
+      <Text
+        style={{
+          fontSize: 15,
+          color: "#6b7280",
+          marginBottom: 24,
+        }}
+      >
+        Explore more church services and features
+      </Text>
+
+      <View
+        style={{
+          flexDirection: "row",
+          flexWrap: "wrap",
+          justifyContent: "space-between",
+        }}
+      >
+        {menuItems.map((item, index) => (
+          <Pressable
+            key={index}
+            onPress={() => router.push(item.route as any)}
             style={{
-              fontSize: 18,
-              fontWeight: "600",
-              color: "#001f5b",
+              width: "48%",
+              backgroundColor: "white",
+              paddingVertical: 22,
+              paddingHorizontal: 14,
+              borderRadius: 18,
+              marginBottom: 16,
+              elevation: 3,
+              alignItems: "center",
             }}
           >
-            {item.title}
-          </Text>
-        </Pressable>
-      ))}
+            <View
+              style={{
+                width: 52,
+                height: 52,
+                borderRadius: 26,
+                backgroundColor: `${item.color}20`,
+                alignItems: "center",
+                justifyContent: "center",
+                marginBottom: 12,
+              }}
+            >
+              <Ionicons name={item.icon as any} size={27} color={item.color} />
+            </View>
+
+            <Text
+              style={{
+                fontSize: 15,
+                fontWeight: "700",
+                color: "#001f5b",
+                textAlign: "center",
+              }}
+            >
+              {item.title}
+            </Text>
+          </Pressable>
+        ))}
+      </View>
     </ScrollView>
   );
 }
