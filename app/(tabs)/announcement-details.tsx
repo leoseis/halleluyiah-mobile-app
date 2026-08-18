@@ -57,8 +57,10 @@ export default function AnnouncementDetails() {
   };
 
   useEffect(() => {
-    fetchAnnouncement();
-  }, []);
+    if (id) {
+      fetchAnnouncement();
+    }
+  }, [id]);
 
   const fetchAnnouncement = async () => {
     try {
