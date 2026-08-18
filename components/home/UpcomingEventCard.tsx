@@ -2,13 +2,13 @@ import { useEffect, useState } from "react";
 
 import { ActivityIndicator, Pressable, Text, View } from "react-native";
 
+import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 
 import api from "../../src/api/api";
 
 export default function UpcomingEventCard() {
   const [event, setEvent] = useState<any>(null);
-
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -29,7 +29,7 @@ export default function UpcomingEventCard() {
     }
   };
 
-  if (loading)
+  if (loading) {
     return (
       <ActivityIndicator
         style={{
@@ -37,76 +37,144 @@ export default function UpcomingEventCard() {
         }}
       />
     );
+  }
 
   if (!event) return null;
 
   return (
     <View
       style={{
-        backgroundColor: "white",
-        marginHorizontal: 20,
-        marginTop: 20,
-        borderRadius: 18,
-        padding: 20,
-        elevation: 4,
+        backgroundColor: "#ffffff",
+        marginTop: 18,
+        borderRadius: 20,
+        padding: 18,
+        elevation: 3,
       }}
     >
-      <Text
+      {/* HEADER */}
+      <View
         style={{
-          fontSize: 20,
-          fontWeight: "bold",
-          color: "#001f5b",
+          flexDirection: "row",
+          alignItems: "center",
+          marginBottom: 16,
         }}
       >
-        📅 Upcoming Event
-      </Text>
+        <View
+          style={{
+            width: 46,
+            height: 46,
+            borderRadius: 14,
+            backgroundColor: "#FFF3E6",
+            alignItems: "center",
+            justifyContent: "center",
+            marginRight: 12,
+          }}
+        >
+          <Ionicons name="calendar-outline" size={24} color="#F59E0B" />
+        </View>
 
+        <View style={{ flex: 1 }}>
+          <Text
+            style={{
+              fontSize: 18,
+              fontWeight: "700",
+              color: "#001f5b",
+            }}
+          >
+            Upcoming Event
+          </Text>
+
+          <Text
+            style={{
+              fontSize: 13,
+              color: "#6B7280",
+              marginTop: 2,
+            }}
+          >
+            Don't miss what's happening next
+          </Text>
+        </View>
+      </View>
+
+      {/* EVENT TITLE */}
       <Text
         style={{
-          fontSize: 18,
-          fontWeight: "bold",
-          marginTop: 15,
+          fontSize: 19,
+          fontWeight: "700",
+          color: "#111827",
+          marginBottom: 14,
         }}
       >
         {event.title}
       </Text>
 
-      <Text
+      {/* LOCATION */}
+      <View
         style={{
-          marginTop: 8,
-          color: "#555",
+          flexDirection: "row",
+          alignItems: "center",
+          marginBottom: 10,
         }}
       >
-        📍 {event.location}
-      </Text>
+        <Ionicons name="location-outline" size={19} color="#6B7280" />
 
-      <Text
-        style={{
-          marginTop: 5,
-          color: "#555",
-        }}
-      >
-        📅 {event.date}
-      </Text>
+        <Text
+          style={{
+            marginLeft: 8,
+            fontSize: 14,
+            color: "#4B5563",
+            flex: 1,
+          }}
+        >
+          {event.location}
+        </Text>
+      </View>
 
-      <Pressable
-        onPress={() => router.push("/events")}
+      {/* DATE */}
+      <View
         style={{
-          backgroundColor: "#001f5b",
-          padding: 14,
-          borderRadius: 12,
-          marginTop: 20,
+          flexDirection: "row",
           alignItems: "center",
         }}
       >
+        <Ionicons name="time-outline" size={19} color="#6B7280" />
+
         <Text
           style={{
-            color: "white",
-            fontWeight: "bold",
+            marginLeft: 8,
+            fontSize: 14,
+            color: "#4B5563",
+          }}
+        >
+          {event.date}
+        </Text>
+      </View>
+
+      {/* BUTTON */}
+      <Pressable
+        onPress={() => router.push("/events")}
+        style={({ pressed }) => ({
+          backgroundColor: pressed ? "#00327f" : "#001f5b",
+          paddingVertical: 13,
+          borderRadius: 14,
+          marginTop: 20,
+          alignItems: "center",
+          flexDirection: "row",
+          justifyContent: "center",
+        })}
+      >
+        <Text
+          style={{
+            color: "#ffffff",
+            fontWeight: "700",
+            fontSize: 14,
+            marginRight: 6,
           }}
         >
           View Event
         </Text>
+
+        <Ionicons name="arrow-forward-outline" size={18} color="#ffffff" />
       </Pressable>
     </View>
   );
