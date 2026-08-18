@@ -1,21 +1,39 @@
+import { Ionicons } from "@expo/vector-icons";
+import { router } from "expo-router";
 import { useContext } from "react";
 
 import { Image, Pressable, ScrollView, Text, View } from "react-native";
 
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { router } from "expo-router";
-
 import { AuthContext } from "../../src/context/AuthContext";
 
 export default function ProfileScreen() {
-  const { logout, user } = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
 
-  const handleLogout = async () => {
-    await logout();
-
-    router.replace("/login");
-  };
+  const accountItems = [
+    {
+      title: "Edit Profile",
+      subtitle: "Update your personal information",
+      icon: "person-circle-outline",
+      color: "#0EA5E9",
+      onPress: () => router.push("../edit-profile"),
+    },
+    {
+      title: "Change Password",
+      subtitle: "Update your account password",
+      icon: "lock-closed-outline",
+      color: "#8B5CF6",
+      onPress: () => {},
+    },
+    {
+      title: "Notifications",
+      subtitle: "Manage notification preferences",
+      icon: "notifications-outline",
+      color: "#F59E0B",
+      onPress: () => {},
+    },
+  ];
 
   return (
     <SafeAreaView
@@ -25,82 +43,93 @@ export default function ProfileScreen() {
       }}
     >
       <ScrollView
+        showsVerticalScrollIndicator={false}
         contentContainerStyle={{
           padding: 20,
+          paddingBottom: 40,
         }}
       >
+        {/* PAGE TITLE */}
+        <Text
+          style={{
+            fontSize: 30,
+            fontWeight: "bold",
+            color: "#001f5b",
+            marginBottom: 20,
+          }}
+        >
+          My Profile
+        </Text>
+
         {/* PROFILE CARD */}
         <View
           style={{
-            backgroundColor: "#fff",
-            borderRadius: 24,
+            backgroundColor: "#001f5b",
+            borderRadius: 26,
             padding: 24,
             alignItems: "center",
-            shadowColor: "#000",
-            shadowOpacity: 0.08,
-            shadowRadius: 8,
-            shadowOffset: {
-              width: 0,
-              height: 4,
-            },
-            elevation: 4,
+            elevation: 5,
           }}
         >
-          {/* AVATAR */}
-          <Image
-            source={
-              user?.profile_picture
-                ? {
-                    uri: `http://192.168.43.207:8000${user.profile_picture}`,
-                  }
-                : {
-                    uri: "https://i.pravatar.cc/300",
-                  }
-            }
+          <View
             style={{
-              width: 110,
-              height: 110,
-              borderRadius: 55,
-              marginBottom: 16,
+              backgroundColor: "white",
+              padding: 4,
+              borderRadius: 62,
             }}
-          />
+          >
+            <Image
+              source={
+                user?.profile_picture
+                  ? {
+                      uri: `http://192.168.43.206:8000${user.profile_picture}`,
+                    }
+                  : {
+                      uri: "https://i.pravatar.cc/300",
+                    }
+              }
+              style={{
+                width: 110,
+                height: 110,
+                borderRadius: 55,
+              }}
+            />
+          </View>
 
-          {/* NAME */}
           <Text
             style={{
-              fontSize: 26,
+              fontSize: 25,
               fontWeight: "bold",
-              color: "#0d1b4c",
+              color: "white",
+              marginTop: 16,
             }}
           >
             {user?.username || "Church Member"}
           </Text>
 
-          {/* EMAIL */}
           <Text
             style={{
-              fontSize: 15,
-              color: "#666",
+              fontSize: 14,
+              color: "#dbeafe",
               marginTop: 6,
             }}
           >
             {user?.email || "member@hallelujah.com"}
           </Text>
 
-          {/* ROLE */}
           <View
             style={{
-              backgroundColor: "#e8f0ff",
-              paddingHorizontal: 14,
+              backgroundColor: "rgba(255,255,255,0.15)",
+              paddingHorizontal: 16,
               paddingVertical: 8,
-              borderRadius: 30,
+              borderRadius: 20,
               marginTop: 16,
             }}
           >
             <Text
               style={{
-                color: "#001f5b",
-                fontWeight: "bold",
+                color: "white",
+                fontWeight: "700",
               }}
             >
               Redeemed Member ✨
@@ -112,25 +141,28 @@ export default function ProfileScreen() {
         <View
           style={{
             flexDirection: "row",
-            justifyContent: "space-between",
-            marginTop: 24,
+            marginTop: 20,
           }}
         >
           <View
             style={{
               flex: 1,
-              backgroundColor: "#fff",
-              padding: 20,
+              backgroundColor: "white",
+              paddingVertical: 20,
               borderRadius: 18,
-              marginRight: 10,
+              marginRight: 8,
               alignItems: "center",
+              elevation: 2,
             }}
           >
+            <Ionicons name="heart" size={26} color="#EF4444" />
+
             <Text
               style={{
-                fontSize: 24,
+                fontSize: 23,
                 fontWeight: "bold",
                 color: "#001f5b",
+                marginTop: 8,
               }}
             >
               24
@@ -138,8 +170,8 @@ export default function ProfileScreen() {
 
             <Text
               style={{
-                marginTop: 6,
-                color: "#666",
+                color: "#6b7280",
+                marginTop: 3,
               }}
             >
               Likes
@@ -149,18 +181,22 @@ export default function ProfileScreen() {
           <View
             style={{
               flex: 1,
-              backgroundColor: "#fff",
-              padding: 20,
+              backgroundColor: "white",
+              paddingVertical: 20,
               borderRadius: 18,
-              marginLeft: 10,
+              marginLeft: 8,
               alignItems: "center",
+              elevation: 2,
             }}
           >
+            <Ionicons name="chatbubble" size={26} color="#0EA5E9" />
+
             <Text
               style={{
-                fontSize: 24,
+                fontSize: 23,
                 fontWeight: "bold",
                 color: "#001f5b",
+                marginTop: 8,
               }}
             >
               12
@@ -168,8 +204,8 @@ export default function ProfileScreen() {
 
             <Text
               style={{
-                marginTop: 6,
-                color: "#666",
+                color: "#6b7280",
+                marginTop: 3,
               }}
             >
               Comments
@@ -177,98 +213,98 @@ export default function ProfileScreen() {
           </View>
         </View>
 
-        {/* SETTINGS */}
+        {/* ACCOUNT */}
+        <Text
+          style={{
+            fontSize: 20,
+            fontWeight: "bold",
+            color: "#001f5b",
+            marginTop: 28,
+            marginBottom: 14,
+          }}
+        >
+          Account
+        </Text>
+
         <View
           style={{
-            backgroundColor: "#fff",
-            borderRadius: 24,
-            padding: 20,
+            backgroundColor: "white",
+            borderRadius: 22,
+            paddingHorizontal: 16,
+            elevation: 2,
+          }}
+        >
+          {accountItems.map((item, index) => (
+            <Pressable
+              key={item.title}
+              onPress={item.onPress}
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                paddingVertical: 17,
+                borderBottomWidth: index === accountItems.length - 1 ? 0 : 1,
+                borderBottomColor: "#f1f5f9",
+              }}
+            >
+              <View
+                style={{
+                  width: 46,
+                  height: 46,
+                  borderRadius: 14,
+                  backgroundColor: `${item.color}18`,
+                  alignItems: "center",
+                  justifyContent: "center",
+                  marginRight: 14,
+                }}
+              >
+                <Ionicons
+                  name={item.icon as any}
+                  size={24}
+                  color={item.color}
+                />
+              </View>
+
+              <View
+                style={{
+                  flex: 1,
+                }}
+              >
+                <Text
+                  style={{
+                    fontSize: 16,
+                    fontWeight: "700",
+                    color: "#111827",
+                  }}
+                >
+                  {item.title}
+                </Text>
+
+                <Text
+                  style={{
+                    fontSize: 13,
+                    color: "#6b7280",
+                    marginTop: 3,
+                  }}
+                >
+                  {item.subtitle}
+                </Text>
+              </View>
+
+              <Ionicons name="chevron-forward" size={20} color="#9ca3af" />
+            </Pressable>
+          ))}
+        </View>
+
+        <Text
+          style={{
+            color: "#94a3b8",
+            fontSize: 13,
+            textAlign: "center",
             marginTop: 24,
           }}
         >
-          <Text
-            style={{
-              fontSize: 20,
-              fontWeight: "bold",
-              color: "#0d1b4c",
-              marginBottom: 20,
-            }}
-          >
-            Account Settings
-          </Text>
-
-          <Pressable
-            onPress={() => router.push("../edit-profile")}
-            style={{
-              paddingVertical: 16,
-              borderBottomWidth: 1,
-              borderBottomColor: "#eee",
-            }}
-          >
-            <Text
-              style={{
-                fontSize: 16,
-                color: "#333",
-              }}
-            >
-              Edit Profile
-            </Text>
-          </Pressable>
-
-          <Pressable
-            style={{
-              paddingVertical: 16,
-              borderBottomWidth: 1,
-              borderBottomColor: "#eee",
-            }}
-          >
-            <Text
-              style={{
-                fontSize: 16,
-                color: "#333",
-              }}
-            >
-              Change Password
-            </Text>
-          </Pressable>
-
-          <Pressable
-            style={{
-              paddingVertical: 16,
-            }}
-          >
-            <Text
-              style={{
-                fontSize: 16,
-                color: "#333",
-              }}
-            >
-              Notifications
-            </Text>
-          </Pressable>
-        </View>
-
-        {/* LOGOUT */}
-        <Pressable
-          onPress={handleLogout}
-          style={{
-            backgroundColor: "#001f5b",
-            paddingVertical: 16,
-            borderRadius: 18,
-            marginTop: 30,
-            alignItems: "center",
-          }}
-        >
-          <Text
-            style={{
-              color: "white",
-              fontWeight: "bold",
-              fontSize: 16,
-            }}
-          >
-            Logout
-          </Text>
-        </Pressable>
+          Manage logout and application settings from Settings.
+        </Text>
       </ScrollView>
     </SafeAreaView>
   );
