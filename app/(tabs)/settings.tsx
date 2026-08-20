@@ -1,13 +1,15 @@
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useContext } from "react";
+import { useAppTheme } from "../../src/context/ThemeContext";
 
-import { Alert, Pressable, ScrollView, Text, View } from "react-native";
+import { Alert, Pressable, ScrollView, Switch, Text, View } from "react-native";
 
 import { AuthContext } from "../../src/context/AuthContext";
 
 export default function SettingsScreen() {
   const { logout } = useContext(AuthContext);
+  const { themeMode, isDark, setThemeMode } = useAppTheme();
 
   const handleLogout = () => {
     Alert.alert("Logout", "Are you sure you want to logout?", [
@@ -61,7 +63,7 @@ export default function SettingsScreen() {
     <ScrollView
       style={{
         flex: 1,
-        backgroundColor: "#f5f7fb",
+        backgroundColor: isDark ? "#111827" : "#f5f7fb",
       }}
       showsVerticalScrollIndicator={false}
       contentContainerStyle={{
@@ -91,10 +93,73 @@ export default function SettingsScreen() {
         Manage your app and church information
       </Text>
 
+      {/* APPEARANCE */}
+      <View
+        style={{
+          backgroundColor: isDark ? "#1f2937" : "#ffffff",
+          borderRadius: 22,
+          padding: 16,
+          marginBottom: 20,
+          elevation: 3,
+        }}
+      >
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+          }}
+        >
+          <View
+            style={{
+              width: 46,
+              height: 46,
+              borderRadius: 14,
+              backgroundColor: isDark ? "#374151" : "#e0ecff",
+              alignItems: "center",
+              justifyContent: "center",
+              marginRight: 14,
+            }}
+          >
+            <Ionicons
+              name={isDark ? "moon-outline" : "sunny-outline"}
+              size={24}
+              color={isDark ? "#facc15" : "#0EA5E9"}
+            />
+          </View>
+
+          <View style={{ flex: 1 }}>
+            <Text
+              style={{
+                fontSize: 16,
+                fontWeight: "700",
+                color: isDark ? "#ffffff" : "#111827",
+              }}
+            >
+              Dark Mode
+            </Text>
+
+            <Text
+              style={{
+                fontSize: 13,
+                color: isDark ? "#9ca3af" : "#6b7280",
+                marginTop: 3,
+              }}
+            >
+              Use a darker appearance
+            </Text>
+          </View>
+
+          <Switch
+            value={themeMode === "dark"}
+            onValueChange={(value) => setThemeMode(value ? "dark" : "light")}
+          />
+        </View>
+      </View>
+
       {/* SETTINGS CARD */}
       <View
         style={{
-          backgroundColor: "white",
+          backgroundColor: isDark ? "#1f2937" : "#ffffff",
           borderRadius: 22,
           paddingHorizontal: 16,
           elevation: 3,
@@ -135,7 +200,7 @@ export default function SettingsScreen() {
                 style={{
                   fontSize: 16,
                   fontWeight: "700",
-                  color: "#111827",
+                  color: isDark ? "#f9fafb" : "#111827",
                 }}
               >
                 {item.title}

@@ -5,22 +5,23 @@ import { useContext, useEffect } from "react";
 import {
   DarkTheme,
   DefaultTheme,
-  ThemeProvider,
+  ThemeProvider as NavigationThemeProvider,
 } from "@react-navigation/native";
+
+import { ThemeProvider, useAppTheme } from "../src/context/ThemeContext";
 
 import { StatusBar } from "expo-status-bar";
 
 import LoaderSpinner from "../components/LoaderSpinner";
 import { AuthContext, AuthProvider } from "../src/context/AuthContext";
 
-import { useColorScheme } from "@/hooks/use-color-scheme";
 
 export const unstable_settings = {
   anchor: "(tabs)",
 };
 
 function RootNavigator() {
-  const colorScheme = useColorScheme();
+  const { isDark } = useAppTheme();
 
   const { userToken, loading } = useContext(AuthContext);
 
@@ -51,7 +52,7 @@ function RootNavigator() {
   }
 
   return (
-    <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+    <NavigationThemeProvider value={isDark ? DarkTheme : DefaultTheme}>
       {userToken ? (
         <Stack>
           <Stack.Screen
@@ -135,7 +136,7 @@ function RootNavigator() {
       )}
 
       <StatusBar style="auto" />
-    </ThemeProvider>
+    </NavigationThemeProvider>
   );
 }
 
@@ -155,8 +156,10 @@ export default function RootLayout() {
     };
   }, []);
   return (
-    <AuthProvider>
-      <RootNavigator />
-    </AuthProvider>
+    <ThemeProvider>
+      <AuthProvider>
+        <RootNavigator />
+      </AuthProvider>
+    </ThemeProvider>
   );
 }

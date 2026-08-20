@@ -1,10 +1,8 @@
-import { useEffect, useState } from "react";
-
-import { Pressable, Text, View } from "react-native";
-
+import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
 import { router } from "expo-router";
+import { useEffect, useState } from "react";
+import { Pressable, Text, View } from "react-native";
 
 export default function ContinueReadingCard() {
   const [progress, setProgress] = useState(0);
@@ -29,39 +27,74 @@ export default function ContinueReadingCard() {
   return (
     <View
       style={{
-        backgroundColor: "white",
-        marginHorizontal: 20,
-        marginTop: 20,
-        borderRadius: 18,
-        padding: 20,
-        elevation: 4,
+        backgroundColor: "#ffffff",
+        marginTop: 18,
+        borderRadius: 20,
+        padding: 18,
+        elevation: 3,
       }}
     >
-      <Text
+      {/* HEADER */}
+      <View
         style={{
-          fontSize: 20,
-          fontWeight: "bold",
-          color: "#001f5b",
+          flexDirection: "row",
+          alignItems: "center",
         }}
       >
-        📚 Continue Reading
-      </Text>
+        <View
+          style={{
+            width: 46,
+            height: 46,
+            borderRadius: 14,
+            backgroundColor: "#ECFDF5",
+            alignItems: "center",
+            justifyContent: "center",
+            marginRight: 12,
+          }}
+        >
+          <Ionicons name="book-outline" size={24} color="#10B981" />
+        </View>
 
-      <Text
-        style={{
-          marginTop: 15,
-          color: "#555",
-        }}
-      >
-        Your Bible Reading Progress
-      </Text>
+        <View style={{ flex: 1 }}>
+          <Text
+            style={{
+              fontSize: 18,
+              fontWeight: "700",
+              color: "#001f5b",
+            }}
+          >
+            Continue Reading
+          </Text>
 
+          <Text
+            style={{
+              fontSize: 13,
+              color: "#6B7280",
+              marginTop: 2,
+            }}
+          >
+            Your Bible reading progress
+          </Text>
+        </View>
+
+        <Text
+          style={{
+            fontSize: 18,
+            fontWeight: "800",
+            color: "#10B981",
+          }}
+        >
+          {progress}%
+        </Text>
+      </View>
+
+      {/* PROGRESS BAR */}
       <View
         style={{
           height: 10,
-          backgroundColor: "#e5e7eb",
+          backgroundColor: "#E5E7EB",
           borderRadius: 10,
-          marginTop: 15,
+          marginTop: 20,
           overflow: "hidden",
         }}
       >
@@ -69,38 +102,65 @@ export default function ContinueReadingCard() {
           style={{
             width: `${progress}%`,
             height: "100%",
-            backgroundColor: "#28a745",
+            backgroundColor: "#10B981",
+            borderRadius: 10,
           }}
         />
       </View>
 
-      <Text
+      {/* PROGRESS TEXT */}
+      <View
         style={{
+          flexDirection: "row",
+          justifyContent: "space-between",
           marginTop: 10,
-          fontWeight: "bold",
-        }}
-      >
-        {progress}% Completed
-      </Text>
-
-      <Pressable
-        onPress={() => router.push("/reading-plan")}
-        style={{
-          marginTop: 20,
-          backgroundColor: "#001f5b",
-          padding: 14,
-          borderRadius: 12,
-          alignItems: "center",
         }}
       >
         <Text
           style={{
-            color: "white",
-            fontWeight: "bold",
+            color: "#6B7280",
+            fontSize: 13,
+          }}
+        >
+          Reading plan
+        </Text>
+
+        <Text
+          style={{
+            color: "#374151",
+            fontWeight: "600",
+            fontSize: 13,
+          }}
+        >
+          {progress}% completed
+        </Text>
+      </View>
+
+      {/* BUTTON */}
+      <Pressable
+        onPress={() => router.push("/reading-plan")}
+        style={({ pressed }) => ({
+          marginTop: 20,
+          backgroundColor: pressed ? "#00327f" : "#001f5b",
+          paddingVertical: 13,
+          borderRadius: 14,
+          alignItems: "center",
+          justifyContent: "center",
+          flexDirection: "row",
+        })}
+      >
+        <Text
+          style={{
+            color: "#ffffff",
+            fontWeight: "700",
+            fontSize: 14,
+            marginRight: 6,
           }}
         >
           Continue Reading
         </Text>
+
+        <Ionicons name="arrow-forward-outline" size={18} color="#ffffff" />
       </Pressable>
     </View>
   );

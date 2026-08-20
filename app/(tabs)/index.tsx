@@ -183,6 +183,7 @@ export default function HomeScreen() {
             <View
               style={{
                 marginTop: 8,
+                paddingHorizontal: 20,
               }}
             >
               <DailyDevotionalCard />
