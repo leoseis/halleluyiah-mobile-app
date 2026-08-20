@@ -1,5 +1,7 @@
+import { Ionicons } from "@expo/vector-icons";
 import { useEffect, useState } from "react";
 import { Linking, Pressable, Text, View } from "react-native";
+
 import api from "../../src/api/api";
 
 export default function LiveServiceBanner() {
@@ -23,51 +25,119 @@ export default function LiveServiceBanner() {
 
   if (!service) return null;
 
+  const handleWatchLive = async () => {
+    if (!service.youtube_url) return;
+
+    try {
+      const supported = await Linking.canOpenURL(service.youtube_url);
+
+      if (supported) {
+        await Linking.openURL(service.youtube_url);
+      }
+    } catch (error) {
+      console.log("Unable to open live service:", error);
+    }
+  };
+
   return (
     <View
       style={{
-        backgroundColor: "#dc2626",
-        marginHorizontal: 20,
-        marginTop: 20,
-        borderRadius: 18,
-        padding: 20,
+        backgroundColor: "#B91C1C",
+        marginTop: 18,
+        borderRadius: 20,
+        padding: 18,
+        elevation: 3,
       }}
     >
-      <Text
+      {/* LIVE BADGE */}
+      <View
         style={{
-          color: "white",
-          fontSize: 22,
-          fontWeight: "bold",
+          alignSelf: "flex-start",
+          flexDirection: "row",
+          alignItems: "center",
+          backgroundColor: "rgba(255,255,255,0.18)",
+          paddingVertical: 7,
+          paddingHorizontal: 11,
+          borderRadius: 20,
         }}
       >
-        🔴 LIVE NOW
-      </Text>
+        <View
+          style={{
+            width: 8,
+            height: 8,
+            borderRadius: 4,
+            backgroundColor: "#ffffff",
+            marginRight: 7,
+          }}
+        />
 
+        <Text
+          style={{
+            color: "#ffffff",
+            fontSize: 12,
+            fontWeight: "800",
+            letterSpacing: 0.8,
+          }}
+        >
+          LIVE NOW
+        </Text>
+      </View>
+
+      {/* TITLE */}
       <Text
         style={{
-          color: "white",
-          marginTop: 10,
-          fontSize: 18,
-          fontWeight: "bold",
+          color: "#ffffff",
+          marginTop: 16,
+          fontSize: 21,
+          fontWeight: "700",
+          lineHeight: 27,
         }}
       >
         {service.title}
       </Text>
 
-      <Pressable
-        onPress={() => Linking.openURL(service.youtube_url)}
+      {/* DESCRIPTION */}
+      <View
         style={{
-          backgroundColor: "white",
-          marginTop: 20,
-          padding: 14,
-          borderRadius: 12,
+          flexDirection: "row",
           alignItems: "center",
+          marginTop: 10,
         }}
       >
+        <Ionicons name="radio-outline" size={18} color="#FEE2E2" />
+
         <Text
           style={{
-            color: "#dc2626",
-            fontWeight: "bold",
+            color: "#FEE2E2",
+            marginLeft: 7,
+            fontSize: 14,
+          }}
+        >
+          Join the service currently streaming live
+        </Text>
+      </View>
+
+      {/* WATCH BUTTON */}
+      <Pressable
+        onPress={handleWatchLive}
+        style={({ pressed }) => ({
+          backgroundColor: pressed ? "#F3F4F6" : "#ffffff",
+          marginTop: 20,
+          paddingVertical: 13,
+          borderRadius: 14,
+          alignItems: "center",
+          justifyContent: "center",
+          flexDirection: "row",
+        })}
+      >
+        <Ionicons name="logo-youtube" size={20} color="#B91C1C" />
+
+        <Text
+          style={{
+            color: "#B91C1C",
+            fontWeight: "700",
+            fontSize: 15,
+            marginLeft: 8,
           }}
         >
           Watch Live

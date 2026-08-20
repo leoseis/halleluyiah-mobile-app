@@ -2,17 +2,11 @@ import { router, useLocalSearchParams } from "expo-router";
 
 import { useState } from "react";
 
-import {
-    Alert,
-    Pressable,
-    ScrollView,
-    Text,
-    TextInput
-} from "react-native";
+import { Alert, Pressable, ScrollView, Text, TextInput } from "react-native";
 
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import api from "../src/api/api";
+import api from "../../src/api/api";
 
 export default function EventRegisterScreen() {
   const { eventId, title } = useLocalSearchParams();

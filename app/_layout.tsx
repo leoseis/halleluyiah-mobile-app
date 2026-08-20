@@ -61,19 +61,19 @@ function RootNavigator() {
             }}
           />
 
-          <Stack.Screen
+          {/* <Stack.Screen
             name="announcement-details"
             options={{
               title: "Announcement",
             }}
-          />
+          /> */}
 
-          <Stack.Screen
+          {/* <Stack.Screen
             name="testimony-details"
             options={{
               title: "Testimony",
             }}
-          />
+          /> */}
           <Stack.Screen
             name="sermons"
             options={{
