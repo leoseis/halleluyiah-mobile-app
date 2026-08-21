@@ -9,11 +9,6 @@ import LiveServiceBanner from "../../components/home/LiveServiceBanner";
 import QuickActions from "../../components/home/QuickActions";
 import UpcomingEventCard from "../../components/home/UpcomingEventCard";
 
-import { SafeAreaView } from "react-native-safe-area-context";
-
-import { useColorScheme } from "@/hooks/use-color-scheme";
-import { COLORS } from "../../constants/colors";
-
 import {
   ActivityIndicator,
   FlatList,
@@ -23,6 +18,8 @@ import {
   TextInput,
   View,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { useAppTheme } from "../../src/context/ThemeContext";
 
 import api from "../../src/api/api";
 import { AuthContext } from "../../src/context/AuthContext";
@@ -37,8 +34,17 @@ export default function HomeScreen() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
 
-  const colorScheme = useColorScheme();
-  const theme = COLORS[colorScheme ?? "light"];
+  const { isDark } = useAppTheme();
+
+  const theme = {
+    background: isDark ? "#0f172a" : "#f5f7fb",
+    card: isDark ? "#1e293b" : "#ffffff",
+    text: isDark ? "#f8fafc" : "#111827",
+    secondaryText: isDark ? "#94a3b8" : "#6b7280",
+    border: isDark ? "#334155" : "#e5e7eb",
+    chip: isDark ? "#334155" : "#eef2f7",
+    primary: isDark ? "#60a5fa" : "#001f5b",
+  };
 
   const categories = [
     "All",
@@ -265,9 +271,8 @@ export default function HomeScreen() {
                   backgroundColor: theme.card,
                   borderRadius: 16,
                   borderWidth: 1,
-                  borderColor: "#e5e7eb",
+                  borderColor: theme.border,
                   paddingHorizontal: 14,
-                  marginBottom: 18,
                 }}
               >
                 <Ionicons name="search-outline" size={21} color="#94a3b8" />
@@ -337,7 +342,11 @@ export default function HomeScreen() {
                       key={category}
                       onPress={() => setSelectedCategory(category)}
                       style={{
-                        backgroundColor: active ? "#001f5b" : "#eef2f7",
+                        backgroundColor: active
+                          ? isDark
+                            ? "#2563eb"
+                            : "#001f5b"
+                          : theme.chip,
                         paddingVertical: 9,
                         paddingHorizontal: 14,
                         borderRadius: 20,
@@ -347,7 +356,11 @@ export default function HomeScreen() {
                     >
                       <Text
                         style={{
-                          color: active ? "white" : "#475569",
+                          color: active
+                            ? "#ffffff"
+                            : isDark
+                              ? "#e2e8f0"
+                              : "#475569",
                           fontWeight: "600",
                           fontSize: 13,
                         }}
@@ -375,7 +388,7 @@ export default function HomeScreen() {
               style={{
                 fontSize: 17,
                 fontWeight: "700",
-                color: "#001f5b",
+                color: theme.text,
                 marginTop: 12,
               }}
             >
