@@ -8,13 +8,11 @@ import {
   ThemeProvider as NavigationThemeProvider,
 } from "@react-navigation/native";
 
-import { ThemeProvider, useAppTheme } from "../src/context/ThemeContext";
-
 import { StatusBar } from "expo-status-bar";
 
 import LoaderSpinner from "../components/LoaderSpinner";
 import { AuthContext, AuthProvider } from "../src/context/AuthContext";
-
+import { ThemeProvider, useAppTheme } from "../src/context/ThemeContext";
 
 export const unstable_settings = {
   anchor: "(tabs)",
@@ -22,7 +20,6 @@ export const unstable_settings = {
 
 function RootNavigator() {
   const { isDark } = useAppTheme();
-
   const { userToken, loading } = useContext(AuthContext);
 
   useEffect(() => {
@@ -53,8 +50,10 @@ function RootNavigator() {
 
   return (
     <NavigationThemeProvider value={isDark ? DarkTheme : DefaultTheme}>
-      {userToken ? (
-        <Stack>
+      <Stack>
+        {/* LOGGED-IN ROUTES */}
+        <Stack.Protected guard={!!userToken}>
+          <Stack.Screen name="index" />
           <Stack.Screen
             name="(tabs)"
             options={{
@@ -62,19 +61,6 @@ function RootNavigator() {
             }}
           />
 
-          {/* <Stack.Screen
-            name="announcement-details"
-            options={{
-              title: "Announcement",
-            }}
-          /> */}
-
-          {/* <Stack.Screen
-            name="testimony-details"
-            options={{
-              title: "Testimony",
-            }}
-          /> */}
           <Stack.Screen
             name="sermons"
             options={{
@@ -116,9 +102,10 @@ function RootNavigator() {
               title: "App Version",
             }}
           />
-        </Stack>
-      ) : (
-        <Stack>
+        </Stack.Protected>
+
+        {/* LOGGED-OUT ROUTES */}
+        <Stack.Protected guard={!userToken}>
           <Stack.Screen
             name="login"
             options={{
@@ -132,29 +119,15 @@ function RootNavigator() {
               headerShown: false,
             }}
           />
-        </Stack>
-      )}
+        </Stack.Protected>
+      </Stack>
 
-      <StatusBar style="auto" />
+      <StatusBar style={isDark ? "light" : "dark"} />
     </NavigationThemeProvider>
   );
 }
 
 export default function RootLayout() {
-  useEffect(() => {
-    const subscription = Notifications.addNotificationResponseReceivedListener(
-      (response) => {
-        console.log(
-          "Notification tapped:",
-          response.notification.request.content,
-        );
-      },
-    );
-
-    return () => {
-      subscription.remove();
-    };
-  }, []);
   return (
     <ThemeProvider>
       <AuthProvider>
