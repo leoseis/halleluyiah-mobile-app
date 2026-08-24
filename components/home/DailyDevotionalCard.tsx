@@ -1,6 +1,8 @@
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
+import { APP_THEME } from "../../constants/appTheme";
+import { useAppTheme } from "../../src/context/ThemeContext";
 
 import { ActivityIndicator, Pressable, Text, View } from "react-native";
 
@@ -9,6 +11,8 @@ import api from "../../src/api/api";
 export default function DailyDevotionalCard() {
   const [devotional, setDevotional] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const { isDark } = useAppTheme();
+  const theme = APP_THEME[isDark ? "dark" : "light"];
 
   useEffect(() => {
     fetchDevotional();
@@ -44,10 +48,9 @@ export default function DailyDevotionalCard() {
   return (
     <View
       style={{
-        backgroundColor: "#ffffff",
+        backgroundColor: theme.card,
         borderRadius: 22,
         padding: 18,
-        marginHorizontal: 20,
         marginTop: 18,
         marginBottom: 4,
         elevation: 4,
@@ -66,7 +69,7 @@ export default function DailyDevotionalCard() {
             width: 46,
             height: 46,
             borderRadius: 14,
-            backgroundColor: "#ede9fe",
+            backgroundColor: isDark ? "#312e81" : "#ede9fe",
             alignItems: "center",
             justifyContent: "center",
             marginRight: 12,
@@ -84,7 +87,7 @@ export default function DailyDevotionalCard() {
             style={{
               fontSize: 18,
               fontWeight: "bold",
-              color: "#001f5b",
+              color: isDark ? "#c4b5fd" : "#001f5b",
             }}
           >
             Daily Devotional
@@ -108,7 +111,7 @@ export default function DailyDevotionalCard() {
         style={{
           fontSize: 19,
           fontWeight: "700",
-          color: "#111827",
+          color: theme.text,
           lineHeight: 26,
         }}
       >
@@ -127,7 +130,7 @@ export default function DailyDevotionalCard() {
 
         <Text
           style={{
-            color: "#6b7280",
+            color: theme.secondaryText,
             marginLeft: 6,
             fontSize: 14,
             fontWeight: "600",
@@ -143,7 +146,7 @@ export default function DailyDevotionalCard() {
         style={{
           marginTop: 12,
           lineHeight: 22,
-          color: "#64748b",
+          color: theme.secondaryText,
           fontSize: 14,
         }}
       >
@@ -173,7 +176,7 @@ export default function DailyDevotionalCard() {
       >
         <Text
           style={{
-            color: "#6d28d9",
+            color: isDark ? "#c4b5fd" : "#6d28d9",
             fontWeight: "700",
             fontSize: 14,
           }}
@@ -181,7 +184,11 @@ export default function DailyDevotionalCard() {
           Read Full Devotional
         </Text>
 
-        <Ionicons name="arrow-forward" size={18} color="#6d28d9" />
+        <Ionicons
+          name="arrow-forward"
+          size={18}
+          color={isDark ? "#c4b5fd" : "#6d28d9"}
+        />
       </Pressable>
     </View>
   );

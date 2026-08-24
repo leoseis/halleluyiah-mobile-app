@@ -1,5 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
+import { APP_THEME } from "../../constants/appTheme";
+import { useAppTheme } from "../../src/context/ThemeContext";
 
 import { Image, Pressable, Text, View } from "react-native";
 
@@ -9,10 +11,13 @@ interface HomeHeaderProps {
 }
 
 export default function HomeHeader({ greeting, userName }: HomeHeaderProps) {
+  const { isDark } = useAppTheme();
+  const theme = APP_THEME[isDark ? "dark" : "light"];
+
   return (
     <View
       style={{
-        backgroundColor: "#001f5b",
+        backgroundColor: isDark ? "#172554" : "#001f5b",
         borderRadius: 26,
         paddingHorizontal: 20,
         paddingVertical: 22,
@@ -110,7 +115,7 @@ export default function HomeHeader({ greeting, userName }: HomeHeaderProps) {
               borderRadius: 4,
               backgroundColor: "#ef4444",
               borderWidth: 1,
-              borderColor: "#001f5b",
+              borderColor: isDark ? "#172554" : "#001f5b",
             }}
           />
         </Pressable>

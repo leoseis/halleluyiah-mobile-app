@@ -1,0 +1,31 @@
+export const APP_THEME = {
+  light: {
+    background: "#f5f7fb",
+    surface: "#ffffff",
+    card: "#ffffff",
+    text: "#111827",
+    secondaryText: "#6b7280",
+    mutedText: "#94a3b8",
+    border: "#e5e7eb",
+    primary: "#001f5b",
+    primarySoft: "#e0ecff",
+    chip: "#eef2f7",
+    success: "#10B981",
+    danger: "#dc2626",
+  },
+
+  dark: {
+    background: "#0f172a",
+    surface: "#111827",
+    card: "#1e293b",
+    text: "#f8fafc",
+    secondaryText: "#cbd5e1",
+    mutedText: "#94a3b8",
+    border: "#334155",
+    primary: "#60a5fa",
+    primarySoft: "#1e3a5f",
+    chip: "#334155",
+    success: "#34d399",
+    danger: "#f87171",
+  },
+};
