@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { APP_THEME } from "../../constants/appTheme";
+import { useAppTheme } from "../../src/context/ThemeContext";
 
 import { ActivityIndicator, Pressable, Text, View } from "react-native";
 
@@ -10,6 +12,8 @@ import api from "../../src/api/api";
 export default function UpcomingEventCard() {
   const [event, setEvent] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const { isDark } = useAppTheme();
+  const theme = APP_THEME[isDark ? "dark" : "light"];
 
   useEffect(() => {
     fetchUpcomingEvent();
@@ -44,7 +48,7 @@ export default function UpcomingEventCard() {
   return (
     <View
       style={{
-        backgroundColor: "#ffffff",
+        backgroundColor: theme.card,
         marginTop: 18,
         borderRadius: 20,
         padding: 18,
@@ -64,7 +68,7 @@ export default function UpcomingEventCard() {
             width: 46,
             height: 46,
             borderRadius: 14,
-            backgroundColor: "#FFF3E6",
+            backgroundColor: isDark ? "#3f2f12" : "#FFF3E6",
             alignItems: "center",
             justifyContent: "center",
             marginRight: 12,
@@ -78,7 +82,7 @@ export default function UpcomingEventCard() {
             style={{
               fontSize: 18,
               fontWeight: "700",
-              color: "#001f5b",
+              color: isDark ? "#fcd34d" : "#001f5b",
             }}
           >
             Upcoming Event
@@ -87,7 +91,7 @@ export default function UpcomingEventCard() {
           <Text
             style={{
               fontSize: 13,
-              color: "#6B7280",
+              color: theme.secondaryText,
               marginTop: 2,
             }}
           >
@@ -101,7 +105,7 @@ export default function UpcomingEventCard() {
         style={{
           fontSize: 19,
           fontWeight: "700",
-          color: "#111827",
+          color: theme.text,
           marginBottom: 14,
         }}
       >
@@ -116,13 +120,17 @@ export default function UpcomingEventCard() {
           marginBottom: 10,
         }}
       >
-        <Ionicons name="location-outline" size={19} color="#6B7280" />
+        <Ionicons
+          name="location-outline"
+          size={19}
+          color={theme.secondaryText}
+        />
 
         <Text
           style={{
             marginLeft: 8,
             fontSize: 14,
-            color: "#4B5563",
+            color: theme.secondaryText,
             flex: 1,
           }}
         >
@@ -137,13 +145,13 @@ export default function UpcomingEventCard() {
           alignItems: "center",
         }}
       >
-        <Ionicons name="time-outline" size={19} color="#6B7280" />
+        <Ionicons name="time-outline" size={19} color={theme.secondaryText} />
 
         <Text
           style={{
             marginLeft: 8,
             fontSize: 14,
-            color: "#4B5563",
+            color: theme.secondaryText,
           }}
         >
           {event.date}
@@ -154,7 +162,14 @@ export default function UpcomingEventCard() {
       <Pressable
         onPress={() => router.push("/events")}
         style={({ pressed }) => ({
-          backgroundColor: pressed ? "#00327f" : "#001f5b",
+          backgroundColor: pressed
+            ? isDark
+              ? "#1d4ed8"
+              : "#00327f"
+            : isDark
+              ? "#2563eb"
+              : "#001f5b",
+
           paddingVertical: 13,
           borderRadius: 14,
           marginTop: 20,
