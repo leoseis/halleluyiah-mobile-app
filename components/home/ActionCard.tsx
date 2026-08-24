@@ -2,6 +2,8 @@ import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import React from "react";
 import { Pressable, Text, View } from "react-native";
+import { APP_THEME } from "../../constants/appTheme";
+import { useAppTheme } from "../../src/context/ThemeContext";
 
 interface ActionCardProps {
   title: string;
@@ -16,12 +18,14 @@ export default function ActionCard({
   route,
   color,
 }: ActionCardProps) {
+  const { isDark } = useAppTheme();
+  const theme = APP_THEME[isDark ? "dark" : "light"];
   return (
     <Pressable
       onPress={() => router.push(route as any)}
       style={{
         width: "48%",
-        backgroundColor: "#ffffff",
+        backgroundColor: theme.card,
         padding: 18,
         borderRadius: 18,
         marginBottom: 14,
@@ -46,7 +50,7 @@ export default function ActionCard({
           fontWeight: "700",
           marginTop: 12,
           fontSize: 15,
-          color: "#001f5b",
+          color: theme.text,
         }}
       >
         {title}
@@ -56,7 +60,7 @@ export default function ActionCard({
         style={{
           marginTop: 4,
           fontSize: 12,
-          color: "#94a3b8",
+          color: theme.mutedText,
         }}
       >
         Open
