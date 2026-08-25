@@ -4,6 +4,9 @@ import React from "react";
 
 import { Pressable, ScrollView, Text, View } from "react-native";
 
+import { APP_THEME } from "../../constants/appTheme";
+import { useAppTheme } from "../../src/context/ThemeContext";
+
 const menuItems = [
   {
     title: "Prayer Requests",
@@ -68,22 +71,26 @@ const menuItems = [
 ];
 
 export default function MoreScreen() {
+  const { isDark } = useAppTheme();
+  const theme = APP_THEME[isDark ? "dark" : "light"];
+
   return (
     <ScrollView
       style={{
         flex: 1,
-        backgroundColor: "#f5f7fb",
+        backgroundColor: theme.background,
       }}
       contentContainerStyle={{
         padding: 20,
         paddingBottom: 40,
       }}
+      showsVerticalScrollIndicator={false}
     >
       <Text
         style={{
           fontSize: 30,
           fontWeight: "bold",
-          color: "#001f5b",
+          color: theme.text,
           marginBottom: 8,
         }}
       >
@@ -93,7 +100,7 @@ export default function MoreScreen() {
       <Text
         style={{
           fontSize: 15,
-          color: "#6b7280",
+          color: theme.secondaryText,
           marginBottom: 24,
         }}
       >
@@ -113,7 +120,7 @@ export default function MoreScreen() {
             onPress={() => router.push(item.route as any)}
             style={{
               width: "48%",
-              backgroundColor: "white",
+              backgroundColor: theme.card,
               paddingVertical: 22,
               paddingHorizontal: 14,
               borderRadius: 18,
@@ -140,7 +147,7 @@ export default function MoreScreen() {
               style={{
                 fontSize: 15,
                 fontWeight: "700",
-                color: "#001f5b",
+                color: theme.text,
                 textAlign: "center",
               }}
             >
