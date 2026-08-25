@@ -1,6 +1,8 @@
 import api from "@/src/api/api";
 import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
+import { APP_THEME } from "../../constants/appTheme";
+import { useAppTheme } from "../../src/context/ThemeContext";
 
 import {
   ActivityIndicator,
@@ -15,6 +17,8 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function EventDetailsScreen() {
+  const { isDark } = useAppTheme();
+  const theme = APP_THEME[isDark ? "dark" : "light"];
   const { id } = useLocalSearchParams();
 
   const [event, setEvent] = useState<any>(null);
@@ -45,9 +49,10 @@ export default function EventDetailsScreen() {
           flex: 1,
           justifyContent: "center",
           alignItems: "center",
+          backgroundColor: theme.background,
         }}
       >
-        <ActivityIndicator size="large" color="#001f5b" />
+        <ActivityIndicator size="large" color={theme.primary} />
       </View>
     );
   }
@@ -59,9 +64,16 @@ export default function EventDetailsScreen() {
           flex: 1,
           justifyContent: "center",
           alignItems: "center",
+          backgroundColor: theme.background,
         }}
       >
-        <Text>Event not found.</Text>
+        <Text
+          style={{
+            color: theme.text,
+          }}
+        >
+          Event not found.
+        </Text>
       </SafeAreaView>
     );
   }
@@ -70,7 +82,7 @@ export default function EventDetailsScreen() {
     <SafeAreaView
       style={{
         flex: 1,
-        backgroundColor: "#f5f7fb",
+        backgroundColor: theme.background,
       }}
     >
       <ScrollView showsVerticalScrollIndicator={false}>
@@ -94,7 +106,7 @@ export default function EventDetailsScreen() {
             style={{
               fontSize: 28,
               fontWeight: "bold",
-              color: "#0d1b4c",
+              color: theme.text,
             }}
           >
             {event.title}
@@ -103,7 +115,7 @@ export default function EventDetailsScreen() {
           <Text
             style={{
               marginTop: 10,
-              color: "#666",
+              color: theme.secondaryText,
               fontSize: 16,
             }}
           >
@@ -136,7 +148,7 @@ export default function EventDetailsScreen() {
             style={{
               marginTop: 20,
               lineHeight: 24,
-              color: "#333",
+              color: theme.text,
               fontSize: 16,
             }}
           >
@@ -154,7 +166,7 @@ export default function EventDetailsScreen() {
               })
             }
             style={{
-              backgroundColor: "#001f5b",
+              backgroundColor: isDark ? "#2563eb" : "#001f5b",
               padding: 16,
               borderRadius: 12,
               marginTop: 30,

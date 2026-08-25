@@ -1,6 +1,9 @@
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
 
+import { APP_THEME } from "../../constants/appTheme";
+import { useAppTheme } from "../../src/context/ThemeContext";
+
 import {
   ActivityIndicator,
   FlatList,
@@ -15,6 +18,9 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import api from "../../src/api/api";
 
 export default function EventsScreen() {
+  const { isDark } = useAppTheme();
+  const theme = APP_THEME[isDark ? "dark" : "light"];
+
   const [events, setEvents] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -40,10 +46,19 @@ export default function EventsScreen() {
           flex: 1,
           justifyContent: "center",
           alignItems: "center",
+          backgroundColor: theme.background,
         }}
       >
-        <ActivityIndicator size="large" />
-        <Text style={{ marginTop: 10 }}>Loading events...</Text>
+        <ActivityIndicator size="large" color={theme.primary} />
+
+        <Text
+          style={{
+            marginTop: 10,
+            color: theme.text,
+          }}
+        >
+          Loading events...
+        </Text>
       </View>
     );
   }
@@ -52,16 +67,15 @@ export default function EventsScreen() {
     <SafeAreaView
       style={{
         flex: 1,
-        backgroundColor: "#f5f7fb",
+        backgroundColor: theme.background,
         paddingHorizontal: 16,
       }}
     >
-      <Text>hello just added u do same lets grow</Text>
       <Text
         style={{
           fontSize: 28,
           fontWeight: "bold",
-          color: "#0d1b4c",
+          color: theme.text,
           marginTop: 10,
           marginBottom: 20,
         }}
@@ -83,7 +97,7 @@ export default function EventsScreen() {
               })
             }
             style={{
-              backgroundColor: "white",
+              backgroundColor: theme.card,
               borderRadius: 18,
               overflow: "hidden",
               marginBottom: 20,
@@ -104,7 +118,7 @@ export default function EventsScreen() {
                 style={{
                   fontSize: 20,
                   fontWeight: "bold",
-                  color: "#0d1b4c",
+                  color: theme.text,
                 }}
               >
                 {item.title}
@@ -112,7 +126,7 @@ export default function EventsScreen() {
 
               <Text
                 style={{
-                  color: "#666",
+                  color: theme.secondaryText,
                   marginTop: 8,
                 }}
               >
@@ -130,7 +144,7 @@ export default function EventsScreen() {
 
               <View
                 style={{
-                  backgroundColor: "#001f5b",
+                  backgroundColor: isDark ? "#2563eb" : "#001f5b",
                   padding: 12,
                   borderRadius: 12,
                   marginTop: 16,
