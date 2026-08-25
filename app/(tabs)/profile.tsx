@@ -6,10 +6,15 @@ import { Image, Pressable, ScrollView, Text, View } from "react-native";
 
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { APP_THEME } from "../../constants/appTheme";
 import { AuthContext } from "../../src/context/AuthContext";
+import { useAppTheme } from "../../src/context/ThemeContext";
 
 export default function ProfileScreen() {
   const { user } = useContext(AuthContext);
+
+  const { isDark } = useAppTheme();
+  const theme = APP_THEME[isDark ? "dark" : "light"];
 
   const accountItems = [
     {
@@ -39,7 +44,7 @@ export default function ProfileScreen() {
     <SafeAreaView
       style={{
         flex: 1,
-        backgroundColor: "#f5f7fb",
+        backgroundColor: theme.background,
       }}
     >
       <ScrollView
@@ -54,7 +59,7 @@ export default function ProfileScreen() {
           style={{
             fontSize: 30,
             fontWeight: "bold",
-            color: "#001f5b",
+            color: theme.text,
             marginBottom: 20,
           }}
         >
@@ -64,7 +69,7 @@ export default function ProfileScreen() {
         {/* PROFILE CARD */}
         <View
           style={{
-            backgroundColor: "#001f5b",
+            backgroundColor: isDark ? "#172554" : "#001f5b",
             borderRadius: 26,
             padding: 24,
             alignItems: "center",
@@ -73,7 +78,7 @@ export default function ProfileScreen() {
         >
           <View
             style={{
-              backgroundColor: "white",
+              backgroundColor: isDark ? "#e2e8f0" : "#ffffff",
               padding: 4,
               borderRadius: 62,
             }}
@@ -100,7 +105,7 @@ export default function ProfileScreen() {
             style={{
               fontSize: 25,
               fontWeight: "bold",
-              color: "white",
+              color: "#ffffff",
               marginTop: 16,
             }}
           >
@@ -128,7 +133,7 @@ export default function ProfileScreen() {
           >
             <Text
               style={{
-                color: "white",
+                color: "#ffffff",
                 fontWeight: "700",
               }}
             >
@@ -147,7 +152,7 @@ export default function ProfileScreen() {
           <View
             style={{
               flex: 1,
-              backgroundColor: "white",
+              backgroundColor: theme.card,
               paddingVertical: 20,
               borderRadius: 18,
               marginRight: 8,
@@ -161,7 +166,7 @@ export default function ProfileScreen() {
               style={{
                 fontSize: 23,
                 fontWeight: "bold",
-                color: "#001f5b",
+                color: theme.text,
                 marginTop: 8,
               }}
             >
@@ -170,7 +175,7 @@ export default function ProfileScreen() {
 
             <Text
               style={{
-                color: "#6b7280",
+                color: theme.secondaryText,
                 marginTop: 3,
               }}
             >
@@ -181,7 +186,7 @@ export default function ProfileScreen() {
           <View
             style={{
               flex: 1,
-              backgroundColor: "white",
+              backgroundColor: theme.card,
               paddingVertical: 20,
               borderRadius: 18,
               marginLeft: 8,
@@ -195,7 +200,7 @@ export default function ProfileScreen() {
               style={{
                 fontSize: 23,
                 fontWeight: "bold",
-                color: "#001f5b",
+                color: theme.text,
                 marginTop: 8,
               }}
             >
@@ -204,7 +209,7 @@ export default function ProfileScreen() {
 
             <Text
               style={{
-                color: "#6b7280",
+                color: theme.secondaryText,
                 marginTop: 3,
               }}
             >
@@ -218,7 +223,7 @@ export default function ProfileScreen() {
           style={{
             fontSize: 20,
             fontWeight: "bold",
-            color: "#001f5b",
+            color: theme.text,
             marginTop: 28,
             marginBottom: 14,
           }}
@@ -228,7 +233,7 @@ export default function ProfileScreen() {
 
         <View
           style={{
-            backgroundColor: "white",
+            backgroundColor: theme.card,
             borderRadius: 22,
             paddingHorizontal: 16,
             elevation: 2,
@@ -243,7 +248,7 @@ export default function ProfileScreen() {
                 alignItems: "center",
                 paddingVertical: 17,
                 borderBottomWidth: index === accountItems.length - 1 ? 0 : 1,
-                borderBottomColor: "#f1f5f9",
+                borderBottomColor: theme.border,
               }}
             >
               <View
@@ -273,7 +278,7 @@ export default function ProfileScreen() {
                   style={{
                     fontSize: 16,
                     fontWeight: "700",
-                    color: "#111827",
+                    color: theme.text,
                   }}
                 >
                   {item.title}
@@ -282,7 +287,7 @@ export default function ProfileScreen() {
                 <Text
                   style={{
                     fontSize: 13,
-                    color: "#6b7280",
+                    color: theme.secondaryText,
                     marginTop: 3,
                   }}
                 >
@@ -290,14 +295,18 @@ export default function ProfileScreen() {
                 </Text>
               </View>
 
-              <Ionicons name="chevron-forward" size={20} color="#9ca3af" />
+              <Ionicons
+                name="chevron-forward"
+                size={20}
+                color={theme.mutedText}
+              />
             </Pressable>
           ))}
         </View>
 
         <Text
           style={{
-            color: "#94a3b8",
+            color: theme.mutedText,
             fontSize: 13,
             textAlign: "center",
             marginTop: 24,

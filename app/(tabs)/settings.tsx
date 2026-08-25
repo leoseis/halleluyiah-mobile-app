@@ -1,15 +1,19 @@
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useContext } from "react";
-import { useAppTheme } from "../../src/context/ThemeContext";
 
 import { Alert, Pressable, ScrollView, Switch, Text, View } from "react-native";
 
+import { APP_THEME } from "../../constants/appTheme";
 import { AuthContext } from "../../src/context/AuthContext";
+import { useAppTheme } from "../../src/context/ThemeContext";
 
 export default function SettingsScreen() {
   const { logout } = useContext(AuthContext);
+
   const { themeMode, isDark, setThemeMode } = useAppTheme();
+
+  const theme = APP_THEME[isDark ? "dark" : "light"];
 
   const handleLogout = () => {
     Alert.alert("Logout", "Are you sure you want to logout?", [
@@ -62,7 +66,7 @@ export default function SettingsScreen() {
     <ScrollView
       style={{
         flex: 1,
-        backgroundColor: isDark ? "#111827" : "#f5f7fb",
+        backgroundColor: theme.background,
       }}
       showsVerticalScrollIndicator={false}
       contentContainerStyle={{
@@ -75,7 +79,7 @@ export default function SettingsScreen() {
         style={{
           fontSize: 30,
           fontWeight: "bold",
-          color: "#001f5b",
+          color: theme.text,
           marginBottom: 6,
         }}
       >
@@ -85,17 +89,17 @@ export default function SettingsScreen() {
       <Text
         style={{
           fontSize: 15,
-          color: "#6b7280",
+          color: theme.secondaryText,
           marginBottom: 24,
         }}
       >
         Manage your app and church information
       </Text>
 
-      {/* APPEARANCE */}
+      {/* APPEARANCE CARD */}
       <View
         style={{
-          backgroundColor: isDark ? "#1f2937" : "#ffffff",
+          backgroundColor: theme.card,
           borderRadius: 22,
           padding: 16,
           marginBottom: 20,
@@ -108,6 +112,7 @@ export default function SettingsScreen() {
             alignItems: "center",
           }}
         >
+          {/* ICON */}
           <View
             style={{
               width: 46,
@@ -126,12 +131,17 @@ export default function SettingsScreen() {
             />
           </View>
 
-          <View style={{ flex: 1 }}>
+          {/* TEXT */}
+          <View
+            style={{
+              flex: 1,
+            }}
+          >
             <Text
               style={{
                 fontSize: 16,
                 fontWeight: "700",
-                color: isDark ? "#ffffff" : "#111827",
+                color: theme.text,
               }}
             >
               Dark Mode
@@ -140,7 +150,7 @@ export default function SettingsScreen() {
             <Text
               style={{
                 fontSize: 13,
-                color: isDark ? "#9ca3af" : "#6b7280",
+                color: theme.secondaryText,
                 marginTop: 3,
               }}
             >
@@ -148,9 +158,15 @@ export default function SettingsScreen() {
             </Text>
           </View>
 
+          {/* SWITCH */}
           <Switch
             value={themeMode === "dark"}
             onValueChange={(value) => setThemeMode(value ? "dark" : "light")}
+            trackColor={{
+              false: "#d1d5db",
+              true: "#2563eb",
+            }}
+            thumbColor="#ffffff"
           />
         </View>
       </View>
@@ -158,7 +174,7 @@ export default function SettingsScreen() {
       {/* SETTINGS CARD */}
       <View
         style={{
-          backgroundColor: isDark ? "#1f2937" : "#ffffff",
+          backgroundColor: theme.card,
           borderRadius: 22,
           paddingHorizontal: 16,
           elevation: 3,
@@ -173,9 +189,10 @@ export default function SettingsScreen() {
               alignItems: "center",
               paddingVertical: 17,
               borderBottomWidth: index === settingsItems.length - 1 ? 0 : 1,
-              borderBottomColor: "#f1f5f9",
+              borderBottomColor: theme.border,
             }}
           >
+            {/* ICON */}
             <View
               style={{
                 width: 46,
@@ -190,6 +207,7 @@ export default function SettingsScreen() {
               <Ionicons name={item.icon as any} size={24} color={item.color} />
             </View>
 
+            {/* TEXT */}
             <View
               style={{
                 flex: 1,
@@ -199,7 +217,7 @@ export default function SettingsScreen() {
                 style={{
                   fontSize: 16,
                   fontWeight: "700",
-                  color: isDark ? "#f9fafb" : "#111827",
+                  color: theme.text,
                 }}
               >
                 {item.title}
@@ -208,7 +226,7 @@ export default function SettingsScreen() {
               <Text
                 style={{
                   fontSize: 13,
-                  color: "#6b7280",
+                  color: theme.secondaryText,
                   marginTop: 3,
                 }}
               >
@@ -216,7 +234,11 @@ export default function SettingsScreen() {
               </Text>
             </View>
 
-            <Ionicons name="chevron-forward" size={20} color="#9ca3af" />
+            <Ionicons
+              name="chevron-forward"
+              size={20}
+              color={theme.mutedText}
+            />
           </Pressable>
         ))}
       </View>
@@ -224,21 +246,26 @@ export default function SettingsScreen() {
       {/* LOGOUT */}
       <Pressable
         onPress={handleLogout}
-        style={{
-          backgroundColor: "#fee2e2",
+        style={({ pressed }) => ({
+          backgroundColor: isDark ? "#3f1d24" : "#fee2e2",
           paddingVertical: 16,
           borderRadius: 18,
           marginTop: 28,
           flexDirection: "row",
           justifyContent: "center",
           alignItems: "center",
-        }}
+          opacity: pressed ? 0.8 : 1,
+        })}
       >
-        <Ionicons name="log-out-outline" size={22} color="#dc2626" />
+        <Ionicons
+          name="log-out-outline"
+          size={22}
+          color={isDark ? "#f87171" : "#dc2626"}
+        />
 
         <Text
           style={{
-            color: "#dc2626",
+            color: isDark ? "#f87171" : "#dc2626",
             fontWeight: "bold",
             fontSize: 16,
             marginLeft: 8,
@@ -248,10 +275,11 @@ export default function SettingsScreen() {
         </Text>
       </Pressable>
 
+      {/* FOOTER */}
       <Text
         style={{
           textAlign: "center",
-          color: "#94a3b8",
+          color: theme.mutedText,
           fontSize: 12,
           marginTop: 18,
         }}
