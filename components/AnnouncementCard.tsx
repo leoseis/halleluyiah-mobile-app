@@ -1,11 +1,15 @@
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
+import { APP_THEME } from "../constants/appTheme";
+import { useAppTheme } from "../src/context/ThemeContext";
 
 import { Image, Pressable, Text, TouchableOpacity, View } from "react-native";
 
 import api from "../src/api/api";
 
 export default function AnnouncementCard({ item, onLike }: any) {
+  const { isDark } = useAppTheme();
+  const theme = APP_THEME[isDark ? "dark" : "light"];
   const handleLike = async () => {
     try {
       const response = await api.post(`/announcements/${item.id}/like/`, {});
@@ -31,7 +35,7 @@ export default function AnnouncementCard({ item, onLike }: any) {
   return (
     <View
       style={{
-        backgroundColor: "#fff",
+        backgroundColor: theme.card,
         borderRadius: 22,
         marginBottom: 20,
         marginHorizontal: 16,
@@ -59,7 +63,7 @@ export default function AnnouncementCard({ item, onLike }: any) {
             style={{
               width: "100%",
               height: 210,
-              backgroundColor: "#e5e7eb",
+              backgroundColor: theme.border,
             }}
           />
         )}
@@ -74,7 +78,7 @@ export default function AnnouncementCard({ item, onLike }: any) {
             <View
               style={{
                 alignSelf: "flex-start",
-                backgroundColor: "#e0ecff",
+                backgroundColor: isDark ? "#1e3a5f" : "#e0ecff",
                 paddingHorizontal: 10,
                 paddingVertical: 5,
                 borderRadius: 20,
@@ -83,7 +87,7 @@ export default function AnnouncementCard({ item, onLike }: any) {
             >
               <Text
                 style={{
-                  color: "#001f5b",
+                  color: isDark ? "#93c5fd" : "#001f5b",
                   fontSize: 12,
                   fontWeight: "700",
                 }}
@@ -98,7 +102,7 @@ export default function AnnouncementCard({ item, onLike }: any) {
             style={{
               fontSize: 21,
               fontWeight: "bold",
-              color: "#0d1b4c",
+              color: theme.text,
               marginBottom: 8,
               lineHeight: 28,
             }}
@@ -110,7 +114,7 @@ export default function AnnouncementCard({ item, onLike }: any) {
           <Text
             numberOfLines={3}
             style={{
-              color: "#64748b",
+              color: theme.secondaryText,
               fontSize: 15,
               lineHeight: 23,
             }}
@@ -124,7 +128,7 @@ export default function AnnouncementCard({ item, onLike }: any) {
       <View
         style={{
           height: 1,
-          backgroundColor: "#f1f5f9",
+          backgroundColor: theme.border,
           marginHorizontal: 18,
         }}
       />
@@ -146,7 +150,7 @@ export default function AnnouncementCard({ item, onLike }: any) {
           style={{
             flexDirection: "row",
             alignItems: "center",
-            backgroundColor: "#fff1f2",
+            backgroundColor: isDark ? "#3f1d24" : "#fff1f2",
             paddingVertical: 9,
             paddingHorizontal: 13,
             borderRadius: 14,
@@ -156,7 +160,7 @@ export default function AnnouncementCard({ item, onLike }: any) {
 
           <Text
             style={{
-              color: "#0d1b4c",
+              color: theme.text,
               fontWeight: "700",
               fontSize: 14,
               marginLeft: 6,
@@ -176,7 +180,7 @@ export default function AnnouncementCard({ item, onLike }: any) {
         >
           <Text
             style={{
-              color: "#001f5b",
+              color: isDark ? "#60a5fa" : "#001f5b",
               fontWeight: "700",
               fontSize: 14,
               marginRight: 4,
@@ -185,7 +189,11 @@ export default function AnnouncementCard({ item, onLike }: any) {
             Read More
           </Text>
 
-          <Ionicons name="arrow-forward" size={17} color="#001f5b" />
+          <Ionicons
+            name="arrow-forward"
+            size={17}
+            color={isDark ? "#60a5fa" : "#001f5b"}
+          />
         </Pressable>
       </View>
     </View>
