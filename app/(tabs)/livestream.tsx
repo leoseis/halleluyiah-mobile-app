@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
+import { APP_THEME } from "../../constants/appTheme";
+import { useAppTheme } from "../../src/context/ThemeContext";
 
 import {
-    ActivityIndicator,
-    FlatList,
-    Pressable,
-    Text,
-    View,
+  ActivityIndicator,
+  FlatList,
+  Pressable,
+  Text,
+  View,
 } from "react-native";
 
 import * as Linking from "expo-linking";
@@ -15,6 +17,9 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import api from "../../src/api/api";
 
 export default function LivestreamScreen() {
+  const { isDark } = useAppTheme();
+  const theme = APP_THEME[isDark ? "dark" : "light"];
+
   const [streams, setStreams] = useState<any[]>([]);
 
   const [loading, setLoading] = useState(true);
@@ -42,13 +47,15 @@ export default function LivestreamScreen() {
           flex: 1,
           justifyContent: "center",
           alignItems: "center",
+          backgroundColor: theme.background,
         }}
       >
-        <ActivityIndicator size="large" />
+        <ActivityIndicator size="large" color={theme.primary} />
 
         <Text
           style={{
             marginTop: 10,
+            color: theme.text,
           }}
         >
           Loading Livestreams...
@@ -61,7 +68,7 @@ export default function LivestreamScreen() {
     <SafeAreaView
       style={{
         flex: 1,
-        backgroundColor: "#f5f7fb",
+        backgroundColor: theme.background,
         paddingHorizontal: 16,
       }}
     >
@@ -69,7 +76,7 @@ export default function LivestreamScreen() {
         style={{
           fontSize: 28,
           fontWeight: "bold",
-          color: "#001f5b",
+          color: theme.text,
           marginVertical: 20,
         }}
       >
@@ -82,7 +89,7 @@ export default function LivestreamScreen() {
         renderItem={({ item }) => (
           <View
             style={{
-              backgroundColor: "white",
+              backgroundColor: theme.card,
               borderRadius: 18,
               padding: 20,
               marginBottom: 20,
@@ -92,7 +99,7 @@ export default function LivestreamScreen() {
             {item.is_live && (
               <Text
                 style={{
-                  color: "red",
+                  color: isDark ? "#f87171" : "red",
                   fontWeight: "bold",
                   marginBottom: 10,
                 }}
@@ -105,7 +112,7 @@ export default function LivestreamScreen() {
               style={{
                 fontSize: 22,
                 fontWeight: "bold",
-                color: "#001f5b",
+                color: theme.text,
               }}
             >
               {item.title}
@@ -114,7 +121,7 @@ export default function LivestreamScreen() {
             <Pressable
               onPress={() => Linking.openURL(item.youtube_url)}
               style={{
-                backgroundColor: "#001f5b",
+                backgroundColor: isDark ? "#2563eb" : "#001f5b",
                 padding: 14,
                 borderRadius: 12,
                 marginTop: 20,

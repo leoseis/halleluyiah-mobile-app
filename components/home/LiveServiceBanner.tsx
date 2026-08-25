@@ -1,10 +1,13 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useEffect, useState } from "react";
 import { Linking, Pressable, Text, View } from "react-native";
+import { useAppTheme } from "../../src/context/ThemeContext";
 
 import api from "../../src/api/api";
 
 export default function LiveServiceBanner() {
+  const { isDark } = useAppTheme();
+
   const [service, setService] = useState<any>(null);
 
   useEffect(() => {
@@ -42,7 +45,7 @@ export default function LiveServiceBanner() {
   return (
     <View
       style={{
-        backgroundColor: "#B91C1C",
+        backgroundColor: isDark ? "#7f1d1d" : "#B91C1C",
         marginTop: 18,
         borderRadius: 20,
         padding: 18,
@@ -104,11 +107,15 @@ export default function LiveServiceBanner() {
           marginTop: 10,
         }}
       >
-        <Ionicons name="radio-outline" size={18} color="#FEE2E2" />
+        <Ionicons
+          name="radio-outline"
+          size={18}
+          color={isDark ? "#fecaca" : "#FEE2E2"}
+        />
 
         <Text
           style={{
-            color: "#FEE2E2",
+            color: isDark ? "#fecaca" : "#FEE2E2",
             marginLeft: 7,
             fontSize: 14,
           }}
@@ -121,7 +128,13 @@ export default function LiveServiceBanner() {
       <Pressable
         onPress={handleWatchLive}
         style={({ pressed }) => ({
-          backgroundColor: pressed ? "#F3F4F6" : "#ffffff",
+          backgroundColor: pressed
+            ? isDark
+              ? "#cbd5e1"
+              : "#F3F4F6"
+            : isDark
+              ? "#f8fafc"
+              : "#ffffff",
           marginTop: 20,
           paddingVertical: 13,
           borderRadius: 14,
@@ -130,11 +143,15 @@ export default function LiveServiceBanner() {
           flexDirection: "row",
         })}
       >
-        <Ionicons name="logo-youtube" size={20} color="#B91C1C" />
+        <Ionicons
+          name="logo-youtube"
+          size={20}
+          color={isDark ? "#991b1b" : "#B91C1C"}
+        />
 
         <Text
           style={{
-            color: "#B91C1C",
+            color: isDark ? "#991b1b" : "#B91C1C",
             fontWeight: "700",
             fontSize: 15,
             marginLeft: 8,
