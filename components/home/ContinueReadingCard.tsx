@@ -3,8 +3,12 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
 import { Pressable, Text, View } from "react-native";
+import { APP_THEME } from "../../constants/appTheme";
+import { useAppTheme } from "../../src/context/ThemeContext";
 
 export default function ContinueReadingCard() {
+  const { isDark } = useAppTheme();
+  const theme = APP_THEME[isDark ? "dark" : "light"];
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
@@ -27,7 +31,7 @@ export default function ContinueReadingCard() {
   return (
     <View
       style={{
-        backgroundColor: "#ffffff",
+        backgroundColor: theme.card,
         marginTop: 18,
         borderRadius: 20,
         padding: 18,
@@ -46,7 +50,7 @@ export default function ContinueReadingCard() {
             width: 46,
             height: 46,
             borderRadius: 14,
-            backgroundColor: "#ECFDF5",
+            backgroundColor: isDark ? "#064e3b" : "#ECFDF5",
             alignItems: "center",
             justifyContent: "center",
             marginRight: 12,
@@ -60,7 +64,7 @@ export default function ContinueReadingCard() {
             style={{
               fontSize: 18,
               fontWeight: "700",
-              color: "#001f5b",
+              color: theme.text,
             }}
           >
             Continue Reading
@@ -69,7 +73,7 @@ export default function ContinueReadingCard() {
           <Text
             style={{
               fontSize: 13,
-              color: "#6B7280",
+              color: theme.secondaryText,
               marginTop: 2,
             }}
           >
@@ -92,7 +96,7 @@ export default function ContinueReadingCard() {
       <View
         style={{
           height: 10,
-          backgroundColor: "#E5E7EB",
+          backgroundColor: isDark ? "#334155" : "#E5E7EB",
           borderRadius: 10,
           marginTop: 20,
           overflow: "hidden",
@@ -118,7 +122,7 @@ export default function ContinueReadingCard() {
       >
         <Text
           style={{
-            color: "#6B7280",
+            color: theme.secondaryText,
             fontSize: 13,
           }}
         >
@@ -127,7 +131,7 @@ export default function ContinueReadingCard() {
 
         <Text
           style={{
-            color: "#374151",
+            color: theme.text,
             fontWeight: "600",
             fontSize: 13,
           }}
@@ -141,7 +145,13 @@ export default function ContinueReadingCard() {
         onPress={() => router.push("/reading-plan")}
         style={({ pressed }) => ({
           marginTop: 20,
-          backgroundColor: pressed ? "#00327f" : "#001f5b",
+          backgroundColor: pressed
+            ? isDark
+              ? "#1d4ed8"
+              : "#00327f"
+            : isDark
+              ? "#2563eb"
+              : "#001f5b",
           paddingVertical: 13,
           borderRadius: 14,
           alignItems: "center",
