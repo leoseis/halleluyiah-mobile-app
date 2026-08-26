@@ -13,11 +13,15 @@ import {
 import { Clipboard } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { APP_THEME } from "../../constants/appTheme";
 import api from "../../src/api/api";
+import { useAppTheme } from "../../src/context/ThemeContext";
 
 export default function GivingScreen() {
-  const [accounts, setAccounts] = useState<any[]>([]);
+  const { isDark } = useAppTheme();
+  const theme = APP_THEME[isDark ? "dark" : "light"];
 
+  const [accounts, setAccounts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -27,7 +31,6 @@ export default function GivingScreen() {
   const fetchAccounts = async () => {
     try {
       const response = await api.get("/giving/");
-
       setAccounts(response.data);
     } catch (error) {
       console.log(error);
@@ -36,20 +39,13 @@ export default function GivingScreen() {
     }
   };
 
-  const copyAccountNumber = async (
-    accountNumber: string
-  ) => {
+  const copyAccountNumber = async (accountNumber: string) => {
     Clipboard.setString(accountNumber);
 
-    Alert.alert(
-      "Copied",
-      "Account number copied successfully."
-    );
+    Alert.alert("Copied", "Account number copied successfully.");
   };
 
-  const shareAccount = async (
-    account: any
-  ) => {
+  const shareAccount = async (account: any) => {
     await Share.share({
       message:
         `${account.title}\n\n` +
@@ -66,9 +62,19 @@ export default function GivingScreen() {
           flex: 1,
           justifyContent: "center",
           alignItems: "center",
+          backgroundColor: theme.background,
         }}
       >
-        <ActivityIndicator size="large" />
+        <ActivityIndicator size="large" color={theme.primary} />
+
+        <Text
+          style={{
+            marginTop: 10,
+            color: theme.secondaryText,
+          }}
+        >
+          Loading giving accounts...
+        </Text>
       </View>
     );
   }
@@ -77,7 +83,7 @@ export default function GivingScreen() {
     <SafeAreaView
       style={{
         flex: 1,
-        backgroundColor: "#f5f7fb",
+        backgroundColor: theme.background,
         paddingHorizontal: 16,
       }}
     >
@@ -85,7 +91,7 @@ export default function GivingScreen() {
         style={{
           fontSize: 28,
           fontWeight: "bold",
-          color: "#0d1b4c",
+          color: theme.text,
           marginVertical: 20,
         }}
       >
@@ -94,13 +100,15 @@ export default function GivingScreen() {
 
       <FlatList
         data={accounts}
-        keyExtractor={(item) =>
-          item.id.toString()
-        }
+        keyExtractor={(item) => item.id.toString()}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{
+          paddingBottom: 30,
+        }}
         renderItem={({ item }) => (
           <View
             style={{
-              backgroundColor: "white",
+              backgroundColor: theme.card,
               borderRadius: 18,
               padding: 20,
               marginBottom: 20,
@@ -111,7 +119,7 @@ export default function GivingScreen() {
               style={{
                 fontSize: 22,
                 fontWeight: "bold",
-                color: "#001f5b",
+                color: theme.text,
               }}
             >
               {item.title}
@@ -120,7 +128,7 @@ export default function GivingScreen() {
             <Text
               style={{
                 marginTop: 10,
-                color: "#555",
+                color: theme.secondaryText,
               }}
             >
               🏦 {item.bank_name}
@@ -129,7 +137,7 @@ export default function GivingScreen() {
             <Text
               style={{
                 marginTop: 6,
-                color: "#555",
+                color: theme.secondaryText,
               }}
             >
               👤 {item.account_name}
@@ -140,7 +148,7 @@ export default function GivingScreen() {
                 marginTop: 6,
                 fontSize: 18,
                 fontWeight: "bold",
-                color: "#0d1b4c",
+                color: isDark ? "#86efac" : "#0d1b4c",
               }}
             >
               {item.account_number}
@@ -154,22 +162,24 @@ export default function GivingScreen() {
               }}
             >
               <Pressable
-                onPress={() =>
-                  copyAccountNumber(
-                    item.account_number
-                  )
-                }
-                style={{
+                onPress={() => copyAccountNumber(item.account_number)}
+                style={({ pressed }) => ({
                   flex: 1,
-                  backgroundColor: "#001f5b",
+                  backgroundColor: pressed
+                    ? isDark
+                      ? "#1d4ed8"
+                      : "#00327f"
+                    : isDark
+                      ? "#2563eb"
+                      : "#001f5b",
                   padding: 12,
                   borderRadius: 12,
                   alignItems: "center",
-                }}
+                })}
               >
                 <Text
                   style={{
-                    color: "white",
+                    color: "#ffffff",
                     fontWeight: "bold",
                   }}
                 >
@@ -178,20 +188,18 @@ export default function GivingScreen() {
               </Pressable>
 
               <Pressable
-                onPress={() =>
-                  shareAccount(item)
-                }
-                style={{
+                onPress={() => shareAccount(item)}
+                style={({ pressed }) => ({
                   flex: 1,
-                  backgroundColor: "#28a745",
+                  backgroundColor: pressed ? "#15803d" : "#28a745",
                   padding: 12,
                   borderRadius: 12,
                   alignItems: "center",
-                }}
+                })}
               >
                 <Text
                   style={{
-                    color: "white",
+                    color: "#ffffff",
                     fontWeight: "bold",
                   }}
                 >
@@ -201,6 +209,22 @@ export default function GivingScreen() {
             </View>
           </View>
         )}
+        ListEmptyComponent={
+          <View
+            style={{
+              alignItems: "center",
+              paddingVertical: 50,
+            }}
+          >
+            <Text
+              style={{
+                color: theme.secondaryText,
+              }}
+            >
+              No giving account available.
+            </Text>
+          </View>
+        }
       />
     </SafeAreaView>
   );
