@@ -1,10 +1,14 @@
 import { useLocalSearchParams } from "expo-router";
-
 import { ScrollView, Text } from "react-native";
-
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { APP_THEME } from "../../constants/appTheme";
+import { useAppTheme } from "../../src/context/ThemeContext";
+
 export default function TestimonyDetails() {
+  const { isDark } = useAppTheme();
+  const theme = APP_THEME[isDark ? "dark" : "light"];
+
   const params = useLocalSearchParams();
 
   const testimony = JSON.parse(params.testimony as string);
@@ -13,19 +17,21 @@ export default function TestimonyDetails() {
     <SafeAreaView
       style={{
         flex: 1,
-        backgroundColor: "#f5f7fb",
+        backgroundColor: theme.background,
       }}
     >
       <ScrollView
+        showsVerticalScrollIndicator={false}
         contentContainerStyle={{
           padding: 20,
+          paddingBottom: 40,
         }}
       >
         <Text
           style={{
             fontSize: 28,
             fontWeight: "bold",
-            color: "#001f5b",
+            color: theme.text,
           }}
         >
           {testimony.title}
@@ -34,7 +40,7 @@ export default function TestimonyDetails() {
         <Text
           style={{
             marginTop: 10,
-            color: "#777",
+            color: theme.secondaryText,
           }}
         >
           By {testimony.author}
@@ -45,7 +51,7 @@ export default function TestimonyDetails() {
             marginTop: 25,
             lineHeight: 28,
             fontSize: 16,
-            color: "#333",
+            color: theme.text,
           }}
         >
           {testimony.content}
