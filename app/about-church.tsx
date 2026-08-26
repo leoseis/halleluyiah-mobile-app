@@ -1,21 +1,29 @@
 import { ScrollView, Text, View } from "react-native";
 
+import { APP_THEME } from "../constants/appTheme";
+import { useAppTheme } from "../src/context/ThemeContext";
+
 export default function AboutChurchScreen() {
+  const { isDark } = useAppTheme();
+  const theme = APP_THEME[isDark ? "dark" : "light"];
+
   return (
     <ScrollView
       style={{
         flex: 1,
-        backgroundColor: "#f5f7fb",
+        backgroundColor: theme.background,
       }}
       contentContainerStyle={{
         padding: 20,
+        paddingBottom: 40,
       }}
+      showsVerticalScrollIndicator={false}
     >
       <Text
         style={{
           fontSize: 30,
           fontWeight: "bold",
-          color: "#001f5b",
+          color: theme.text,
           marginBottom: 20,
         }}
       >
@@ -24,7 +32,7 @@ export default function AboutChurchScreen() {
 
       <View
         style={{
-          backgroundColor: "white",
+          backgroundColor: theme.card,
           padding: 20,
           borderRadius: 16,
           elevation: 3,
@@ -35,6 +43,7 @@ export default function AboutChurchScreen() {
             fontSize: 20,
             fontWeight: "bold",
             marginBottom: 10,
+            color: theme.text,
           }}
         >
           RCCG Hallelujah Parish
@@ -43,7 +52,7 @@ export default function AboutChurchScreen() {
         <Text
           style={{
             lineHeight: 24,
-            color: "#555",
+            color: theme.secondaryText,
           }}
         >
           Welcome to RCCG Hallelujah Parish. We are committed to raising
@@ -55,6 +64,7 @@ export default function AboutChurchScreen() {
           style={{
             marginTop: 20,
             fontWeight: "bold",
+            color: theme.text,
           }}
         >
           Vision
@@ -62,7 +72,7 @@ export default function AboutChurchScreen() {
 
         <Text
           style={{
-            color: "#555",
+            color: theme.secondaryText,
             marginTop: 5,
           }}
         >
@@ -73,6 +83,7 @@ export default function AboutChurchScreen() {
           style={{
             marginTop: 20,
             fontWeight: "bold",
+            color: theme.text,
           }}
         >
           Service Times
@@ -80,7 +91,7 @@ export default function AboutChurchScreen() {
 
         <Text
           style={{
-            color: "#555",
+            color: theme.secondaryText,
             marginTop: 5,
           }}
         >
@@ -89,7 +100,7 @@ export default function AboutChurchScreen() {
 
         <Text
           style={{
-            color: "#555",
+            color: theme.secondaryText,
           }}
         >
           Bible Study - Wednesday 6:00 PM
@@ -97,7 +108,7 @@ export default function AboutChurchScreen() {
 
         <Text
           style={{
-            color: "#555",
+            color: theme.secondaryText,
           }}
         >
           Prayer Meeting - Friday 6:00 PM
