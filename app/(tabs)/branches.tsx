@@ -1,20 +1,25 @@
 import { useEffect, useState } from "react";
 
 import {
-    ActivityIndicator,
-    FlatList,
-    Image,
-    Linking,
-    Pressable,
-    Text,
-    View,
+  ActivityIndicator,
+  FlatList,
+  Image,
+  Linking,
+  Pressable,
+  Text,
+  View,
 } from "react-native";
 
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { APP_THEME } from "../../constants/appTheme";
 import api from "../../src/api/api";
+import { useAppTheme } from "../../src/context/ThemeContext";
 
 export default function BranchesScreen() {
+  const { isDark } = useAppTheme();
+  const theme = APP_THEME[isDark ? "dark" : "light"];
+
   const [branches, setBranches] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -40,9 +45,19 @@ export default function BranchesScreen() {
           flex: 1,
           justifyContent: "center",
           alignItems: "center",
+          backgroundColor: theme.background,
         }}
       >
-        <ActivityIndicator size="large" />
+        <ActivityIndicator size="large" color={theme.primary} />
+
+        <Text
+          style={{
+            marginTop: 10,
+            color: theme.secondaryText,
+          }}
+        >
+          Loading branches...
+        </Text>
       </View>
     );
   }
@@ -51,7 +66,7 @@ export default function BranchesScreen() {
     <SafeAreaView
       style={{
         flex: 1,
-        backgroundColor: "#f5f7fb",
+        backgroundColor: theme.background,
         paddingHorizontal: 16,
       }}
     >
@@ -59,7 +74,7 @@ export default function BranchesScreen() {
         style={{
           fontSize: 28,
           fontWeight: "bold",
-          color: "#001f5b",
+          color: theme.text,
           marginVertical: 20,
         }}
       >
@@ -69,10 +84,14 @@ export default function BranchesScreen() {
       <FlatList
         data={branches}
         keyExtractor={(item) => item.id.toString()}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{
+          paddingBottom: 30,
+        }}
         renderItem={({ item }) => (
           <View
             style={{
-              backgroundColor: "white",
+              backgroundColor: theme.card,
               borderRadius: 16,
               padding: 18,
               marginBottom: 16,
@@ -87,6 +106,7 @@ export default function BranchesScreen() {
                   height: 180,
                   borderRadius: 12,
                   marginBottom: 15,
+                  backgroundColor: theme.border,
                 }}
                 resizeMode="cover"
               />
@@ -96,7 +116,7 @@ export default function BranchesScreen() {
               style={{
                 fontSize: 22,
                 fontWeight: "bold",
-                color: "#001f5b",
+                color: theme.text,
               }}
             >
               {item.name}
@@ -105,7 +125,7 @@ export default function BranchesScreen() {
             <Text
               style={{
                 marginTop: 8,
-                color: "#555",
+                color: theme.secondaryText,
               }}
             >
               👨🏽‍💼 Pastor: {item.pastor}
@@ -114,37 +134,50 @@ export default function BranchesScreen() {
             <Text
               style={{
                 marginTop: 5,
-                color: "#555",
+                color: theme.secondaryText,
               }}
             >
               📍 {item.address}
             </Text>
 
             {item.phone && (
-              <Text
-                style={{
-                  marginTop: 5,
-                  color: "#555",
-                }}
+              <Pressable
+                onPress={() => Linking.openURL(`tel:${item.phone}`)}
+                style={({ pressed }) => ({
+                  opacity: pressed ? 0.6 : 1,
+                })}
               >
-                📞 {item.phone}
-              </Text>
+                <Text
+                  style={{
+                    marginTop: 5,
+                    color: isDark ? "#60a5fa" : "#001f5b",
+                  }}
+                >
+                  📞 {item.phone}
+                </Text>
+              </Pressable>
             )}
 
             {item.map_link && (
               <Pressable
                 onPress={() => Linking.openURL(item.map_link)}
-                style={{
+                style={({ pressed }) => ({
                   marginTop: 15,
-                  backgroundColor: "#001f5b",
+                  backgroundColor: pressed
+                    ? isDark
+                      ? "#1d4ed8"
+                      : "#00327f"
+                    : isDark
+                      ? "#2563eb"
+                      : "#001f5b",
                   padding: 12,
                   borderRadius: 10,
                   alignItems: "center",
-                }}
+                })}
               >
                 <Text
                   style={{
-                    color: "white",
+                    color: "#ffffff",
                     fontWeight: "bold",
                   }}
                 >
@@ -154,6 +187,23 @@ export default function BranchesScreen() {
             )}
           </View>
         )}
+        ListEmptyComponent={
+          <View
+            style={{
+              alignItems: "center",
+              paddingVertical: 50,
+            }}
+          >
+            <Text
+              style={{
+                color: theme.secondaryText,
+                fontSize: 15,
+              }}
+            >
+              No church branches available.
+            </Text>
+          </View>
+        }
       />
     </SafeAreaView>
   );

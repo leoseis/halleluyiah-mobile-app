@@ -4,9 +4,14 @@ import { ActivityIndicator, FlatList, Image, Text, View } from "react-native";
 
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { APP_THEME } from "../../constants/appTheme";
 import api from "../../src/api/api";
+import { useAppTheme } from "../../src/context/ThemeContext";
 
 export default function GalleryScreen() {
+  const { isDark } = useAppTheme();
+  const theme = APP_THEME[isDark ? "dark" : "light"];
+
   const [gallery, setGallery] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -17,9 +22,6 @@ export default function GalleryScreen() {
   const fetchGallery = async () => {
     try {
       const response = await api.get("/gallery/");
-
-      console.log(response.data);
-
       setGallery(response.data);
     } catch (error) {
       console.log(error);
@@ -35,13 +37,15 @@ export default function GalleryScreen() {
           flex: 1,
           justifyContent: "center",
           alignItems: "center",
+          backgroundColor: theme.background,
         }}
       >
-        <ActivityIndicator size="large" />
+        <ActivityIndicator size="large" color={theme.primary} />
 
         <Text
           style={{
             marginTop: 10,
+            color: theme.secondaryText,
           }}
         >
           Loading Gallery...
@@ -54,7 +58,7 @@ export default function GalleryScreen() {
     <SafeAreaView
       style={{
         flex: 1,
-        backgroundColor: "#f5f7fb",
+        backgroundColor: theme.background,
         paddingHorizontal: 16,
       }}
     >
@@ -62,7 +66,7 @@ export default function GalleryScreen() {
         style={{
           fontSize: 28,
           fontWeight: "bold",
-          color: "#001f5b",
+          color: theme.text,
           marginVertical: 20,
         }}
       >
@@ -73,10 +77,13 @@ export default function GalleryScreen() {
         data={gallery}
         keyExtractor={(item) => item.id.toString()}
         showsVerticalScrollIndicator={false}
+        contentContainerStyle={{
+          paddingBottom: 30,
+        }}
         renderItem={({ item }) => (
           <View
             style={{
-              backgroundColor: "white",
+              backgroundColor: theme.card,
               borderRadius: 16,
               marginBottom: 20,
               overflow: "hidden",
@@ -90,6 +97,7 @@ export default function GalleryScreen() {
               style={{
                 width: "100%",
                 height: 240,
+                backgroundColor: theme.border,
               }}
               resizeMode="cover"
             />
@@ -103,7 +111,7 @@ export default function GalleryScreen() {
                 style={{
                   fontSize: 18,
                   fontWeight: "bold",
-                  color: "#001f5b",
+                  color: theme.text,
                 }}
               >
                 {item.title}
@@ -111,7 +119,7 @@ export default function GalleryScreen() {
 
               <Text
                 style={{
-                  color: "#666",
+                  color: theme.secondaryText,
                   marginTop: 8,
                   lineHeight: 22,
                 }}
@@ -121,6 +129,23 @@ export default function GalleryScreen() {
             </View>
           </View>
         )}
+        ListEmptyComponent={
+          <View
+            style={{
+              alignItems: "center",
+              paddingVertical: 50,
+            }}
+          >
+            <Text
+              style={{
+                color: theme.secondaryText,
+                fontSize: 15,
+              }}
+            >
+              No gallery images available.
+            </Text>
+          </View>
+        }
       />
     </SafeAreaView>
   );
