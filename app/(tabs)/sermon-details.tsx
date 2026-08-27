@@ -13,8 +13,14 @@ import {
   View,
 } from "react-native";
 
+import { APP_THEME } from "../../constants/appTheme";
+import { useAppTheme } from "../../src/context/ThemeContext";
+
 export default function SermonDetails() {
   const { id } = useLocalSearchParams();
+
+  const { isDark } = useAppTheme();
+  const theme = APP_THEME[isDark ? "dark" : "light"];
 
   const [sermon, setSermon] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -28,15 +34,18 @@ export default function SermonDetails() {
   const fetchSermon = async () => {
     try {
       const response = await api.get(`/sermons/${id}/`);
+
       setSermon(response.data);
     } catch (error) {
-      console.log(error);
+      console.log("Sermon details error:", error);
+
       Alert.alert("Error", "Unable to load sermon.");
     } finally {
       setLoading(false);
     }
   };
 
+  // LOADING
   if (loading) {
     return (
       <View
@@ -44,13 +53,24 @@ export default function SermonDetails() {
           flex: 1,
           justifyContent: "center",
           alignItems: "center",
+          backgroundColor: theme.background,
         }}
       >
-        <ActivityIndicator size="large" color="#001f5b" />
+        <ActivityIndicator size="large" color={theme.primary} />
+
+        <Text
+          style={{
+            marginTop: 10,
+            color: theme.secondaryText,
+          }}
+        >
+          Loading sermon...
+        </Text>
       </View>
     );
   }
 
+  // NOT FOUND
   if (!sermon) {
     return (
       <View
@@ -58,9 +78,29 @@ export default function SermonDetails() {
           flex: 1,
           justifyContent: "center",
           alignItems: "center",
+          paddingHorizontal: 20,
+          backgroundColor: theme.background,
         }}
       >
-        <Text>Sermon not found.</Text>
+        <Text
+          style={{
+            color: theme.text,
+            fontSize: 18,
+            fontWeight: "700",
+          }}
+        >
+          Sermon not found.
+        </Text>
+
+        <Text
+          style={{
+            color: theme.secondaryText,
+            marginTop: 8,
+            textAlign: "center",
+          }}
+        >
+          This sermon may no longer be available.
+        </Text>
       </View>
     );
   }
@@ -69,89 +109,103 @@ export default function SermonDetails() {
     <ScrollView
       style={{
         flex: 1,
-        backgroundColor: "#f5f7fb",
+        backgroundColor: theme.background,
       }}
       contentContainerStyle={{
         paddingBottom: 40,
       }}
+      showsVerticalScrollIndicator={false}
     >
-      {/* Thumbnail */}
-      <Image
-        source={{ uri: sermon.thumbnail }}
-        style={{
-          width: "100%",
-          height: 250,
-        }}
-        resizeMode="cover"
-      />
+      {/* THUMBNAIL */}
+      {sermon.thumbnail ? (
+        <Image
+          source={{
+            uri: sermon.thumbnail,
+          }}
+          style={{
+            width: "100%",
+            height: 250,
+            backgroundColor: theme.border,
+          }}
+          resizeMode="cover"
+        />
+      ) : null}
 
       <View
         style={{
           padding: 20,
         }}
       >
-        {/* Title */}
+        {/* TITLE */}
         <Text
           style={{
             fontSize: 28,
             fontWeight: "bold",
-            color: "#0d1b4c",
+            color: theme.text,
             marginBottom: 12,
           }}
         >
           {sermon.title}
         </Text>
 
-        {/* Pastor */}
+        {/* PASTOR */}
         <Text
           style={{
             fontSize: 18,
-            color: "#555",
+            color: theme.secondaryText,
             marginBottom: 8,
           }}
         >
           🎤 {sermon.pastor}
         </Text>
 
-        {/* Scripture */}
+        {/* SCRIPTURE */}
         <Text
           style={{
             fontSize: 16,
             fontWeight: "600",
-            color: "#2e7d32",
+            color: isDark ? "#86efac" : "#2e7d32",
             marginBottom: 20,
           }}
         >
           📖 {sermon.scripture}
         </Text>
 
-        {/* Description */}
+        {/* DESCRIPTION */}
         <Text
           style={{
             fontSize: 16,
             lineHeight: 26,
-            color: "#444",
+            color: theme.text,
             marginBottom: 30,
           }}
         >
           {sermon.description}
         </Text>
 
-        {/* Watch Button */}
+        {/* WATCH SERMON */}
         {sermon.youtube_link ? (
           <Pressable
             onPress={() => Linking.openURL(sermon.youtube_link)}
-            style={{
-              backgroundColor: "#001f5b",
+            style={({ pressed }) => ({
+              backgroundColor: pressed
+                ? isDark
+                  ? "#1d4ed8"
+                  : "#00327f"
+                : isDark
+                  ? "#2563eb"
+                  : "#001f5b",
+
               paddingVertical: 16,
               borderRadius: 16,
               alignItems: "center",
               marginBottom: 15,
-            }}
+              opacity: pressed ? 0.9 : 1,
+            })}
           >
             <Text
               style={{
-                color: "#fff",
+                color: "#ffffff",
                 fontSize: 16,
                 fontWeight: "bold",
               }}
@@ -161,21 +215,23 @@ export default function SermonDetails() {
           </Pressable>
         ) : null}
 
-        {/* Listen Audio */}
+        {/* LISTEN AUDIO */}
         {sermon.audio_file ? (
           <Pressable
             onPress={() => Linking.openURL(sermon.audio_file)}
-            style={{
-              backgroundColor: "#2E7D32",
+            style={({ pressed }) => ({
+              backgroundColor: pressed ? "#166534" : "#2E7D32",
+
               paddingVertical: 16,
               borderRadius: 16,
               alignItems: "center",
               marginBottom: 15,
-            }}
+              opacity: pressed ? 0.9 : 1,
+            })}
           >
             <Text
               style={{
-                color: "#fff",
+                color: "#ffffff",
                 fontSize: 16,
                 fontWeight: "bold",
               }}
@@ -185,20 +241,22 @@ export default function SermonDetails() {
           </Pressable>
         ) : null}
 
-        {/* PDF Notes */}
+        {/* PDF NOTES */}
         {sermon.pdf_notes ? (
           <Pressable
             onPress={() => Linking.openURL(sermon.pdf_notes)}
-            style={{
-              backgroundColor: "#8B0000",
+            style={({ pressed }) => ({
+              backgroundColor: pressed ? "#7f1d1d" : "#8B0000",
+
               paddingVertical: 16,
               borderRadius: 16,
               alignItems: "center",
-            }}
+              opacity: pressed ? 0.9 : 1,
+            })}
           >
             <Text
               style={{
-                color: "#fff",
+                color: "#ffffff",
                 fontSize: 16,
                 fontWeight: "bold",
               }}
