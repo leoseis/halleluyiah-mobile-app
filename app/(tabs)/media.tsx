@@ -1,5 +1,4 @@
 import { router } from "expo-router";
-
 import { useEffect, useState } from "react";
 
 import {
@@ -13,11 +12,15 @@ import {
 
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { APP_THEME } from "../../constants/appTheme";
 import api from "../../src/api/api";
+import { useAppTheme } from "../../src/context/ThemeContext";
 
 export default function MediaScreen() {
-  const [sermons, setSermons] = useState<any[]>([]);
+  const { isDark } = useAppTheme();
+  const theme = APP_THEME[isDark ? "dark" : "light"];
 
+  const [sermons, setSermons] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -28,11 +31,9 @@ export default function MediaScreen() {
     try {
       const response = await api.get("/sermons/");
 
-      console.log(response.data);
-
       setSermons(response.data);
     } catch (error) {
-      console.log(error);
+      console.log("Media sermon fetch error:", error);
     } finally {
       setLoading(false);
     }
@@ -45,14 +46,16 @@ export default function MediaScreen() {
           flex: 1,
           justifyContent: "center",
           alignItems: "center",
+          backgroundColor: theme.background,
         }}
       >
-        <ActivityIndicator size="large" />
+        <ActivityIndicator size="large" color={theme.primary} />
 
         <Text
           style={{
             marginTop: 10,
             fontSize: 16,
+            color: theme.secondaryText,
           }}
         >
           Loading sermons...
@@ -65,7 +68,7 @@ export default function MediaScreen() {
     <SafeAreaView
       style={{
         flex: 1,
-        backgroundColor: "#f5f7fb",
+        backgroundColor: theme.background,
         paddingHorizontal: 16,
       }}
     >
@@ -73,36 +76,39 @@ export default function MediaScreen() {
         style={{
           fontSize: 28,
           fontWeight: "bold",
-          color: "#0d1b4c",
+          color: theme.text,
           marginBottom: 20,
           marginTop: 10,
         }}
       >
-        Sermons 🎥
+        Media 🎥
       </Text>
 
       <FlatList
         data={sermons}
         keyExtractor={(item) => item.id.toString()}
         showsVerticalScrollIndicator={false}
+        contentContainerStyle={{
+          paddingBottom: 30,
+        }}
         renderItem={({ item }) => (
           <Pressable
             onPress={() =>
               router.push({
                 pathname: "/sermon-details",
                 params: {
-                  sermon: JSON.stringify(item),
+                  id: item.id.toString(),
                 },
               })
             }
-            style={{
-              backgroundColor: "white",
+            style={({ pressed }) => ({
+              backgroundColor: theme.card,
               borderRadius: 18,
               marginBottom: 20,
               overflow: "hidden",
 
               shadowColor: "#000",
-              shadowOpacity: 0.08,
+              shadowOpacity: isDark ? 0.2 : 0.08,
               shadowRadius: 8,
               shadowOffset: {
                 width: 0,
@@ -110,53 +116,52 @@ export default function MediaScreen() {
               },
 
               elevation: 4,
-            }}
+              opacity: pressed ? 0.88 : 1,
+            })}
           >
-            {/* THUMBNAIL */}
-            <Image
-              source={{
-                uri: item.thumbnail,
-              }}
-              style={{
-                width: "100%",
-                height: 220,
-              }}
-              resizeMode="cover"
-            />
+            {item.thumbnail ? (
+              <Image
+                source={{
+                  uri: item.thumbnail,
+                }}
+                style={{
+                  width: "100%",
+                  height: 220,
+                  backgroundColor: theme.border,
+                }}
+                resizeMode="cover"
+              />
+            ) : null}
 
-            {/* CONTENT */}
             <View
               style={{
                 padding: 16,
               }}
             >
-              {/* TITLE */}
               <Text
                 style={{
                   fontSize: 20,
                   fontWeight: "bold",
-                  color: "#0d1b4c",
+                  color: theme.text,
                   marginBottom: 8,
                 }}
               >
                 {item.title}
               </Text>
 
-              {/* PASTOR */}
               <Text
                 style={{
                   fontSize: 15,
-                  color: "#666",
+                  color: theme.secondaryText,
                   marginBottom: 16,
                 }}
               >
                 Pastor {item.pastor}
               </Text>
 
-              {/* BUTTON */}
               <View
                 style={{
-                  backgroundColor: "#001f5b",
+                  backgroundColor: isDark ? "#2563eb" : "#001f5b",
                   paddingVertical: 12,
                   borderRadius: 12,
                   alignItems: "center",
@@ -164,7 +169,7 @@ export default function MediaScreen() {
               >
                 <Text
                   style={{
-                    color: "white",
+                    color: "#ffffff",
                     fontWeight: "bold",
                     fontSize: 15,
                   }}
@@ -175,6 +180,22 @@ export default function MediaScreen() {
             </View>
           </Pressable>
         )}
+        ListEmptyComponent={
+          <View
+            style={{
+              alignItems: "center",
+              paddingVertical: 50,
+            }}
+          >
+            <Text
+              style={{
+                color: theme.secondaryText,
+              }}
+            >
+              No media available.
+            </Text>
+          </View>
+        }
       />
     </SafeAreaView>
   );

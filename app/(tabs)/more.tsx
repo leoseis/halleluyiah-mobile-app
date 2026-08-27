@@ -14,6 +14,13 @@ const menuItems = [
     icon: "heart",
     color: "#ef4444",
   },
+
+  {
+    title: "Media",
+    route: "/media",
+    icon: "play-circle",
+    color: "#ec4899",
+  },
   {
     title: "Giving",
     route: "/giving",
