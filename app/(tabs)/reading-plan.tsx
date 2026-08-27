@@ -12,9 +12,14 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
+import { APP_THEME } from "../../constants/appTheme";
 import api from "../../src/api/api";
+import { useAppTheme } from "../../src/context/ThemeContext";
 
 export default function ReadingPlanScreen() {
+  const { isDark } = useAppTheme();
+  const theme = APP_THEME[isDark ? "dark" : "light"];
+
   const [plans, setPlans] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [completed, setCompleted] = useState<number[]>([]);
@@ -72,9 +77,19 @@ export default function ReadingPlanScreen() {
           flex: 1,
           justifyContent: "center",
           alignItems: "center",
+          backgroundColor: theme.background,
         }}
       >
-        <ActivityIndicator size="large" />
+        <ActivityIndicator size="large" color={theme.primary} />
+
+        <Text
+          style={{
+            marginTop: 10,
+            color: theme.secondaryText,
+          }}
+        >
+          Loading reading plan...
+        </Text>
       </View>
     );
   }
@@ -83,7 +98,7 @@ export default function ReadingPlanScreen() {
     <SafeAreaView
       style={{
         flex: 1,
-        backgroundColor: "#f5f7fb",
+        backgroundColor: theme.background,
         paddingHorizontal: 16,
       }}
     >
@@ -91,17 +106,17 @@ export default function ReadingPlanScreen() {
         style={{
           fontSize: 28,
           fontWeight: "bold",
-          color: "#001f5b",
+          color: theme.text,
           marginVertical: 20,
         }}
       >
         Bible Reading Plan 📖
       </Text>
 
-      {/* Progress Card */}
+      {/* PROGRESS CARD */}
       <View
         style={{
-          backgroundColor: "white",
+          backgroundColor: theme.card,
           padding: 16,
           borderRadius: 16,
           marginBottom: 20,
@@ -112,6 +127,7 @@ export default function ReadingPlanScreen() {
           style={{
             fontSize: 18,
             fontWeight: "bold",
+            color: theme.text,
           }}
         >
           Progress
@@ -121,7 +137,7 @@ export default function ReadingPlanScreen() {
           style={{
             marginTop: 10,
             fontSize: 16,
-            color: "#555",
+            color: theme.secondaryText,
           }}
         >
           {progress}% Completed
@@ -130,7 +146,7 @@ export default function ReadingPlanScreen() {
         <View
           style={{
             height: 12,
-            backgroundColor: "#e5e7eb",
+            backgroundColor: isDark ? "#334155" : "#e5e7eb",
             borderRadius: 10,
             marginTop: 12,
             overflow: "hidden",
@@ -141,78 +157,111 @@ export default function ReadingPlanScreen() {
               width: `${progress}%`,
               height: "100%",
               backgroundColor: "#28a745",
+              borderRadius: 10,
             }}
           />
         </View>
       </View>
 
+      {/* READING PLAN LIST */}
       <FlatList
         data={plans}
         keyExtractor={(item) => item.id.toString()}
         showsVerticalScrollIndicator={false}
-        renderItem={({ item }) => (
-          <View
-            style={{
-              backgroundColor: "white",
-              borderRadius: 16,
-              padding: 18,
-              marginBottom: 15,
-              elevation: 3,
-            }}
-          >
-            <Text
-              style={{
-                fontSize: 20,
-                fontWeight: "bold",
-                color: "#001f5b",
-              }}
-            >
-              {item.title}
-            </Text>
+        contentContainerStyle={{
+          paddingBottom: 30,
+        }}
+        renderItem={({ item }) => {
+          const isCompleted = completed.includes(item.id);
 
-            <Text
+          return (
+            <View
               style={{
-                marginTop: 8,
-                color: "#555",
-              }}
-            >
-              📖 {item.scripture}
-            </Text>
-
-            <Text
-              style={{
-                marginTop: 8,
-                color: "#777",
-              }}
-            >
-              📅 {item.reading_date}
-            </Text>
-
-            <Pressable
-              onPress={() => toggleCompleted(item.id)}
-              style={{
-                marginTop: 15,
-                backgroundColor: completed.includes(item.id)
-                  ? "#28a745"
-                  : "#001f5b",
-                padding: 12,
-                borderRadius: 10,
-                alignItems: "center",
+                backgroundColor: theme.card,
+                borderRadius: 16,
+                padding: 18,
+                marginBottom: 15,
+                elevation: 3,
               }}
             >
               <Text
                 style={{
-                  color: "white",
+                  fontSize: 20,
                   fontWeight: "bold",
+                  color: theme.text,
                 }}
               >
-                {completed.includes(item.id)
-                  ? "✓ Completed"
-                  : "Mark as Completed"}
+                {item.title}
               </Text>
-            </Pressable>
+
+              <Text
+                style={{
+                  marginTop: 8,
+                  color: theme.secondaryText,
+                }}
+              >
+                📖 {item.scripture}
+              </Text>
+
+              <Text
+                style={{
+                  marginTop: 8,
+                  color: theme.secondaryText,
+                }}
+              >
+                📅 {item.reading_date}
+              </Text>
+
+              <Pressable
+                onPress={() => toggleCompleted(item.id)}
+                style={({ pressed }) => ({
+                  marginTop: 15,
+                  backgroundColor: isCompleted
+                    ? pressed
+                      ? "#15803d"
+                      : "#28a745"
+                    : pressed
+                      ? isDark
+                        ? "#1d4ed8"
+                        : "#00327f"
+                      : isDark
+                        ? "#2563eb"
+                        : "#001f5b",
+
+                  padding: 12,
+                  borderRadius: 10,
+                  alignItems: "center",
+                })}
+              >
+                <Text
+                  style={{
+                    color: "#ffffff",
+                    fontWeight: "bold",
+                  }}
+                >
+                  {isCompleted ? "✓ Completed" : "Mark as Completed"}
+                </Text>
+              </Pressable>
+            </View>
+          );
+        }}
+        ListEmptyComponent={
+          <View
+            style={{
+              alignItems: "center",
+              paddingVertical: 50,
+            }}
+          >
+            <Text
+              style={{
+                color: theme.secondaryText,
+                fontSize: 15,
+              }}
+            >
+              No reading plan available.
+            </Text>
           </View>
-        )}
+        }
       />
     </SafeAreaView>
   );

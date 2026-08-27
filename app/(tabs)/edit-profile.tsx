@@ -1,5 +1,6 @@
 import * as ImagePicker from "expo-image-picker";
 import { useContext, useEffect, useState } from "react";
+
 import {
   ActivityIndicator,
   Image,
@@ -9,13 +10,19 @@ import {
   TextInput,
   TouchableOpacity,
 } from "react-native";
+
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { APP_THEME } from "../../constants/appTheme";
 import { changePassword, updateProfile } from "../../src/api/auth";
 import { AuthContext } from "../../src/context/AuthContext";
+import { useAppTheme } from "../../src/context/ThemeContext";
 
 export default function EditProfileScreen() {
   const { user, setUser } = useContext(AuthContext);
+
+  const { isDark } = useAppTheme();
+  const theme = APP_THEME[isDark ? "dark" : "light"];
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -27,6 +34,7 @@ export default function EditProfileScreen() {
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
+
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -73,7 +81,6 @@ export default function EditProfileScreen() {
     try {
       setSaving(true);
 
-      // Update profile
       const updatedUser = await updateProfile({
         first_name: firstName,
         last_name: lastName,
@@ -84,7 +91,6 @@ export default function EditProfileScreen() {
 
       setUser(updatedUser);
 
-      // Change password if user entered one
       if (oldPassword || newPassword || confirmPassword) {
         if (newPassword !== confirmPassword) {
           alert("New password and confirm password do not match.");
@@ -96,7 +102,6 @@ export default function EditProfileScreen() {
           new_password: newPassword,
         });
 
-        // Clear password fields after success
         setOldPassword("");
         setNewPassword("");
         setConfirmPassword("");
@@ -125,18 +130,46 @@ export default function EditProfileScreen() {
           flex: 1,
           justifyContent: "center",
           alignItems: "center",
+          backgroundColor: theme.background,
         }}
       >
-        <ActivityIndicator size="large" />
+        <ActivityIndicator size="large" color={theme.primary} />
+
+        <Text
+          style={{
+            marginTop: 10,
+            color: theme.secondaryText,
+          }}
+        >
+          Loading profile...
+        </Text>
       </SafeAreaView>
     );
   }
+
+  const inputStyle = {
+    borderWidth: 1,
+    borderColor: theme.border,
+    backgroundColor: theme.card,
+    color: theme.text,
+    padding: 14,
+    borderRadius: 12,
+    marginBottom: 16,
+    fontSize: 15,
+  };
+
+  const labelStyle = {
+    color: theme.text,
+    fontWeight: "600" as const,
+    marginBottom: 7,
+    fontSize: 14,
+  };
 
   return (
     <SafeAreaView
       style={{
         flex: 1,
-        backgroundColor: "#f5f7fb",
+        backgroundColor: theme.background,
       }}
     >
       <ScrollView
@@ -145,21 +178,23 @@ export default function EditProfileScreen() {
           paddingBottom: 40,
         }}
         showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
       >
         <Text
           style={{
             fontSize: 28,
             fontWeight: "bold",
+            color: theme.text,
             marginBottom: 25,
           }}
         >
-          EDIT PROFILE TEST
+          Edit Profile
         </Text>
 
-        {/* Profile Picture */}
-
+        {/* PROFILE PICTURE */}
         <TouchableOpacity
           onPress={pickImage}
+          activeOpacity={0.8}
           style={{
             alignItems: "center",
             marginBottom: 30,
@@ -168,7 +203,9 @@ export default function EditProfileScreen() {
           <Image
             source={
               profileImage
-                ? { uri: profileImage }
+                ? {
+                    uri: profileImage,
+                  }
                 : {
                     uri: "https://i.pravatar.cc/300",
                   }
@@ -177,15 +214,16 @@ export default function EditProfileScreen() {
               width: 120,
               height: 120,
               borderRadius: 60,
-              borderWidth: 2,
-              borderColor: "#001f5b",
+              borderWidth: 3,
+              borderColor: isDark ? "#60a5fa" : "#001f5b",
+              backgroundColor: theme.card,
             }}
           />
 
           <Text
             style={{
               marginTop: 10,
-              color: "#001f5b",
+              color: isDark ? "#60a5fa" : "#001f5b",
               fontWeight: "600",
             }}
           >
@@ -193,157 +231,156 @@ export default function EditProfileScreen() {
           </Text>
         </TouchableOpacity>
 
-        <Text>Username</Text>
+        {/* USERNAME */}
+        <Text style={labelStyle}>Username</Text>
 
         <TextInput
           value={username}
           editable={false}
           style={{
-            borderWidth: 1,
-            borderColor: "#ddd",
-            padding: 14,
-            borderRadius: 12,
+            ...inputStyle,
+            backgroundColor: isDark ? "#1e293b" : "#eeeeee",
+            color: theme.secondaryText,
             marginBottom: 20,
-            backgroundColor: "#eee",
           }}
         />
 
-        <Text>First Name</Text>
+        {/* FIRST NAME */}
+        <Text style={labelStyle}>First Name</Text>
 
         <TextInput
           value={firstName}
           onChangeText={setFirstName}
           placeholder="First Name"
-          style={{
-            borderWidth: 1,
-            borderColor: "#ddd",
-            borderRadius: 12,
-            padding: 14,
-            marginBottom: 16,
-          }}
+          placeholderTextColor={theme.mutedText}
+          style={inputStyle}
         />
 
-        <Text>Last Name</Text>
+        {/* LAST NAME */}
+        <Text style={labelStyle}>Last Name</Text>
 
         <TextInput
           value={lastName}
           onChangeText={setLastName}
           placeholder="Last Name"
-          style={{
-            borderWidth: 1,
-            borderColor: "#ddd",
-            borderRadius: 12,
-            padding: 14,
-            marginBottom: 16,
-          }}
+          placeholderTextColor={theme.mutedText}
+          style={inputStyle}
         />
 
-        <Text>Email</Text>
+        {/* EMAIL */}
+        <Text style={labelStyle}>Email</Text>
 
         <TextInput
           value={email}
           onChangeText={setEmail}
           placeholder="Email"
+          placeholderTextColor={theme.mutedText}
           keyboardType="email-address"
           autoCapitalize="none"
-          style={{
-            borderWidth: 1,
-            borderColor: "#ddd",
-            borderRadius: 12,
-            padding: 14,
-            marginBottom: 16,
-          }}
+          style={inputStyle}
         />
 
-        <Text>Phone Number</Text>
+        {/* PHONE */}
+        <Text style={labelStyle}>Phone Number</Text>
 
         <TextInput
           value={phoneNumber}
           onChangeText={setPhoneNumber}
           placeholder="Phone Number"
+          placeholderTextColor={theme.mutedText}
           keyboardType="phone-pad"
           style={{
-            borderWidth: 1,
-            borderColor: "#ddd",
-            borderRadius: 12,
-            padding: 14,
+            ...inputStyle,
             marginBottom: 30,
           }}
         />
 
+        {/* PASSWORD SECTION */}
         <Text
           style={{
-            marginTop: 20,
-            marginBottom: 10,
-            fontSize: 18,
+            marginTop: 10,
+            marginBottom: 15,
+            fontSize: 20,
             fontWeight: "bold",
+            color: theme.text,
           }}
         >
           Change Password
         </Text>
 
-        <Text>Current Password</Text>
+        <Text
+          style={{
+            color: theme.secondaryText,
+            marginBottom: 18,
+            lineHeight: 20,
+          }}
+        >
+          Leave these fields empty if you do not want to change your password.
+        </Text>
+
+        {/* CURRENT PASSWORD */}
+        <Text style={labelStyle}>Current Password</Text>
 
         <TextInput
           value={oldPassword}
           onChangeText={setOldPassword}
           placeholder="Current Password"
+          placeholderTextColor={theme.mutedText}
           secureTextEntry
-          style={{
-            borderWidth: 1,
-            borderColor: "#ddd",
-            borderRadius: 12,
-            padding: 14,
-            marginBottom: 16,
-          }}
+          style={inputStyle}
         />
 
-        <Text>New Password</Text>
+        {/* NEW PASSWORD */}
+        <Text style={labelStyle}>New Password</Text>
 
         <TextInput
           value={newPassword}
           onChangeText={setNewPassword}
           placeholder="New Password"
+          placeholderTextColor={theme.mutedText}
           secureTextEntry
-          style={{
-            borderWidth: 1,
-            borderColor: "#ddd",
-            borderRadius: 12,
-            padding: 14,
-            marginBottom: 16,
-          }}
+          style={inputStyle}
         />
 
-        <Text>Confirm Password</Text>
+        {/* CONFIRM PASSWORD */}
+        <Text style={labelStyle}>Confirm Password</Text>
 
         <TextInput
           value={confirmPassword}
           onChangeText={setConfirmPassword}
           placeholder="Confirm Password"
+          placeholderTextColor={theme.mutedText}
           secureTextEntry
           style={{
-            borderWidth: 1,
-            borderColor: "#ddd",
-            borderRadius: 12,
-            padding: 14,
-            marginBottom: 20,
+            ...inputStyle,
+            marginBottom: 22,
           }}
         />
 
+        {/* SAVE BUTTON */}
         <Pressable
           onPress={handleSave}
           disabled={saving}
-          style={{
-            backgroundColor: "#001f5b",
+          style={({ pressed }) => ({
+            backgroundColor: saving
+              ? theme.mutedText
+              : pressed
+                ? isDark
+                  ? "#1d4ed8"
+                  : "#00327f"
+                : isDark
+                  ? "#2563eb"
+                  : "#001f5b",
+
             padding: 16,
             borderRadius: 14,
             alignItems: "center",
             opacity: saving ? 0.7 : 1,
-          }}
+          })}
         >
           <Text
             style={{
-              color: "white",
+              color: "#ffffff",
               fontWeight: "bold",
               fontSize: 16,
             }}
