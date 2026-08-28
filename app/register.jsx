@@ -12,9 +12,17 @@ import {
   TextInput,
   View,
 } from "react-native";
+
+import { APP_THEME } from "../constants/appTheme";
 import api from "../src/api/api";
+import { useAppTheme } from "../src/context/ThemeContext";
 
 export default function RegisterScreen() {
+  // DARK MODE
+  const { isDark } = useAppTheme();
+  const theme = APP_THEME[isDark ? "dark" : "light"];
+
+  // FORM STATE
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -77,7 +85,7 @@ export default function RegisterScreen() {
     <KeyboardAvoidingView
       style={{
         flex: 1,
-        backgroundColor: "#f5f7fb",
+        backgroundColor: theme.background,
       }}
       behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
@@ -89,6 +97,7 @@ export default function RegisterScreen() {
           paddingVertical: 40,
         }}
         keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
       >
         {/* HEADER */}
         <View
@@ -100,7 +109,7 @@ export default function RegisterScreen() {
             style={{
               fontSize: 32,
               fontWeight: "bold",
-              color: "#001f5b",
+              color: theme.text,
             }}
           >
             Create Account
@@ -110,7 +119,7 @@ export default function RegisterScreen() {
             style={{
               marginTop: 8,
               fontSize: 15,
-              color: "#6b7280",
+              color: theme.secondaryText,
               lineHeight: 22,
             }}
           >
@@ -121,17 +130,18 @@ export default function RegisterScreen() {
         {/* FORM CARD */}
         <View
           style={{
-            backgroundColor: "#ffffff",
+            backgroundColor: theme.card,
             padding: 20,
             borderRadius: 22,
             elevation: 3,
           }}
         >
+          {/* USERNAME */}
           <Text
             style={{
               fontSize: 14,
               fontWeight: "600",
-              color: "#374151",
+              color: theme.text,
               marginBottom: 7,
             }}
           >
@@ -140,29 +150,30 @@ export default function RegisterScreen() {
 
           <TextInput
             placeholder="Enter username"
-            placeholderTextColor="#94a3b8"
+            placeholderTextColor={theme.mutedText}
             value={username}
             onChangeText={setUsername}
             autoCapitalize="none"
             editable={!loading}
             style={{
               borderWidth: 1,
-              borderColor: "#e5e7eb",
-              backgroundColor: "#f8fafc",
+              borderColor: theme.border,
+              backgroundColor: isDark ? "#111827" : "#f8fafc",
               paddingHorizontal: 14,
               paddingVertical: 14,
               borderRadius: 12,
               fontSize: 16,
-              color: "#111827",
+              color: theme.text,
               marginBottom: 18,
             }}
           />
 
+          {/* EMAIL */}
           <Text
             style={{
               fontSize: 14,
               fontWeight: "600",
-              color: "#374151",
+              color: theme.text,
               marginBottom: 7,
             }}
           >
@@ -171,7 +182,7 @@ export default function RegisterScreen() {
 
           <TextInput
             placeholder="Enter email address"
-            placeholderTextColor="#94a3b8"
+            placeholderTextColor={theme.mutedText}
             value={email}
             onChangeText={setEmail}
             autoCapitalize="none"
@@ -179,22 +190,23 @@ export default function RegisterScreen() {
             editable={!loading}
             style={{
               borderWidth: 1,
-              borderColor: "#e5e7eb",
-              backgroundColor: "#f8fafc",
+              borderColor: theme.border,
+              backgroundColor: isDark ? "#111827" : "#f8fafc",
               paddingHorizontal: 14,
               paddingVertical: 14,
               borderRadius: 12,
               fontSize: 16,
-              color: "#111827",
+              color: theme.text,
               marginBottom: 18,
             }}
           />
 
+          {/* PASSWORD */}
           <Text
             style={{
               fontSize: 14,
               fontWeight: "600",
-              color: "#374151",
+              color: theme.text,
               marginBottom: 7,
             }}
           >
@@ -203,20 +215,20 @@ export default function RegisterScreen() {
 
           <TextInput
             placeholder="Create password"
-            placeholderTextColor="#94a3b8"
+            placeholderTextColor={theme.mutedText}
             value={password}
             onChangeText={setPassword}
             secureTextEntry
             editable={!loading}
             style={{
               borderWidth: 1,
-              borderColor: "#e5e7eb",
-              backgroundColor: "#f8fafc",
+              borderColor: theme.border,
+              backgroundColor: isDark ? "#111827" : "#f8fafc",
               paddingHorizontal: 14,
               paddingVertical: 14,
               borderRadius: 12,
               fontSize: 16,
-              color: "#111827",
+              color: theme.text,
               marginBottom: 22,
             }}
           />
@@ -227,16 +239,21 @@ export default function RegisterScreen() {
             disabled={loading}
             style={({ pressed }) => ({
               backgroundColor: loading
-                ? "#94a3b8"
+                ? theme.mutedText
                 : pressed
-                  ? "#00327f"
-                  : "#001f5b",
+                  ? isDark
+                    ? "#1d4ed8"
+                    : "#00327f"
+                  : isDark
+                    ? "#2563eb"
+                    : "#001f5b",
 
               paddingVertical: 16,
               borderRadius: 14,
               alignItems: "center",
               justifyContent: "center",
               minHeight: 52,
+              opacity: loading ? 0.75 : 1,
             })}
           >
             {loading ? (
@@ -258,21 +275,22 @@ export default function RegisterScreen() {
         {/* LOGIN LINK */}
         <Pressable
           onPress={() => router.replace("/login")}
-          style={{
+          style={({ pressed }) => ({
             marginTop: 24,
             alignItems: "center",
-          }}
+            opacity: pressed ? 0.65 : 1,
+          })}
         >
           <Text
             style={{
-              color: "#6b7280",
+              color: theme.secondaryText,
               fontSize: 14,
             }}
           >
             Already have an account?{" "}
             <Text
               style={{
-                color: "#001f5b",
+                color: isDark ? "#60a5fa" : "#001f5b",
                 fontWeight: "bold",
               }}
             >
