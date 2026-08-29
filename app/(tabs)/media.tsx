@@ -1,5 +1,5 @@
-import { router } from "expo-router";
-import { useEffect, useState } from "react";
+import { router, useFocusEffect } from "expo-router";
+import { useCallback, useState } from "react";
 
 import {
   ActivityIndicator,
@@ -22,23 +22,55 @@ export default function MediaScreen() {
 
   const [sermons, setSermons] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetchSermons();
-  }, []);
+  const [error, setError] = useState("");
 
   const fetchSermons = async () => {
     try {
+      console.log("MEDIA: starting sermon API request");
+
+      setLoading(true);
+      setError("");
+
       const response = await api.get("/sermons/");
 
+      console.log("MEDIA SERMONS SUCCESS:", response.data);
+
       setSermons(response.data);
-    } catch (error) {
-      console.log("Media sermon fetch error:", error);
+    } catch (error: any) {
+      console.log("MEDIA SERMON FETCH FAILED");
+      console.log("MEDIA ERROR MESSAGE:", error.message);
+      console.log("MEDIA ERROR STATUS:", error.response?.status);
+      console.log("MEDIA ERROR RESPONSE:", error.response?.data);
+
+      setSermons([]);
+
+      if (!error.response) {
+        setError(
+          "Unable to connect to the server. Please check your connection and try again.",
+        );
+      } else if (error.response?.status >= 500) {
+        setError(
+          "The server is currently unable to load sermons. Please try again later.",
+        );
+      } else {
+        setError("Unable to load sermons. Please try again.");
+      }
     } finally {
       setLoading(false);
     }
   };
 
+  /*
+   * Refresh sermons whenever Media screen
+   * comes back into focus.
+   */
+  useFocusEffect(
+    useCallback(() => {
+      fetchSermons();
+    }, []),
+  );
+
+  // LOADING STATE
   if (loading) {
     return (
       <View
@@ -61,6 +93,75 @@ export default function MediaScreen() {
           Loading sermons...
         </Text>
       </View>
+    );
+  }
+
+  // ERROR STATE
+  if (error) {
+    return (
+      <SafeAreaView
+        style={{
+          flex: 1,
+          backgroundColor: theme.background,
+          justifyContent: "center",
+          alignItems: "center",
+          paddingHorizontal: 30,
+        }}
+      >
+        <Text
+          style={{
+            fontSize: 48,
+            marginBottom: 16,
+          }}
+        >
+          📡
+        </Text>
+
+        <Text
+          style={{
+            fontSize: 22,
+            fontWeight: "bold",
+            color: theme.text,
+            textAlign: "center",
+          }}
+        >
+          Unable to Load Sermons
+        </Text>
+
+        <Text
+          style={{
+            color: theme.secondaryText,
+            textAlign: "center",
+            marginTop: 10,
+            lineHeight: 22,
+            fontSize: 15,
+          }}
+        >
+          {error}
+        </Text>
+
+        <Pressable
+          onPress={fetchSermons}
+          style={({ pressed }) => ({
+            backgroundColor: isDark ? "#2563eb" : "#001f5b",
+            paddingHorizontal: 30,
+            paddingVertical: 14,
+            borderRadius: 12,
+            marginTop: 24,
+            opacity: pressed ? 0.8 : 1,
+          })}
+        >
+          <Text
+            style={{
+              color: "#ffffff",
+              fontWeight: "bold",
+              fontSize: 16,
+            }}
+          >
+            Try Again
+          </Text>
+        </Pressable>
+      </SafeAreaView>
     );
   }
 
@@ -90,6 +191,7 @@ export default function MediaScreen() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{
           paddingBottom: 30,
+          flexGrow: sermons.length === 0 ? 1 : undefined,
         }}
         renderItem={({ item }) => (
           <Pressable
@@ -117,6 +219,9 @@ export default function MediaScreen() {
 
               elevation: 4,
               opacity: pressed ? 0.88 : 1,
+
+              borderWidth: isDark ? 1 : 0,
+              borderColor: theme.border,
             })}
           >
             {item.thumbnail ? (
@@ -149,15 +254,17 @@ export default function MediaScreen() {
                 {item.title}
               </Text>
 
-              <Text
-                style={{
-                  fontSize: 15,
-                  color: theme.secondaryText,
-                  marginBottom: 16,
-                }}
-              >
-                Pastor {item.pastor}
-              </Text>
+              {item.pastor && (
+                <Text
+                  style={{
+                    fontSize: 15,
+                    color: theme.secondaryText,
+                    marginBottom: 16,
+                  }}
+                >
+                  Pastor {item.pastor}
+                </Text>
+              )}
 
               <View
                 style={{
@@ -183,16 +290,42 @@ export default function MediaScreen() {
         ListEmptyComponent={
           <View
             style={{
+              flex: 1,
               alignItems: "center",
-              paddingVertical: 50,
+              justifyContent: "center",
+              paddingHorizontal: 30,
             }}
           >
             <Text
               style={{
-                color: theme.secondaryText,
+                fontSize: 46,
+                marginBottom: 14,
               }}
             >
-              No media available.
+              🎥
+            </Text>
+
+            <Text
+              style={{
+                fontSize: 21,
+                fontWeight: "bold",
+                color: theme.text,
+                textAlign: "center",
+              }}
+            >
+              No Sermons Available
+            </Text>
+
+            <Text
+              style={{
+                color: theme.secondaryText,
+                fontSize: 15,
+                textAlign: "center",
+                marginTop: 8,
+                lineHeight: 22,
+              }}
+            >
+              There are currently no sermons available. Please check back later.
             </Text>
           </View>
         }
