@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 
 import {
   ActivityIndicator,
@@ -8,6 +8,7 @@ import {
   View,
 } from "react-native";
 
+import { useFocusEffect } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { APP_THEME } from "../../constants/appTheme";
@@ -21,10 +22,6 @@ export default function ScheduleScreen() {
   const [schedules, setSchedules] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-
-  useEffect(() => {
-    fetchSchedules();
-  }, []);
 
   const fetchSchedules = async () => {
     try {
@@ -42,16 +39,38 @@ export default function ScheduleScreen() {
       console.log("SCHEDULE API FAILED");
       console.log("SCHEDULE ERROR MESSAGE:", error.message);
       console.log("SCHEDULE ERROR STATUS:", error.response?.status);
+      console.log("SCHEDULE ERROR RESPONSE:", error.response?.data);
 
+      // Clear old data so stale schedules are not displayed
       setSchedules([]);
 
-      setError(
-        "Unable to load the service schedule. Please check your connection and try again.",
-      );
+      if (!error.response) {
+        setError(
+          "Unable to connect to the server. Please check your connection and try again.",
+        );
+      } else if (error.response?.status >= 500) {
+        setError(
+          "The server is currently unable to load the service schedule. Please try again later.",
+        );
+      } else {
+        setError("Unable to load the service schedule. Please try again.");
+      }
     } finally {
       setLoading(false);
     }
   };
+
+  /*
+   * Fetch every time this screen comes into focus.
+   *
+   * This is important because Expo Router can keep
+   * screens mounted when navigating away from them.
+   */
+  useFocusEffect(
+    useCallback(() => {
+      fetchSchedules();
+    }, []),
+  );
 
   // LOADING STATE
   if (loading) {
@@ -148,6 +167,7 @@ export default function ScheduleScreen() {
     );
   }
 
+  // NORMAL SCREEN
   return (
     <SafeAreaView
       style={{
@@ -215,15 +235,17 @@ export default function ScheduleScreen() {
               ⏰ {item.time}
             </Text>
 
-            <Text
-              style={{
-                marginTop: 10,
-                color: theme.secondaryText,
-                lineHeight: 22,
-              }}
-            >
-              {item.description}
-            </Text>
+            {item.description && (
+              <Text
+                style={{
+                  marginTop: 10,
+                  color: theme.secondaryText,
+                  lineHeight: 22,
+                }}
+              >
+                {item.description}
+              </Text>
+            )}
           </View>
         )}
         ListEmptyComponent={

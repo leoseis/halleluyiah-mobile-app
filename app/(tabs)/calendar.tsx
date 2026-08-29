@@ -1,7 +1,14 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 
-import { ActivityIndicator, FlatList, Text, View } from "react-native";
+import {
+  ActivityIndicator,
+  FlatList,
+  Pressable,
+  Text,
+  View,
+} from "react-native";
 
+import { useFocusEffect } from "expo-router";
 import { Calendar } from "react-native-calendars";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -15,33 +22,50 @@ export default function CalendarScreen() {
 
   const [events, setEvents] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
-
-  useEffect(() => {
-    fetchEvents();
-  }, []);
 
   const fetchEvents = async () => {
     try {
+      console.log("CALENDAR: starting API request");
+
+      setLoading(true);
+      setError("");
+
       const response = await api.get("/events/");
 
       console.log("CALENDAR EVENTS:", response.data);
 
       setEvents(response.data);
-    } catch (error) {
-      console.log("Calendar event fetch error:", error);
+    } catch (error: any) {
+      console.log("CALENDAR API FAILED");
+      console.log("CALENDAR ERROR MESSAGE:", error.message);
+      console.log("CALENDAR ERROR STATUS:", error.response?.status);
+
+      setEvents([]);
+
+      setError(
+        "Unable to load church events. Please check your connection and try again.",
+      );
     } finally {
       setLoading(false);
     }
   };
 
   /*
-   * Convert Django datetime:
-   *
+   * Fetch whenever Calendar screen
+   * comes back into focus.
+   */
+  useFocusEffect(
+    useCallback(() => {
+      fetchEvents();
+    }, []),
+  );
+
+  /*
+   * Convert:
    * 2026-06-10T12:00:00Z
-   *
-   * into:
-   *
+   * to:
    * 2026-06-10
    */
   const getEventDate = (eventDate: string) => {
@@ -51,10 +75,7 @@ export default function CalendarScreen() {
   };
 
   /*
-   * MARK ALL EVENT DATES
-   *
-   * Past and future events can both appear
-   * as dots on the calendar.
+   * Mark all event dates.
    */
   const markedDates = useMemo(() => {
     const dates: Record<string, any> = {};
@@ -71,7 +92,7 @@ export default function CalendarScreen() {
     });
 
     /*
-     * Highlight date selected by user.
+     * Highlight selected date.
      */
     if (selectedDate) {
       dates[selectedDate] = {
@@ -86,9 +107,7 @@ export default function CalendarScreen() {
   }, [events, selectedDate, isDark]);
 
   /*
-   * FUTURE EVENTS ONLY
-   *
-   * These appear under "Upcoming Events".
+   * Future events only.
    */
   const upcomingEvents = useMemo(() => {
     const today = new Date();
@@ -101,9 +120,6 @@ export default function CalendarScreen() {
 
         const date = getEventDate(event.event_date);
 
-        /*
-         * Adding T00:00:00 prevents timezone problems.
-         */
         const eventDate = new Date(`${date}T00:00:00`);
 
         return eventDate >= today;
@@ -122,11 +138,10 @@ export default function CalendarScreen() {
   }, [events]);
 
   /*
-   * Decide which month should open first.
-   *
-   * 1. Nearest upcoming event
-   * 2. First available event
-   * 3. Today's date
+   * Calendar opens at:
+   * 1. Closest upcoming event
+   * 2. First existing event
+   * 3. Today
    */
   const initialCalendarDate = useMemo(() => {
     if (upcomingEvents.length > 0) {
@@ -141,7 +156,7 @@ export default function CalendarScreen() {
   }, [events, upcomingEvents]);
 
   /*
-   * Events belonging to currently selected date.
+   * Events on selected date.
    */
   const selectedDateEvents = useMemo(() => {
     if (!selectedDate) return [];
@@ -151,6 +166,7 @@ export default function CalendarScreen() {
     );
   }, [events, selectedDate]);
 
+  // LOADING STATE
   if (loading) {
     return (
       <View
@@ -165,13 +181,83 @@ export default function CalendarScreen() {
 
         <Text
           style={{
-            marginTop: 10,
+            marginTop: 12,
             color: theme.secondaryText,
+            fontSize: 15,
           }}
         >
           Loading church events...
         </Text>
       </View>
+    );
+  }
+
+  // ERROR STATE
+  if (error) {
+    return (
+      <SafeAreaView
+        style={{
+          flex: 1,
+          backgroundColor: theme.background,
+          justifyContent: "center",
+          alignItems: "center",
+          paddingHorizontal: 30,
+        }}
+      >
+        <Text
+          style={{
+            fontSize: 48,
+            marginBottom: 16,
+          }}
+        >
+          📡
+        </Text>
+
+        <Text
+          style={{
+            fontSize: 22,
+            fontWeight: "bold",
+            color: theme.text,
+            textAlign: "center",
+          }}
+        >
+          Unable to Load Calendar
+        </Text>
+
+        <Text
+          style={{
+            color: theme.secondaryText,
+            textAlign: "center",
+            marginTop: 10,
+            lineHeight: 22,
+            fontSize: 15,
+          }}
+        >
+          {error}
+        </Text>
+
+        <Pressable
+          onPress={fetchEvents}
+          style={({ pressed }) => ({
+            backgroundColor: isDark ? "#2563eb" : "#001f5b",
+            paddingHorizontal: 30,
+            paddingVertical: 14,
+            borderRadius: 12,
+            marginTop: 24,
+            opacity: pressed ? 0.8 : 1,
+          })}
+        >
+          <Text
+            style={{
+              color: "#ffffff",
+              fontWeight: "bold",
+              fontSize: 16,
+            }}
+          >
+            Try Again
+          </Text>
+        </Pressable>
+      </SafeAreaView>
     );
   }
 
@@ -211,15 +297,14 @@ export default function CalendarScreen() {
                 borderRadius: 18,
                 overflow: "hidden",
                 elevation: 3,
+                borderWidth: isDark ? 1 : 0,
+                borderColor: theme.border,
               }}
             >
               <Calendar
                 current={initialCalendarDate}
                 markedDates={markedDates}
                 onDayPress={(day) => {
-                  /*
-                   * Tap selected date again to clear it.
-                   */
                   if (selectedDate === day.dateString) {
                     setSelectedDate(null);
                   } else {
@@ -294,6 +379,8 @@ export default function CalendarScreen() {
               borderRadius: 14,
               marginBottom: 12,
               elevation: 2,
+              borderWidth: isDark ? 1 : 0,
+              borderColor: theme.border,
             }}
           >
             {/* EVENT TITLE */}
@@ -363,20 +450,44 @@ export default function CalendarScreen() {
           <View
             style={{
               backgroundColor: theme.card,
-              padding: 20,
+              padding: 24,
               borderRadius: 14,
               alignItems: "center",
+              borderWidth: isDark ? 1 : 0,
+              borderColor: theme.border,
             }}
           >
             <Text
               style={{
-                color: theme.secondaryText,
+                fontSize: 36,
+                marginBottom: 10,
+              }}
+            >
+              📅
+            </Text>
+
+            <Text
+              style={{
+                color: theme.text,
+                fontWeight: "bold",
+                fontSize: 17,
                 textAlign: "center",
               }}
             >
+              {selectedDate ? "No Event On This Date" : "No Upcoming Events"}
+            </Text>
+
+            <Text
+              style={{
+                color: theme.secondaryText,
+                textAlign: "center",
+                marginTop: 7,
+                lineHeight: 21,
+              }}
+            >
               {selectedDate
-                ? "No church event scheduled for this date."
-                : "No upcoming events available."}
+                ? "There is currently no church event scheduled for this date."
+                : "There are currently no upcoming church events available."}
             </Text>
           </View>
         }
