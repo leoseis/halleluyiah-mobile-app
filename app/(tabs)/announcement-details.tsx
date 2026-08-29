@@ -1,6 +1,8 @@
 import { router, useLocalSearchParams } from "expo-router";
 
 import {
+  ActivityIndicator,
+  Alert,
   Image,
   Pressable,
   ScrollView,
@@ -25,8 +27,12 @@ export default function AnnouncementDetails() {
 
   const [comment, setComment] = useState("");
   const [posting, setPosting] = useState(false);
+
   const [announcement, setAnnouncement] = useState<any>(null);
   const [comments, setComments] = useState<any[]>([]);
+
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     if (id) {
@@ -36,12 +42,41 @@ export default function AnnouncementDetails() {
 
   const fetchAnnouncement = async () => {
     try {
+      console.log("ANNOUNCEMENT DETAILS: starting API request");
+
+      setLoading(true);
+      setError("");
+
       const response = await api.get(`/announcements/${id}/`);
+
+      console.log("ANNOUNCEMENT DETAILS SUCCESS:", response.data);
 
       setAnnouncement(response.data);
       setComments(response.data.comments || []);
-    } catch (error) {
-      console.log("Announcement details error:", error);
+    } catch (error: any) {
+      console.log("ANNOUNCEMENT DETAILS FAILED");
+      console.log("ERROR MESSAGE:", error.message);
+      console.log("ERROR STATUS:", error.response?.status);
+      console.log("ERROR RESPONSE:", error.response?.data);
+
+      setAnnouncement(null);
+      setComments([]);
+
+      if (!error.response) {
+        setError(
+          "Unable to connect to the server. Please check your connection and try again.",
+        );
+      } else if (error.response?.status === 404) {
+        setError("This announcement could not be found.");
+      } else if (error.response?.status >= 500) {
+        setError(
+          "The server is currently unable to load this announcement. Please try again later.",
+        );
+      } else {
+        setError("Unable to load this announcement. Please try again.");
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -56,7 +91,7 @@ export default function AnnouncementDetails() {
       await api.post(
         "/comments/create/",
         {
-          content: comment,
+          content: comment.trim(),
           announcement: Number(id),
         },
         {
@@ -69,12 +104,159 @@ export default function AnnouncementDetails() {
       setComment("");
 
       await fetchAnnouncement();
-    } catch (error) {
-      console.log("Comment error:", error);
+
+      Alert.alert("Success", "Your comment has been posted.");
+    } catch (error: any) {
+      console.log("COMMENT POST FAILED");
+      console.log("COMMENT ERROR MESSAGE:", error.message);
+      console.log("COMMENT ERROR STATUS:", error.response?.status);
+
+      if (!error.response) {
+        Alert.alert(
+          "Connection Error",
+          "Unable to connect to the server. Please check your connection and try again.",
+        );
+      } else if (error.response?.status === 400) {
+        Alert.alert(
+          "Comment Failed",
+          "Your comment could not be submitted. Please check it and try again.",
+        );
+      } else if (error.response?.status === 401) {
+        Alert.alert(
+          "Session Expired",
+          "Please log in again before posting a comment.",
+        );
+      } else if (error.response?.status === 403) {
+        Alert.alert(
+          "Permission Denied",
+          "You do not have permission to post this comment.",
+        );
+      } else if (error.response?.status >= 500) {
+        Alert.alert(
+          "Server Error",
+          "The server could not process your comment. Please try again later.",
+        );
+      } else {
+        Alert.alert(
+          "Comment Failed",
+          "Unable to post your comment. Please try again.",
+        );
+      }
     } finally {
       setPosting(false);
     }
   };
+
+  // LOADING
+  if (loading) {
+    return (
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: theme.background,
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <ActivityIndicator size="large" color={theme.primary} />
+
+        <Text
+          style={{
+            color: theme.secondaryText,
+            marginTop: 12,
+            fontSize: 15,
+          }}
+        >
+          Loading announcement...
+        </Text>
+      </View>
+    );
+  }
+
+  // ERROR
+  if (error) {
+    return (
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: theme.background,
+          justifyContent: "center",
+          alignItems: "center",
+          paddingHorizontal: 30,
+        }}
+      >
+        <Text
+          style={{
+            fontSize: 48,
+            marginBottom: 16,
+          }}
+        >
+          📡
+        </Text>
+
+        <Text
+          style={{
+            fontSize: 22,
+            fontWeight: "bold",
+            color: theme.text,
+            textAlign: "center",
+          }}
+        >
+          Unable to Load Announcement
+        </Text>
+
+        <Text
+          style={{
+            color: theme.secondaryText,
+            textAlign: "center",
+            marginTop: 10,
+            lineHeight: 22,
+          }}
+        >
+          {error}
+        </Text>
+
+        <Pressable
+          onPress={fetchAnnouncement}
+          style={({ pressed }) => ({
+            backgroundColor: isDark ? "#2563eb" : "#001f5b",
+            paddingHorizontal: 30,
+            paddingVertical: 14,
+            borderRadius: 12,
+            marginTop: 24,
+            opacity: pressed ? 0.8 : 1,
+          })}
+        >
+          <Text
+            style={{
+              color: "#ffffff",
+              fontWeight: "bold",
+              fontSize: 16,
+            }}
+          >
+            Try Again
+          </Text>
+        </Pressable>
+
+        <Pressable
+          onPress={() => router.back()}
+          style={({ pressed }) => ({
+            marginTop: 18,
+            opacity: pressed ? 0.6 : 1,
+          })}
+        >
+          <Text
+            style={{
+              color: isDark ? "#60a5fa" : "#001f5b",
+              fontWeight: "700",
+            }}
+          >
+            ← Go Back
+          </Text>
+        </Pressable>
+      </View>
+    );
+  }
 
   return (
     <ScrollView
@@ -109,10 +291,10 @@ export default function AnnouncementDetails() {
       </Pressable>
 
       {/* IMAGE */}
-      {(announcement?.image || image) && (
+      {announcement?.image && (
         <Image
           source={{
-            uri: (announcement?.image || image) as string,
+            uri: announcement.image,
           }}
           resizeMode="contain"
           style={{

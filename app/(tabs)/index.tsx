@@ -1,5 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
-import { useContext, useEffect, useMemo, useState } from "react";
+import { useFocusEffect } from "expo-router";
+import { useCallback, useContext, useMemo, useState } from "react";
 
 import AnnouncementCard from "../../components/AnnouncementCard";
 import ContinueReadingCard from "../../components/home/ContinueReadingCard";
@@ -18,11 +19,12 @@ import {
   TextInput,
   View,
 } from "react-native";
+
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useAppTheme } from "../../src/context/ThemeContext";
 
 import api from "../../src/api/api";
 import { AuthContext } from "../../src/context/AuthContext";
+import { useAppTheme } from "../../src/context/ThemeContext";
 
 export default function HomeScreen() {
   const { user } = useContext(AuthContext);
@@ -30,6 +32,7 @@ export default function HomeScreen() {
   const [announcements, setAnnouncements] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [error, setError] = useState("");
 
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
@@ -57,12 +60,12 @@ export default function HomeScreen() {
     "pastoral",
   ];
 
-  useEffect(() => {
-    fetchAnnouncements();
-  }, []);
-
   const fetchAnnouncements = async (isRefreshing = false) => {
     try {
+      console.log("HOME: starting announcements API request");
+
+      setError("");
+
       if (isRefreshing) {
         setRefreshing(true);
       } else {
@@ -71,9 +74,28 @@ export default function HomeScreen() {
 
       const response = await api.get("/announcements/");
 
+      console.log("ANNOUNCEMENTS SUCCESS:", response.data);
+
       setAnnouncements(response.data);
-    } catch (error) {
-      console.log("Announcement fetch error:", error);
+    } catch (error: any) {
+      console.log("ANNOUNCEMENT FETCH FAILED");
+      console.log("ERROR MESSAGE:", error.message);
+      console.log("ERROR STATUS:", error.response?.status);
+      console.log("ERROR RESPONSE:", error.response?.data);
+
+      setAnnouncements([]);
+
+      if (!error.response) {
+        setError(
+          "Unable to connect to the server. Please check your connection and try again.",
+        );
+      } else if (error.response?.status >= 500) {
+        setError(
+          "The server is currently unable to load announcements. Please try again later.",
+        );
+      } else {
+        setError("Unable to load announcements. Please try again.");
+      }
     } finally {
       if (isRefreshing) {
         setRefreshing(false);
@@ -82,6 +104,16 @@ export default function HomeScreen() {
       }
     }
   };
+
+  /*
+   * Refresh announcements whenever
+   * Home comes back into focus.
+   */
+  useFocusEffect(
+    useCallback(() => {
+      fetchAnnouncements();
+    }, []),
+  );
 
   const handleLikeUpdate = (id: number, likes_count: number) => {
     setAnnouncements((prev: any) =>
@@ -126,31 +158,6 @@ export default function HomeScreen() {
     });
   }, [announcements, searchQuery, selectedCategory]);
 
-  if (loading) {
-    return (
-      <View
-        style={{
-          flex: 1,
-          justifyContent: "center",
-          alignItems: "center",
-          backgroundColor: theme.background,
-        }}
-      >
-        <ActivityIndicator size="large" color="#001f5b" />
-
-        <Text
-          style={{
-            marginTop: 12,
-            fontSize: 15,
-            color: "#6b7280",
-          }}
-        >
-          Loading announcements...
-        </Text>
-      </View>
-    );
-  }
-
   return (
     <SafeAreaView
       style={{
@@ -159,7 +166,7 @@ export default function HomeScreen() {
       }}
     >
       <FlatList
-        data={filteredAnnouncements}
+        data={error ? [] : filteredAnnouncements}
         refreshing={refreshing}
         onRefresh={() => fetchAnnouncements(true)}
         keyExtractor={(item: any) => item.id.toString()}
@@ -193,9 +200,13 @@ export default function HomeScreen() {
               }}
             >
               <DailyDevotionalCard />
+
               <QuickActions />
+
               <UpcomingEventCard />
+
               <LiveServiceBanner />
+
               <ContinueReadingCard />
             </View>
 
@@ -220,7 +231,7 @@ export default function HomeScreen() {
                     width: 50,
                     height: 50,
                     borderRadius: 16,
-                    backgroundColor: "#e0ecff",
+                    backgroundColor: isDark ? "#1e3a5f" : "#e0ecff",
                     alignItems: "center",
                     justifyContent: "center",
                     marginRight: 12,
@@ -254,7 +265,7 @@ export default function HomeScreen() {
                   <Text
                     style={{
                       fontSize: 13,
-                      color: "#6b7280",
+                      color: theme.secondaryText,
                       marginTop: 3,
                     }}
                   >
@@ -264,39 +275,41 @@ export default function HomeScreen() {
               </View>
 
               {/* SEARCH */}
-              <View
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  backgroundColor: theme.card,
-                  borderRadius: 16,
-                  borderWidth: 1,
-                  borderColor: theme.border,
-                  paddingHorizontal: 14,
-                }}
-              >
-                <Ionicons name="search-outline" size={21} color="#94a3b8" />
-
-                <TextInput
-                  placeholder="Search announcements..."
-                  value={searchQuery}
-                  onChangeText={setSearchQuery}
-                  placeholderTextColor="#94a3b8"
+              {!error && (
+                <View
                   style={{
-                    flex: 1,
-                    paddingVertical: 14,
-                    paddingHorizontal: 10,
-                    fontSize: 15,
-                    color: theme.text,
+                    flexDirection: "row",
+                    alignItems: "center",
+                    backgroundColor: theme.card,
+                    borderRadius: 16,
+                    borderWidth: 1,
+                    borderColor: theme.border,
+                    paddingHorizontal: 14,
                   }}
-                />
+                >
+                  <Ionicons name="search-outline" size={21} color="#94a3b8" />
 
-                {searchQuery.length > 0 && (
-                  <Pressable onPress={() => setSearchQuery("")}>
-                    <Ionicons name="close-circle" size={21} color="#94a3b8" />
-                  </Pressable>
-                )}
-              </View>
+                  <TextInput
+                    placeholder="Search announcements..."
+                    value={searchQuery}
+                    onChangeText={setSearchQuery}
+                    placeholderTextColor="#94a3b8"
+                    style={{
+                      flex: 1,
+                      paddingVertical: 14,
+                      paddingHorizontal: 10,
+                      fontSize: 15,
+                      color: theme.text,
+                    }}
+                  />
+
+                  {searchQuery.length > 0 && (
+                    <Pressable onPress={() => setSearchQuery("")}>
+                      <Ionicons name="close-circle" size={21} color="#94a3b8" />
+                    </Pressable>
+                  )}
+                </View>
+              )}
 
               {/* SECTION TITLE */}
               <View
@@ -304,6 +317,7 @@ export default function HomeScreen() {
                   flexDirection: "row",
                   justifyContent: "space-between",
                   alignItems: "center",
+                  marginTop: 18,
                   marginBottom: 12,
                 }}
               >
@@ -311,100 +325,208 @@ export default function HomeScreen() {
                   style={{
                     fontSize: 18,
                     fontWeight: "bold",
-                    color: "#001f5b",
+                    color: theme.primary,
                   }}
                 >
                   Announcements
                 </Text>
 
-                <Text
-                  style={{
-                    fontSize: 13,
-                    color: "#6b7280",
-                  }}
-                >
-                  {filteredAnnouncements.length} found
-                </Text>
+                {!error && !loading && (
+                  <Text
+                    style={{
+                      fontSize: 13,
+                      color: theme.secondaryText,
+                    }}
+                  >
+                    {filteredAnnouncements.length} found
+                  </Text>
+                )}
               </View>
 
               {/* CATEGORY FILTERS */}
-              <View
-                style={{
-                  flexDirection: "row",
-                  flexWrap: "wrap",
-                }}
-              >
-                {categories.map((category) => {
-                  const active = selectedCategory === category;
+              {!error && !loading && (
+                <View
+                  style={{
+                    flexDirection: "row",
+                    flexWrap: "wrap",
+                  }}
+                >
+                  {categories.map((category) => {
+                    const active = selectedCategory === category;
 
-                  return (
-                    <Pressable
-                      key={category}
-                      onPress={() => setSelectedCategory(category)}
-                      style={{
-                        backgroundColor: active
-                          ? isDark
-                            ? "#2563eb"
-                            : "#001f5b"
-                          : theme.chip,
-                        paddingVertical: 9,
-                        paddingHorizontal: 14,
-                        borderRadius: 20,
-                        marginRight: 8,
-                        marginBottom: 9,
-                      }}
-                    >
-                      <Text
+                    return (
+                      <Pressable
+                        key={category}
+                        onPress={() => setSelectedCategory(category)}
                         style={{
-                          color: active
-                            ? "#ffffff"
-                            : isDark
-                              ? "#e2e8f0"
-                              : "#475569",
-                          fontWeight: "600",
-                          fontSize: 13,
+                          backgroundColor: active
+                            ? isDark
+                              ? "#2563eb"
+                              : "#001f5b"
+                            : theme.chip,
+
+                          paddingVertical: 9,
+                          paddingHorizontal: 14,
+                          borderRadius: 20,
+                          marginRight: 8,
+                          marginBottom: 9,
                         }}
                       >
-                        {category}
-                      </Text>
-                    </Pressable>
-                  );
-                })}
-              </View>
+                        <Text
+                          style={{
+                            color: active
+                              ? "#ffffff"
+                              : isDark
+                                ? "#e2e8f0"
+                                : "#475569",
+
+                            fontWeight: "600",
+                            fontSize: 13,
+                          }}
+                        >
+                          {category}
+                        </Text>
+                      </Pressable>
+                    );
+                  })}
+                </View>
+              )}
+
+              {/* ANNOUNCEMENT LOADING */}
+              {loading && (
+                <View
+                  style={{
+                    alignItems: "center",
+                    paddingVertical: 35,
+                  }}
+                >
+                  <ActivityIndicator size="large" color={theme.primary} />
+
+                  <Text
+                    style={{
+                      color: theme.secondaryText,
+                      marginTop: 12,
+                    }}
+                  >
+                    Loading announcements...
+                  </Text>
+                </View>
+              )}
+
+              {/* ANNOUNCEMENT ERROR */}
+              {!loading && error && (
+                <View
+                  style={{
+                    backgroundColor: theme.card,
+                    borderRadius: 18,
+                    padding: 25,
+                    alignItems: "center",
+                    borderWidth: 1,
+                    borderColor: theme.border,
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontSize: 42,
+                      marginBottom: 12,
+                    }}
+                  >
+                    📡
+                  </Text>
+
+                  <Text
+                    style={{
+                      fontSize: 19,
+                      fontWeight: "bold",
+                      color: theme.text,
+                      textAlign: "center",
+                    }}
+                  >
+                    Unable to Load Announcements
+                  </Text>
+
+                  <Text
+                    style={{
+                      color: theme.secondaryText,
+                      textAlign: "center",
+                      marginTop: 8,
+                      lineHeight: 21,
+                    }}
+                  >
+                    {error}
+                  </Text>
+
+                  <Pressable
+                    onPress={() => fetchAnnouncements()}
+                    style={({ pressed }) => ({
+                      backgroundColor: isDark ? "#2563eb" : "#001f5b",
+
+                      paddingHorizontal: 25,
+                      paddingVertical: 12,
+                      borderRadius: 12,
+                      marginTop: 18,
+                      opacity: pressed ? 0.8 : 1,
+                    })}
+                  >
+                    <Text
+                      style={{
+                        color: "#ffffff",
+                        fontWeight: "bold",
+                      }}
+                    >
+                      Try Again
+                    </Text>
+                  </Pressable>
+                </View>
+              )}
             </View>
           </View>
         }
         ListEmptyComponent={
-          <View
-            style={{
-              paddingHorizontal: 20,
-              paddingVertical: 40,
-              alignItems: "center",
-            }}
-          >
-            <Ionicons name="search-outline" size={42} color="#94a3b8" />
-
-            <Text
+          !loading && !error ? (
+            <View
               style={{
-                fontSize: 17,
-                fontWeight: "700",
-                color: theme.text,
-                marginTop: 12,
+                paddingHorizontal: 20,
+                paddingVertical: 40,
+                alignItems: "center",
               }}
             >
-              No announcements found
-            </Text>
+              <Ionicons
+                name={
+                  searchQuery || selectedCategory !== "All"
+                    ? "search-outline"
+                    : "megaphone-outline"
+                }
+                size={42}
+                color="#94a3b8"
+              />
 
-            <Text
-              style={{
-                color: "#6b7280",
-                marginTop: 5,
-                textAlign: "center",
-              }}
-            >
-              Try another search or category.
-            </Text>
-          </View>
+              <Text
+                style={{
+                  fontSize: 17,
+                  fontWeight: "700",
+                  color: theme.text,
+                  marginTop: 12,
+                }}
+              >
+                {searchQuery || selectedCategory !== "All"
+                  ? "No announcements found"
+                  : "No announcements available"}
+              </Text>
+
+              <Text
+                style={{
+                  color: theme.secondaryText,
+                  marginTop: 5,
+                  textAlign: "center",
+                }}
+              >
+                {searchQuery || selectedCategory !== "All"
+                  ? "Try another search or category."
+                  : "There are currently no church announcements. Please check back later."}
+              </Text>
+            </View>
+          ) : null
         }
       />
     </SafeAreaView>
