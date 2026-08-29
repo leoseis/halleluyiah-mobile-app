@@ -1,6 +1,12 @@
 import { useEffect, useState } from "react";
 
-import { ActivityIndicator, FlatList, Text, View } from "react-native";
+import {
+  ActivityIndicator,
+  FlatList,
+  Pressable,
+  Text,
+  View,
+} from "react-native";
 
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -14,6 +20,7 @@ export default function ScheduleScreen() {
 
   const [schedules, setSchedules] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     fetchSchedules();
@@ -21,15 +28,32 @@ export default function ScheduleScreen() {
 
   const fetchSchedules = async () => {
     try {
+      console.log("SCHEDULE: starting API request");
+
+      setLoading(true);
+      setError("");
+
       const response = await api.get("/schedules/");
+
+      console.log("SCHEDULE API SUCCESS:", response.data);
+
       setSchedules(response.data);
-    } catch (error) {
-      console.log(error);
+    } catch (error: any) {
+      console.log("SCHEDULE API FAILED");
+      console.log("SCHEDULE ERROR MESSAGE:", error.message);
+      console.log("SCHEDULE ERROR STATUS:", error.response?.status);
+
+      setSchedules([]);
+
+      setError(
+        "Unable to load the service schedule. Please check your connection and try again.",
+      );
     } finally {
       setLoading(false);
     }
   };
 
+  // LOADING STATE
   if (loading) {
     return (
       <View
@@ -44,13 +68,83 @@ export default function ScheduleScreen() {
 
         <Text
           style={{
-            marginTop: 10,
+            marginTop: 12,
             color: theme.secondaryText,
+            fontSize: 15,
           }}
         >
           Loading schedule...
         </Text>
       </View>
+    );
+  }
+
+  // ERROR STATE
+  if (error) {
+    return (
+      <SafeAreaView
+        style={{
+          flex: 1,
+          backgroundColor: theme.background,
+          justifyContent: "center",
+          alignItems: "center",
+          paddingHorizontal: 30,
+        }}
+      >
+        <Text
+          style={{
+            fontSize: 48,
+            marginBottom: 16,
+          }}
+        >
+          📡
+        </Text>
+
+        <Text
+          style={{
+            fontSize: 22,
+            fontWeight: "bold",
+            color: theme.text,
+            textAlign: "center",
+          }}
+        >
+          Unable to Load Schedule
+        </Text>
+
+        <Text
+          style={{
+            color: theme.secondaryText,
+            textAlign: "center",
+            marginTop: 10,
+            lineHeight: 22,
+            fontSize: 15,
+          }}
+        >
+          {error}
+        </Text>
+
+        <Pressable
+          onPress={fetchSchedules}
+          style={({ pressed }) => ({
+            backgroundColor: isDark ? "#2563eb" : "#001f5b",
+            paddingHorizontal: 30,
+            paddingVertical: 14,
+            borderRadius: 12,
+            marginTop: 24,
+            opacity: pressed ? 0.8 : 1,
+          })}
+        >
+          <Text
+            style={{
+              color: "#ffffff",
+              fontWeight: "bold",
+              fontSize: 16,
+            }}
+          >
+            Try Again
+          </Text>
+        </Pressable>
+      </SafeAreaView>
     );
   }
 
@@ -79,6 +173,7 @@ export default function ScheduleScreen() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{
           paddingBottom: 30,
+          flexGrow: schedules.length === 0 ? 1 : undefined,
         }}
         renderItem={({ item }) => (
           <View
@@ -88,6 +183,8 @@ export default function ScheduleScreen() {
               borderRadius: 16,
               marginBottom: 15,
               elevation: 3,
+              borderWidth: isDark ? 1 : 0,
+              borderColor: theme.border,
             }}
           >
             <Text
@@ -132,17 +229,43 @@ export default function ScheduleScreen() {
         ListEmptyComponent={
           <View
             style={{
+              flex: 1,
               alignItems: "center",
-              paddingVertical: 50,
+              justifyContent: "center",
+              paddingHorizontal: 30,
             }}
           >
             <Text
               style={{
-                color: theme.secondaryText,
-                fontSize: 15,
+                fontSize: 46,
+                marginBottom: 14,
               }}
             >
-              No service schedule available.
+              📅
+            </Text>
+
+            <Text
+              style={{
+                fontSize: 21,
+                fontWeight: "bold",
+                color: theme.text,
+                textAlign: "center",
+              }}
+            >
+              No Service Schedule Available
+            </Text>
+
+            <Text
+              style={{
+                color: theme.secondaryText,
+                fontSize: 15,
+                textAlign: "center",
+                marginTop: 8,
+                lineHeight: 22,
+              }}
+            >
+              There are currently no scheduled services to display. Please check
+              back later.
             </Text>
           </View>
         }
