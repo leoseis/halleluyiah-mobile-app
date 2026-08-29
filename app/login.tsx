@@ -51,10 +51,20 @@ export default function LoginScreen() {
       await login(access);
 
       router.push("/(tabs)");
-    } catch (error) {
+    } catch (error: any) {
       console.log("LOGIN ERROR:", error);
+      console.log("LOGIN ERROR RESPONSE:", error.response?.data);
 
-      Alert.alert("Login Failed", "Invalid username or password");
+      if (!error.response) {
+        Alert.alert(
+          "Connection Error",
+          "Unable to connect to the server. Please check your connection and try again.",
+        );
+      } else if (error.response?.status === 401) {
+        Alert.alert("Login Failed", "Invalid username or password.");
+      } else {
+        Alert.alert("Login Failed", "Something went wrong. Please try again.");
+      }
     } finally {
       setLoading(false);
     }
