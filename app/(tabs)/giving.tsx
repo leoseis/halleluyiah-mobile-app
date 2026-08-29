@@ -23,6 +23,7 @@ export default function GivingScreen() {
 
   const [accounts, setAccounts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     fetchAccounts();
@@ -30,10 +31,26 @@ export default function GivingScreen() {
 
   const fetchAccounts = async () => {
     try {
+      console.log("GIVING: starting API request");
+
+      setLoading(true);
+      setError("");
+
       const response = await api.get("/giving/");
+
+      console.log("GIVING API SUCCESS:", response.data);
+
       setAccounts(response.data);
-    } catch (error) {
-      console.log(error);
+    } catch (error: any) {
+      console.log("GIVING API FAILED");
+      console.log("GIVING ERROR MESSAGE:", error.message);
+      console.log("GIVING ERROR STATUS:", error.response?.status);
+
+      setAccounts([]);
+
+      setError(
+        "Unable to load giving accounts. Please check your connection and try again.",
+      );
     } finally {
       setLoading(false);
     }
@@ -46,15 +63,22 @@ export default function GivingScreen() {
   };
 
   const shareAccount = async (account: any) => {
-    await Share.share({
-      message:
-        `${account.title}\n\n` +
-        `Bank: ${account.bank_name}\n` +
-        `Account Name: ${account.account_name}\n` +
-        `Account Number: ${account.account_number}`,
-    });
+    try {
+      await Share.share({
+        message:
+          `${account.title}\n\n` +
+          `Bank: ${account.bank_name}\n` +
+          `Account Name: ${account.account_name}\n` +
+          `Account Number: ${account.account_number}`,
+      });
+    } catch (error) {
+      console.log("SHARE ERROR:", error);
+
+      Alert.alert("Share Failed", "Unable to share this account information.");
+    }
   };
 
+  // LOADING STATE
   if (loading) {
     return (
       <View
@@ -69,13 +93,83 @@ export default function GivingScreen() {
 
         <Text
           style={{
-            marginTop: 10,
+            marginTop: 12,
             color: theme.secondaryText,
+            fontSize: 15,
           }}
         >
           Loading giving accounts...
         </Text>
       </View>
+    );
+  }
+
+  // ERROR STATE
+  if (error) {
+    return (
+      <SafeAreaView
+        style={{
+          flex: 1,
+          backgroundColor: theme.background,
+          justifyContent: "center",
+          alignItems: "center",
+          paddingHorizontal: 30,
+        }}
+      >
+        <Text
+          style={{
+            fontSize: 48,
+            marginBottom: 16,
+          }}
+        >
+          📡
+        </Text>
+
+        <Text
+          style={{
+            fontSize: 22,
+            fontWeight: "bold",
+            color: theme.text,
+            textAlign: "center",
+          }}
+        >
+          Unable to Load Giving Accounts
+        </Text>
+
+        <Text
+          style={{
+            color: theme.secondaryText,
+            textAlign: "center",
+            marginTop: 10,
+            lineHeight: 22,
+            fontSize: 15,
+          }}
+        >
+          {error}
+        </Text>
+
+        <Pressable
+          onPress={fetchAccounts}
+          style={({ pressed }) => ({
+            backgroundColor: isDark ? "#2563eb" : "#001f5b",
+            paddingHorizontal: 30,
+            paddingVertical: 14,
+            borderRadius: 12,
+            marginTop: 24,
+            opacity: pressed ? 0.8 : 1,
+          })}
+        >
+          <Text
+            style={{
+              color: "#ffffff",
+              fontWeight: "bold",
+              fontSize: 16,
+            }}
+          >
+            Try Again
+          </Text>
+        </Pressable>
+      </SafeAreaView>
     );
   }
 
@@ -104,6 +198,7 @@ export default function GivingScreen() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{
           paddingBottom: 30,
+          flexGrow: accounts.length === 0 ? 1 : undefined,
         }}
         renderItem={({ item }) => (
           <View
@@ -113,6 +208,8 @@ export default function GivingScreen() {
               padding: 20,
               marginBottom: 20,
               elevation: 4,
+              borderWidth: isDark ? 1 : 0,
+              borderColor: theme.border,
             }}
           >
             <Text
@@ -212,16 +309,43 @@ export default function GivingScreen() {
         ListEmptyComponent={
           <View
             style={{
+              flex: 1,
               alignItems: "center",
-              paddingVertical: 50,
+              justifyContent: "center",
+              paddingHorizontal: 30,
             }}
           >
             <Text
               style={{
-                color: theme.secondaryText,
+                fontSize: 46,
+                marginBottom: 14,
               }}
             >
-              No giving account available.
+              💝
+            </Text>
+
+            <Text
+              style={{
+                fontSize: 21,
+                fontWeight: "bold",
+                color: theme.text,
+                textAlign: "center",
+              }}
+            >
+              No Giving Accounts Available
+            </Text>
+
+            <Text
+              style={{
+                color: theme.secondaryText,
+                textAlign: "center",
+                marginTop: 8,
+                lineHeight: 22,
+                fontSize: 15,
+              }}
+            >
+              There are currently no giving accounts to display. Please check
+              back later.
             </Text>
           </View>
         }
