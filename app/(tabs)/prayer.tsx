@@ -27,28 +27,89 @@ export default function PrayerScreen() {
 
   const submitPrayer = async () => {
     if (!request.trim()) {
-      Alert.alert("Required", "Please enter your prayer request");
+      Alert.alert(
+        "Prayer Request Required",
+        "Please enter your prayer request.",
+      );
       return;
     }
 
     try {
       setLoading(true);
 
-      await api.post("/prayers/", {
-        name,
-        request,
-        is_anonymous: anonymous,
-      });
+      console.log("PRAYER: starting submission");
 
-      Alert.alert("Success 🙏", "Your prayer request has been submitted.");
+      const payload = {
+        name: anonymous ? "" : name.trim(),
+        request: request.trim(),
+        is_anonymous: anonymous,
+      };
+
+      const response = await api.post("/prayers/", payload);
+
+      console.log("PRAYER SUBMISSION SUCCESS:", response.data);
+
+      Alert.alert(
+        "Success 🙏",
+        "Your prayer request has been submitted successfully.",
+      );
 
       setName("");
       setRequest("");
       setAnonymous(false);
-    } catch (error) {
-      console.log(error);
+    } catch (error: any) {
+      console.log("PRAYER SUBMISSION FAILED");
+      console.log("PRAYER ERROR MESSAGE:", error.message);
+      console.log("PRAYER ERROR STATUS:", error.response?.status);
+      console.log("PRAYER ERROR RESPONSE:", error.response?.data);
 
-      Alert.alert("Error", "Unable to submit prayer request.");
+      // Network / backend unavailable
+      if (!error.response) {
+        Alert.alert(
+          "Connection Error",
+          "Unable to connect to the server. Please check your connection and try again.",
+        );
+      }
+
+      // Validation problem from Django
+      else if (error.response?.status === 400) {
+        Alert.alert(
+          "Submission Failed",
+          "Please check the prayer request information and try again.",
+        );
+      }
+
+      // Authentication issue
+      else if (error.response?.status === 401) {
+        Alert.alert(
+          "Session Expired",
+          "Your session has expired. Please log in again.",
+        );
+      }
+
+      // Permission issue
+      else if (error.response?.status === 403) {
+        Alert.alert(
+          "Permission Denied",
+          "You do not have permission to submit this prayer request.",
+        );
+      }
+
+      // Server error
+      else if (error.response?.status >= 500) {
+        Alert.alert(
+          "Server Error",
+          "The server is currently unable to process your request. Please try again later.",
+        );
+      }
+
+      // Other unexpected errors
+      else {
+        Alert.alert(
+          "Submission Failed",
+          "Something went wrong while submitting your prayer request. Please try again.",
+        );
+      }
     } finally {
       setLoading(false);
     }
@@ -93,10 +154,13 @@ export default function PrayerScreen() {
 
         {/* NAME INPUT */}
         <TextInput
-          placeholder="Your Name"
+          placeholder={
+            anonymous ? "Name hidden for anonymous request" : "Your Name"
+          }
           placeholderTextColor={theme.mutedText}
-          value={name}
+          value={anonymous ? "" : name}
           onChangeText={setName}
+          editable={!anonymous && !loading}
           style={{
             backgroundColor: theme.card,
             color: theme.text,
@@ -106,6 +170,7 @@ export default function PrayerScreen() {
             borderWidth: 1,
             borderColor: theme.border,
             fontSize: 15,
+            opacity: anonymous ? 0.6 : 1,
           }}
         />
 
@@ -118,6 +183,7 @@ export default function PrayerScreen() {
           multiline
           numberOfLines={6}
           textAlignVertical="top"
+          editable={!loading}
           style={{
             backgroundColor: theme.card,
             color: theme.text,
@@ -175,6 +241,7 @@ export default function PrayerScreen() {
           <Switch
             value={anonymous}
             onValueChange={setAnonymous}
+            disabled={loading}
             trackColor={{
               false: "#d1d5db",
               true: "#2563eb",
