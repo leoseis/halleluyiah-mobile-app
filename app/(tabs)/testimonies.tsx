@@ -21,6 +21,7 @@ export default function TestimoniesScreen() {
 
   const [testimonies, setTestimonies] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     fetchTestimonies();
@@ -28,15 +29,32 @@ export default function TestimoniesScreen() {
 
   const fetchTestimonies = async () => {
     try {
+      console.log("TESTIMONIES: starting API request");
+
+      setLoading(true);
+      setError("");
+
       const response = await api.get("/testimonies/");
+
+      console.log("TESTIMONIES API SUCCESS:", response.data);
+
       setTestimonies(response.data);
-    } catch (error) {
-      console.log(error);
+    } catch (error: any) {
+      console.log("TESTIMONIES API FAILED");
+      console.log("TESTIMONIES ERROR MESSAGE:", error.message);
+      console.log("TESTIMONIES ERROR STATUS:", error.response?.status);
+
+      setTestimonies([]);
+
+      setError(
+        "Unable to load testimonies. Please check your connection and try again.",
+      );
     } finally {
       setLoading(false);
     }
   };
 
+  // LOADING STATE
   if (loading) {
     return (
       <View
@@ -51,13 +69,83 @@ export default function TestimoniesScreen() {
 
         <Text
           style={{
-            marginTop: 10,
+            marginTop: 12,
             color: theme.secondaryText,
+            fontSize: 15,
           }}
         >
           Loading testimonies...
         </Text>
       </View>
+    );
+  }
+
+  // ERROR STATE
+  if (error) {
+    return (
+      <SafeAreaView
+        style={{
+          flex: 1,
+          backgroundColor: theme.background,
+          justifyContent: "center",
+          alignItems: "center",
+          paddingHorizontal: 30,
+        }}
+      >
+        <Text
+          style={{
+            fontSize: 48,
+            marginBottom: 16,
+          }}
+        >
+          📡
+        </Text>
+
+        <Text
+          style={{
+            fontSize: 22,
+            fontWeight: "bold",
+            color: theme.text,
+            textAlign: "center",
+          }}
+        >
+          Unable to Load Testimonies
+        </Text>
+
+        <Text
+          style={{
+            color: theme.secondaryText,
+            textAlign: "center",
+            marginTop: 10,
+            lineHeight: 22,
+            fontSize: 15,
+          }}
+        >
+          {error}
+        </Text>
+
+        <Pressable
+          onPress={fetchTestimonies}
+          style={({ pressed }) => ({
+            backgroundColor: isDark ? "#2563eb" : "#001f5b",
+            paddingHorizontal: 30,
+            paddingVertical: 14,
+            borderRadius: 12,
+            marginTop: 24,
+            opacity: pressed ? 0.8 : 1,
+          })}
+        >
+          <Text
+            style={{
+              color: "#ffffff",
+              fontWeight: "bold",
+              fontSize: 16,
+            }}
+          >
+            Try Again
+          </Text>
+        </Pressable>
+      </SafeAreaView>
     );
   }
 
@@ -86,6 +174,7 @@ export default function TestimoniesScreen() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{
           paddingBottom: 30,
+          flexGrow: testimonies.length === 0 ? 1 : undefined,
         }}
         renderItem={({ item }) => (
           <Pressable
@@ -103,6 +192,8 @@ export default function TestimoniesScreen() {
               borderRadius: 18,
               marginBottom: 18,
               elevation: 4,
+              borderWidth: isDark ? 1 : 0,
+              borderColor: theme.border,
               opacity: pressed ? 0.85 : 1,
             })}
           >
@@ -150,17 +241,43 @@ export default function TestimoniesScreen() {
         ListEmptyComponent={
           <View
             style={{
+              flex: 1,
               alignItems: "center",
-              paddingVertical: 50,
+              justifyContent: "center",
+              paddingHorizontal: 30,
             }}
           >
             <Text
               style={{
+                fontSize: 46,
+                marginBottom: 14,
+              }}
+            >
+              ✨
+            </Text>
+
+            <Text
+              style={{
+                fontSize: 21,
+                fontWeight: "bold",
+                color: theme.text,
+                textAlign: "center",
+              }}
+            >
+              No Testimonies Available
+            </Text>
+
+            <Text
+              style={{
                 color: theme.secondaryText,
+                textAlign: "center",
+                marginTop: 8,
+                lineHeight: 22,
                 fontSize: 15,
               }}
             >
-              No testimonies available.
+              There are currently no testimonies to display. Please check back
+              later.
             </Text>
           </View>
         }
