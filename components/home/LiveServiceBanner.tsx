@@ -29,118 +29,37 @@ export default function LiveServiceBanner() {
 
       setLoading(true);
       setError("");
-      setService(null);
 
-      const response = await api.get("/live-service/", {
-        // Important for local development.
-        // Do not allow the request to wait forever.
-        timeout: 5000,
-      });
+      const response = await api.get("/live-service/");
 
       console.log("LIVE SERVICE SUCCESS:", response.data);
 
-      /*
-       * Your API may return either:
-       *
-       * [
-       *   {...}
-       * ]
-       *
-       * or directly:
-       *
-       * {...}
-       *
-       * We safely support both.
-       */
-
-      if (Array.isArray(response.data)) {
-        if (response.data.length > 0) {
-          setService(response.data[0]);
-        } else {
-          setService(null);
-        }
-
-        return;
+      if (Array.isArray(response.data) && response.data.length > 0) {
+        setService(response.data[0]);
+      } else {
+        /*
+         * Successful request but nothing is currently live.
+         * This is NOT an error.
+         */
+        setService(null);
       }
-
-      if (
-        response.data &&
-        typeof response.data === "object" &&
-        Object.keys(response.data).length > 0
-      ) {
-        setService(response.data);
-        return;
-      }
-
-      /*
-       * API worked successfully,
-       * but there is no live service.
-       */
-      setService(null);
     } catch (error: any) {
-      console.log("========== LIVE SERVICE ERROR ==========");
-      console.log("MESSAGE:", error?.message);
-      console.log("CODE:", error?.code);
-      console.log("STATUS:", error?.response?.status);
-      console.log("DATA:", error?.response?.data);
-      console.log("========================================");
+      console.log("LIVE SERVICE FAILED");
+      console.log("ERROR MESSAGE:", error.message);
+      console.log("ERROR STATUS:", error.response?.status);
+      console.log("ERROR RESPONSE:", error.response?.data);
 
       setService(null);
 
-      /*
-       * Request timed out.
-       */
-      if (error?.code === "ECONNABORTED" || error?.code === "ETIMEDOUT") {
-        setError("The connection to the server timed out. Please try again.");
-
-        return;
-      }
-
-      /*
-       * No HTTP response means:
-       * server offline,
-       * Wi-Fi/LAN issue,
-       * incorrect IP,
-       * etc.
-       */
-      if (!error?.response) {
+      if (!error.response) {
         setError(
-          "Unable to connect to the server. Please check your connection and try again.",
+          "Unable to check the live service. Please check your connection.",
         );
-
-        return;
+      } else if (error.response?.status >= 500) {
+        setError("The server is currently unable to check the live service.");
+      } else {
+        setError("Unable to check the live service right now.");
       }
-
-      /*
-       * Authentication problem.
-       */
-      if (error.response.status === 401) {
-        setError("Your session has expired. Please sign in again.");
-
-        return;
-      }
-
-      /*
-       * Endpoint not found.
-       */
-      if (error.response.status === 404) {
-        setError("The live service information could not be found.");
-
-        return;
-      }
-
-      /*
-       * Backend/server problem.
-       */
-      if (error.response.status >= 500) {
-        setError(
-          "The server is currently unable to check the live service. Please try again.",
-        );
-
-        return;
-      }
-
-      setError("Unable to check the live service right now. Please try again.");
     } finally {
       setLoading(false);
     }

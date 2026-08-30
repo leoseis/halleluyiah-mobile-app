@@ -1,32 +1,98 @@
 import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { router } from "expo-router";
-import { useEffect, useState } from "react";
+import { router, useFocusEffect } from "expo-router";
+import { useCallback, useState } from "react";
 import { Pressable, Text, View } from "react-native";
+
 import { APP_THEME } from "../../constants/appTheme";
+import api from "../../src/api/api";
 import { useAppTheme } from "../../src/context/ThemeContext";
 
 export default function ContinueReadingCard() {
   const { isDark } = useAppTheme();
   const theme = APP_THEME[isDark ? "dark" : "light"];
-  const [progress, setProgress] = useState(0);
 
-  useEffect(() => {
-    loadProgress();
-  }, []);
+  const [progress, setProgress] = useState(0);
+  const [completedCount, setCompletedCount] = useState(0);
+  const [totalReadings, setTotalReadings] = useState(0);
 
   const loadProgress = async () => {
-    const stored = await AsyncStorage.getItem("completed_readings");
+    try {
+      /*
+       * Load the actual reading-plan list
+       * and locally completed IDs together.
+       */
+      const [planResponse, stored] = await Promise.all([
+        api.get("/reading-plans/", {
+          timeout: 5000,
+        }),
+        AsyncStorage.getItem("completed_readings"),
+      ]);
 
-    if (stored) {
+      const plans = Array.isArray(planResponse.data) ? planResponse.data : [];
+
+      const total = plans.length;
+
+      setTotalReadings(total);
+
+      if (!stored || total === 0) {
+        setCompletedCount(0);
+        setProgress(0);
+        return;
+      }
+
       const completed = JSON.parse(stored);
 
-      // Assuming 30 readings for now
-      const percent = Math.round((completed.length / 30) * 100);
+      if (!Array.isArray(completed)) {
+        console.log("Invalid completed_readings data:", completed);
 
-      setProgress(percent);
+        setCompletedCount(0);
+        setProgress(0);
+
+        return;
+      }
+
+      /*
+       * Only count completed IDs that still exist
+       * in the current backend reading plan.
+       */
+      const planIds = new Set(plans.map((plan: any) => plan.id));
+
+      const validCompleted = completed.filter(
+        (id: any) => typeof id === "number" && planIds.has(id),
+      );
+
+      const percent = Math.round((validCompleted.length / total) * 100);
+
+      setCompletedCount(validCompleted.length);
+
+      setProgress(Math.min(100, Math.max(0, percent)));
+    } catch (error: any) {
+      console.log("Continue Reading progress error:", error);
+
+      /*
+       * This is only a Home widget.
+       * A failure here should never break Home.
+       */
+      setCompletedCount(0);
+      setTotalReadings(0);
+      setProgress(0);
     }
   };
+
+  /*
+   * Refresh whenever Home regains focus.
+   *
+   * So:
+   * Reading Plan -> mark completed -> Home
+   *
+   * immediately reflects the new percentage.
+   */
+  useFocusEffect(
+    useCallback(() => {
+      loadProgress();
+    }, []),
+  );
 
   return (
     <View
@@ -36,6 +102,8 @@ export default function ContinueReadingCard() {
         borderRadius: 20,
         padding: 18,
         elevation: 3,
+        borderWidth: isDark ? 1 : 0,
+        borderColor: theme.border,
       }}
     >
       {/* HEADER */}
@@ -136,7 +204,9 @@ export default function ContinueReadingCard() {
             fontSize: 13,
           }}
         >
-          {progress}% completed
+          {totalReadings > 0
+            ? `${completedCount} of ${totalReadings}`
+            : "No readings"}
         </Text>
       </View>
 
@@ -145,6 +215,7 @@ export default function ContinueReadingCard() {
         onPress={() => router.push("/reading-plan")}
         style={({ pressed }) => ({
           marginTop: 20,
+
           backgroundColor: pressed
             ? isDark
               ? "#1d4ed8"
@@ -152,6 +223,7 @@ export default function ContinueReadingCard() {
             : isDark
               ? "#2563eb"
               : "#001f5b",
+
           paddingVertical: 13,
           borderRadius: 14,
           alignItems: "center",

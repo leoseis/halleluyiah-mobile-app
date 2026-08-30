@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 
 import {
   ActivityIndicator,
+  Alert,
   FlatList,
   Pressable,
   Text,
@@ -11,6 +12,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useFocusEffect } from "expo-router";
 
 import { APP_THEME } from "../../constants/appTheme";
 import api from "../../src/api/api";
@@ -21,54 +23,161 @@ export default function ReadingPlanScreen() {
   const theme = APP_THEME[isDark ? "dark" : "light"];
 
   const [plans, setPlans] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
   const [completed, setCompleted] = useState<number[]>([]);
 
-  useEffect(() => {
-    fetchPlans();
-    loadCompleted();
-  }, []);
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  const [error, setError] = useState("");
 
   const loadCompleted = async () => {
     try {
       const stored = await AsyncStorage.getItem("completed_readings");
 
-      if (stored) {
-        setCompleted(JSON.parse(stored));
+      if (!stored) {
+        setCompleted([]);
+        return;
       }
+
+      const parsed = JSON.parse(stored);
+
+      if (!Array.isArray(parsed)) {
+        console.log("Invalid completed_readings value:", parsed);
+
+        setCompleted([]);
+        return;
+      }
+
+      const safeIds = parsed.filter((item) => typeof item === "number");
+
+      setCompleted(safeIds);
     } catch (error) {
-      console.log(error);
+      console.log("LOAD COMPLETED ERROR:", error);
+
+      setCompleted([]);
     }
   };
+
+  const fetchPlans = async (isRefreshing = false) => {
+    try {
+      console.log("READING PLAN: starting API request");
+
+      setError("");
+
+      if (isRefreshing) {
+        setRefreshing(true);
+      } else {
+        setLoading(true);
+      }
+
+      const response = await api.get("/reading-plans/", {
+        timeout: 5000,
+      });
+
+      console.log("READING PLAN SUCCESS:", response.data);
+
+      if (Array.isArray(response.data)) {
+        setPlans(response.data);
+      } else {
+        setPlans([]);
+      }
+    } catch (error: any) {
+      console.log("========== READING PLAN ERROR ==========");
+      console.log("MESSAGE:", error?.message);
+      console.log("CODE:", error?.code);
+      console.log("STATUS:", error?.response?.status);
+      console.log("DATA:", error?.response?.data);
+      console.log("========================================");
+
+      setPlans([]);
+
+      if (error?.code === "ECONNABORTED" || error?.code === "ETIMEDOUT") {
+        setError("The connection to the server timed out. Please try again.");
+
+        return;
+      }
+
+      if (!error?.response) {
+        setError(
+          "Unable to connect to the server. Please check your connection and try again.",
+        );
+
+        return;
+      }
+
+      if (error.response.status === 401) {
+        setError("Your session has expired. Please sign in again.");
+
+        return;
+      }
+
+      if (error.response.status >= 500) {
+        setError(
+          "The server is currently unable to load the reading plan. Please try again later.",
+        );
+
+        return;
+      }
+
+      setError("Unable to load the reading plan. Please try again.");
+    } finally {
+      if (isRefreshing) {
+        setRefreshing(false);
+      } else {
+        setLoading(false);
+      }
+    }
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      loadCompleted();
+      fetchPlans();
+    }, []),
+  );
 
   const toggleCompleted = async (id: number) => {
-    let updated;
+    const wasCompleted = completed.includes(id);
 
-    if (completed.includes(id)) {
-      updated = completed.filter((item) => item !== id);
-    } else {
-      updated = [...completed, id];
-    }
+    const updated = wasCompleted
+      ? completed.filter((item) => item !== id)
+      : [...completed, id];
 
+    /*
+     * Optimistic UI update.
+     */
     setCompleted(updated);
 
-    await AsyncStorage.setItem("completed_readings", JSON.stringify(updated));
-  };
-
-  const fetchPlans = async () => {
     try {
-      const response = await api.get("/reading-plans/");
-
-      setPlans(response.data);
+      await AsyncStorage.setItem("completed_readings", JSON.stringify(updated));
     } catch (error) {
-      console.log(error);
-    } finally {
-      setLoading(false);
+      console.log("SAVE READING PROGRESS ERROR:", error);
+
+      /*
+       * Restore previous state if saving fails.
+       */
+      setCompleted(completed);
+
+      Alert.alert(
+        "Unable to Save Progress",
+        "Your reading progress could not be saved. Please try again.",
+      );
     }
   };
 
+  /*
+   * Only count completed IDs that actually
+   * exist in the current reading-plan response.
+   */
+  const validCompletedCount = useMemo(() => {
+    const planIds = new Set(plans.map((plan) => plan.id));
+
+    return completed.filter((id) => planIds.has(id)).length;
+  }, [plans, completed]);
+
   const progress =
-    plans.length > 0 ? Math.round((completed.length / plans.length) * 100) : 0;
+    plans.length > 0
+      ? Math.min(100, Math.round((validCompletedCount / plans.length) * 100))
+      : 0;
 
   if (loading) {
     return (
@@ -91,6 +200,93 @@ export default function ReadingPlanScreen() {
           Loading reading plan...
         </Text>
       </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <SafeAreaView
+        style={{
+          flex: 1,
+          backgroundColor: theme.background,
+          paddingHorizontal: 20,
+        }}
+      >
+        <Text
+          style={{
+            fontSize: 28,
+            fontWeight: "bold",
+            color: theme.text,
+            marginVertical: 20,
+          }}
+        >
+          Bible Reading Plan 📖
+        </Text>
+
+        <View
+          style={{
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+            paddingBottom: 80,
+          }}
+        >
+          <Text
+            style={{
+              fontSize: 44,
+              marginBottom: 14,
+            }}
+          >
+            📡
+          </Text>
+
+          <Text
+            style={{
+              fontSize: 21,
+              fontWeight: "bold",
+              color: theme.text,
+              textAlign: "center",
+            }}
+          >
+            Unable to Load Reading Plan
+          </Text>
+
+          <Text
+            style={{
+              color: theme.secondaryText,
+              textAlign: "center",
+              marginTop: 10,
+              lineHeight: 21,
+              maxWidth: 320,
+            }}
+          >
+            {error}
+          </Text>
+
+          <Pressable
+            onPress={() => fetchPlans()}
+            style={({ pressed }) => ({
+              backgroundColor: isDark ? "#2563eb" : "#001f5b",
+
+              paddingHorizontal: 26,
+              paddingVertical: 13,
+              borderRadius: 12,
+              marginTop: 22,
+              opacity: pressed ? 0.8 : 1,
+            })}
+          >
+            <Text
+              style={{
+                color: "#ffffff",
+                fontWeight: "bold",
+                fontSize: 15,
+              }}
+            >
+              Try Again
+            </Text>
+          </Pressable>
+        </View>
+      </SafeAreaView>
     );
   }
 
@@ -121,6 +317,8 @@ export default function ReadingPlanScreen() {
           borderRadius: 16,
           marginBottom: 20,
           elevation: 3,
+          borderWidth: isDark ? 1 : 0,
+          borderColor: theme.border,
         }}
       >
         <Text
@@ -166,10 +364,13 @@ export default function ReadingPlanScreen() {
       {/* READING PLAN LIST */}
       <FlatList
         data={plans}
+        refreshing={refreshing}
+        onRefresh={() => fetchPlans(true)}
         keyExtractor={(item) => item.id.toString()}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{
           paddingBottom: 30,
+          flexGrow: plans.length === 0 ? 1 : 0,
         }}
         renderItem={({ item }) => {
           const isCompleted = completed.includes(item.id);
@@ -182,6 +383,8 @@ export default function ReadingPlanScreen() {
                 padding: 18,
                 marginBottom: 15,
                 elevation: 3,
+                borderWidth: isDark ? 1 : 0,
+                borderColor: theme.border,
               }}
             >
               <Text
@@ -216,6 +419,7 @@ export default function ReadingPlanScreen() {
                 onPress={() => toggleCompleted(item.id)}
                 style={({ pressed }) => ({
                   marginTop: 15,
+
                   backgroundColor: isCompleted
                     ? pressed
                       ? "#15803d"
@@ -248,17 +452,40 @@ export default function ReadingPlanScreen() {
         ListEmptyComponent={
           <View
             style={{
+              flex: 1,
+              justifyContent: "center",
               alignItems: "center",
-              paddingVertical: 50,
+              paddingBottom: 80,
             }}
           >
             <Text
               style={{
-                color: theme.secondaryText,
-                fontSize: 15,
+                fontSize: 42,
+                marginBottom: 12,
               }}
             >
-              No reading plan available.
+              📖
+            </Text>
+
+            <Text
+              style={{
+                color: theme.text,
+                fontSize: 18,
+                fontWeight: "700",
+              }}
+            >
+              No Reading Plan Available
+            </Text>
+
+            <Text
+              style={{
+                color: theme.secondaryText,
+                fontSize: 14,
+                textAlign: "center",
+                marginTop: 7,
+              }}
+            >
+              There are currently no readings available.
             </Text>
           </View>
         }
