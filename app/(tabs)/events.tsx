@@ -1,5 +1,5 @@
-import { router } from "expo-router";
-import { useEffect, useState } from "react";
+import { router, useFocusEffect } from "expo-router";
+import { useCallback, useState } from "react";
 
 import { APP_THEME } from "../../constants/appTheme";
 import { useAppTheme } from "../../src/context/ThemeContext";
@@ -25,10 +25,6 @@ export default function EventsScreen() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  useEffect(() => {
-    fetchEvents();
-  }, []);
-
   const fetchEvents = async () => {
     try {
       console.log("EVENTS: starting API request");
@@ -45,14 +41,43 @@ export default function EventsScreen() {
       console.log("EVENTS API FAILED");
       console.log("EVENTS ERROR MESSAGE:", error.message);
       console.log("EVENTS ERROR STATUS:", error.response?.status);
+      console.log("EVENTS ERROR RESPONSE:", error.response?.data);
 
       setEvents([]);
 
-      setError(
-        "Unable to load events. Please check your connection and try again.",
-      );
+      if (!error.response) {
+        setError(
+          "Unable to connect to the server. Please check your connection and try again.",
+        );
+      } else if (error.response?.status >= 500) {
+        setError(
+          "The server is currently unable to load events. Please try again later.",
+        );
+      } else {
+        setError("Unable to load events. Please try again.");
+      }
     } finally {
       setLoading(false);
+    }
+  };
+
+  /*
+   * Reload events whenever this screen
+   * comes back into focus.
+   */
+  useFocusEffect(
+    useCallback(() => {
+      fetchEvents();
+    }, []),
+  );
+
+  const formatEventDate = (eventDate: string) => {
+    if (!eventDate) return "Date not available";
+
+    try {
+      return new Date(eventDate).toLocaleDateString();
+    } catch {
+      return eventDate;
     }
   };
 
@@ -72,7 +97,7 @@ export default function EventsScreen() {
         <Text
           style={{
             marginTop: 12,
-            color: theme.text,
+            color: theme.secondaryText,
             fontSize: 15,
           }}
         >
@@ -226,7 +251,7 @@ export default function EventsScreen() {
               router.push({
                 pathname: "/event-details",
                 params: {
-                  id: item.id,
+                  id: item.id.toString(),
                 },
               })
             }
@@ -243,10 +268,13 @@ export default function EventsScreen() {
           >
             {item.banner ? (
               <Image
-                source={{ uri: item.banner }}
+                source={{
+                  uri: item.banner,
+                }}
                 style={{
                   width: "100%",
                   height: 220,
+                  backgroundColor: theme.border,
                 }}
                 resizeMode="cover"
               />
@@ -260,7 +288,13 @@ export default function EventsScreen() {
                   alignItems: "center",
                 }}
               >
-                <Text style={{ fontSize: 42 }}>📅</Text>
+                <Text
+                  style={{
+                    fontSize: 42,
+                  }}
+                >
+                  📅
+                </Text>
 
                 <Text
                   style={{
@@ -273,7 +307,11 @@ export default function EventsScreen() {
               </View>
             )}
 
-            <View style={{ padding: 16 }}>
+            <View
+              style={{
+                padding: 16,
+              }}
+            >
               <Text
                 style={{
                   fontSize: 20,
@@ -290,17 +328,19 @@ export default function EventsScreen() {
                   marginTop: 8,
                 }}
               >
-                📅 {item.event_date}
+                📅 {formatEventDate(item.event_date)}
               </Text>
 
-              <Text
-                style={{
-                  color: theme.secondaryText,
-                  marginTop: 4,
-                }}
-              >
-                📍 {item.venue}
-              </Text>
+              {item.venue && (
+                <Text
+                  style={{
+                    color: theme.secondaryText,
+                    marginTop: 4,
+                  }}
+                >
+                  📍 {item.venue}
+                </Text>
+              )}
 
               <View
                 style={{
@@ -313,7 +353,7 @@ export default function EventsScreen() {
               >
                 <Text
                   style={{
-                    color: "white",
+                    color: "#ffffff",
                     fontWeight: "bold",
                   }}
                 >
