@@ -144,15 +144,17 @@ export default function HomeScreen() {
 
   const filteredAnnouncements = useMemo(() => {
     return announcements.filter((item: any) => {
-      const matchesSearch =
-        item.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        item.body?.toLowerCase().includes(searchQuery.toLowerCase());
+      const search = searchQuery.trim().toLowerCase();
 
-      const categoryName = item.category?.name?.toLowerCase() || "";
+      const matchesSearch =
+        item.title?.toLowerCase().includes(search) ||
+        item.body?.toLowerCase().includes(search);
+
+      const categoryName = item.category?.name?.trim().toLowerCase() || "";
 
       const matchesCategory =
         selectedCategory === "All" ||
-        categoryName.includes(selectedCategory.toLowerCase());
+        categoryName === selectedCategory.trim().toLowerCase();
 
       return matchesSearch && matchesCategory;
     });
