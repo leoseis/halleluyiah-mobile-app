@@ -53,7 +53,6 @@ function RootNavigator() {
       <Stack>
         {/* LOGGED-IN ROUTES */}
         <Stack.Protected guard={!!userToken}>
-          <Stack.Screen name="index" />
           <Stack.Screen
             name="(tabs)"
             options={{
